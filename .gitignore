@@ -1,0 +1,33 @@
+# Runtime & auto-generated
+history.jsonl
+projects/
+plans/
+cache/
+paste-cache/
+debug/
+telemetry/
+statsig/
+session-env/
+shell-snapshots/
+file-history/
+todos/
+tasks/
+backups/
+downloads/
+plugins/
+ide/
+hud/
+teams/
+
+# OMC runtime
+.omc/
+.omc-config.json
+.session-stats.json
+stats-cache.json
+mcp-needs-auth-cache.json
+
+# OS
+.DS_Store
+
+# Archive
+아카이브.zip
