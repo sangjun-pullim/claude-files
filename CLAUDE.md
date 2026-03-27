@@ -39,6 +39,7 @@ When writing code, follow these principles:
 - IMPORTANT: Always plan before implementing. Share the plan, get approval, then build.
 - IMPORTANT: When implementing features or fixing bugs, write tests first (or alongside), then run them to verify.
 - IMPORTANT: After completing implementation, run the reviewer agent before reporting done.
+- IMPORTANT: After code changes that affect architecture, DB schema, API, or business logic, check if `docs/` files need updating and suggest specific changes. Do NOT auto-update without approval.
 - IMPORTANT: Never read .env, secret, or credential files.
 - Break large changes into stages. Each stage should be independently verifiable.
 - If unsure, say so honestly rather than guessing.

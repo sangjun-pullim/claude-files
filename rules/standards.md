@@ -32,7 +32,8 @@
 
 ## Git
 
-- Commit format: `<type>(<scope>): <description>`
+- Commit format: `<type>(<scope>): <한국어 설명>`
+- type/scope는 영어, description은 한국어로 작성
 - Types: feat, fix, refactor, test, docs, chore
 - One commit = one logical change.
 

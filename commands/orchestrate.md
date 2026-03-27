@@ -1,3 +1,7 @@
+---
+description: Run a structured workflow (feature/bugfix/refactor) with plan → implement → review → report stages
+---
+
 # Orchestrate Workflow
 
 Run a structured workflow based on the given type. Parse the first word of `$ARGUMENTS` as the workflow type and the rest as the description.

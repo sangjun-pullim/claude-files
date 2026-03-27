@@ -22,10 +22,7 @@ Write tests FIRST. They must fail before any implementation.
 - **E2E tests**: Full user workflows (Playwright, if applicable)
 
 Run the tests. Confirm they fail with the expected reasons.
-
-```
-npm test -- --testPathPattern="<test-file>"
-```
+Use the project's package manager (detect from lock file) and test script to run specific test files.
 
 ## Step 3: GREEN — Minimal Implementation
 

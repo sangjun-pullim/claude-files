@@ -7,38 +7,25 @@ description: Run a 6-phase verification loop (build, types, lint, tests, securit
 
 Run all phases in order. Stop and fix if any phase fails before moving on.
 
+## Phase 0: Detect Package Manager
+
+Check which package manager the project uses (look for `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, or `package-lock.json`). Use the detected package manager for all commands below. Default to `npm` if none found.
+
 ## Phase 1: Build
 
-```bash
-npm run build 2>&1 | tail -20
-```
-
-If build fails, STOP. Fix build errors before continuing.
+Run the project's build script via the detected package manager. If build fails, STOP. Fix build errors before continuing.
 
 ## Phase 2: Type Check
 
-```bash
-npx tsc --noEmit 2>&1 | head -30
-```
-
-Report and fix all type errors.
+Run `tsc --noEmit` (via `npx` or the project's type-check script). Report and fix all type errors.
 
 ## Phase 3: Lint
 
-```bash
-npm run lint 2>&1 | head -30
-```
-
-Auto-fix what can be fixed. Report remaining issues.
+Run the project's lint script. Auto-fix what can be fixed. Report remaining issues.
 
 ## Phase 4: Tests
 
-```bash
-npm test -- --coverage 2>&1 | tail -50
-```
-
-Report: total / passed / failed / coverage %.
-Target: minimum 80% coverage.
+Run the project's test script with coverage enabled. Report: total / passed / failed / coverage %. Target: minimum 80% coverage.
 
 ## Phase 5: Security Scan
 

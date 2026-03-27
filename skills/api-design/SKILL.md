@@ -1,6 +1,6 @@
 ---
 name: api-design
-description: REST API design patterns — resource naming, status codes, pagination, error responses, and validation for NestJS APIs
+description: REST API design patterns for NestJS — resource naming, status codes, pagination, error responses, and validation. Only trigger for NestJS backend API projects, not for React/Next.js frontend or Electron projects.
 ---
 
 # API Design Patterns
