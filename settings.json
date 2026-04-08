@@ -58,9 +58,8 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "node /Users/pullim/.claude/hud/omc-hud.mjs"
+    "command": "python3 /Users/pullim/.claude/statusline-command.sh"
   },
-  "model": "opus",
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true
@@ -71,18 +70,6 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
-    }
-  },
-  "omcHud": {
-    "elements": {
-      "omcLabel": false,
-      "cwd": true,
-      "cwdFormat": "folder",
-      "gitBranch": true,
-      "model": true,
-      "modelFormat": "short",
-      "permissionStatus": true,
-      "agentsFormat": "count"
     }
   },
   "mcpServers": {
