@@ -23,8 +23,11 @@ When writing code, follow these principles:
 
 - Simplicity first: no features beyond what was asked. No abstractions for single-use code.
   If 200 lines could be 50, rewrite it.
+  When fixing a bug, try the simplest possible fix first. Don't propose complex algorithms or type refactors when a straightforward check will do.
 - Surgical changes: touch only what the request requires. Don't "improve" adjacent code.
   Remove only what YOUR changes made unused.
+- When debugging, investigate the root cause first. Don't suggest workarounds or wrappers before understanding why it fails.
+- When given a plan or document to implement, start implementation immediately. Don't just read and summarize — act on it.
 
 ## Communication
 
@@ -42,4 +45,5 @@ When writing code, follow these principles:
 - IMPORTANT: After code changes that affect architecture, DB schema, API, or business logic, check if `docs/` files need updating and suggest specific changes. Do NOT auto-update without approval.
 - IMPORTANT: Never read .env, secret, or credential files.
 - Break large changes into stages. Each stage should be independently verifiable.
-- If unsure, say so honestly rather than guessing.
+- If unsure, ask back to clarify rather than guessing. Get solid evidence before proceeding.
+- When saving files, use the correct location. Plans go to `docs/`, config goes to `~/.claude/`. If unspecified, ask before saving.
