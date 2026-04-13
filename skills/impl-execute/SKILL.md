@@ -29,6 +29,7 @@ The agent that implements code develops blind spots -- it "knows" what it intend
    - Which plan steps were completed
    - Files changed with brief description of each change
    - Any deviations from the plan and why
+5. **Collect dependency map** -- for each changed file, grep for files that import it. Include this "affected dependents" list in the change summary. This gives the reviewer visibility into code that might break due to your changes, without requiring a separate analysis phase.
 
 ### Phase 2: Plan-vs-Implementation Review Loop
 
@@ -46,7 +47,12 @@ The reviewer's job:
 - Read the plan document
 - Read every file that was changed (use git diff to identify them)
 - For each plan step, verify the implementation matches the specification
-- Check for: missing steps, incomplete changes, incorrect logic, missing imports, unintended side effects
+- Check for: missing steps, incomplete changes, incorrect logic, missing imports
+- **Side-effect checks** (use the dependency map from the change summary):
+  - Changed function/method signatures: do all callers match the new signature?
+  - New Guard/Middleware/Interceptor: does it accidentally apply to unintended endpoints (e.g., global registration affecting health checks)?
+  - Removed or renamed exports: are other modules still importing the old name?
+  - Existing tests: do changes break any test expectations?
 - Report findings with severity: CRITICAL / HIGH / MEDIUM / LOW / INFO
 
 #### Step B: Disposition
