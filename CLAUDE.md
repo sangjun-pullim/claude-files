@@ -36,6 +36,8 @@ When writing code, follow these principles:
 - When there are multiple options, compare tradeoffs and recommend one.
 - Skip what I already know. Don't restate obvious context.
 - Never output unchanged code.
+- When making non-obvious assumptions, state them explicitly before proceeding.
+- If multiple interpretations exist, present them — don't pick silently.
 
 ## Work Rules
 
@@ -46,4 +48,5 @@ When writing code, follow these principles:
 - IMPORTANT: Never read .env, secret, or credential files.
 - Break large changes into stages. Each stage should be independently verifiable.
 - If unsure, ask back to clarify rather than guessing. Get solid evidence before proceeding.
+- Transform tasks into verifiable goals before starting. Example: "Fix the bug" → "Write a test that reproduces it, then make it pass."
 - When saving files, use the correct location. Plans go to `docs/`, config goes to `~/.claude/`. If unspecified, ask before saving.
