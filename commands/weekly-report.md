@@ -9,6 +9,7 @@ description: Git 이력 기반 주간업무보고서 자동 생성
 - 인자가 있으면 해당 주를 기준으로 합니다: $ARGUMENTS (예: "2026-03-23" → 해당 주 월~금)
 - 인자가 없으면 이번 주 월요일~오늘(또는 금요일) 기준으로 합니다
 - 보고 기간을 "MM/DD(월) ~ MM/DD(금)" 형식으로 표시합니다
+- **주말(토, 일) 작업은 그 다음 주 보고서에 포함합니다.** 즉, 이번 주 보고서의 수집 범위는 "직전 주 토요일 ~ 이번 주 금요일"입니다. (한국시간 KST 기준)
 
 ## 2단계: Git 이력 수집
 
@@ -16,7 +17,7 @@ description: Git 이력 기반 주간업무보고서 자동 생성
 각 프로젝트 디렉토리에서 병렬로 실행하세요:
 
 ```
-git log --author="sangjun-lim" --after="<월요일>" --before="<토요일>" --format="%h %ad %s" --date=short
+TZ=Asia/Seoul git log --author="sangjun-lim" --since="<직전 주 토요일>" --before="<이번 주 토요일>" --format="%h %ad %s" --date=short
 ```
 
 대상 디렉토리: /Users/pullim/Documents/workspace/ 하위의 모든 git 저장소
