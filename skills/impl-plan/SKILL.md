@@ -82,9 +82,13 @@ The new reviewer:
 
 #### Loop Exit
 
-The loop exits when the reviewer reports **no CRITICAL or HIGH findings**. Remaining MEDIUM/LOW items are noted but do not block.
+When a reviewer reports **no CRITICAL or HIGH findings**, run **one final confirmation review** with a fresh-context `planner` agent. Provide it with the current plan only (disposition table is not needed for this round — a fresh reviewer without prior anchors is the point). Instruct it to re-verify end-to-end, with emphasis on reverse-tracing, second-order effects, and pattern parity. If it also reports no CRITICAL/HIGH findings, the loop exits. If new issues surface, return to Step B (Disposition) and continue the loop.
 
-Maximum iterations: **5**. If issues persist after 5 rounds, present the remaining findings to the user for judgment.
+Rationale: a reviewer with prior context tends to anchor on issues it already raised. A fresh reviewer on a "clean" plan occasionally catches things the previous pass missed.
+
+Remaining MEDIUM/LOW items are noted but do not block.
+
+Maximum iterations: **5**. The final confirmation round does not count toward this limit, but any issues found in it trigger iterations that do count. If issues persist after 5 rounds, present the remaining findings to the user for judgment.
 
 ### Phase 3: Present to User
 
