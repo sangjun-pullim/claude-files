@@ -41,6 +41,7 @@ When writing code, follow these principles:
 
 ## Work Rules
 
+- IMPORTANT: Before starting investigation or implementation, skim the project's CLAUDE.md `## Documentation` section and read relevant `docs/` files (decisions, architecture, business-logic, bug-fixes first) before diving into source code. See `rules/second-brain.md` `Research Order` for details.
 - IMPORTANT: Always plan before implementing. Share the plan, get approval, then build.
 - IMPORTANT: When implementing features or fixing bugs, write tests first (or alongside), then run them to verify.
 - IMPORTANT: After completing implementation, run the reviewer agent before reporting done.
