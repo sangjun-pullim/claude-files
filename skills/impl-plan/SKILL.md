@@ -23,8 +23,10 @@ The agent that writes a plan develops confirmation bias toward the code it read 
    - Risks and edge cases
    - Verification steps
 3. **Save plan** to the project's `docs/impl-spec/` directory
-   - Filename: `<issue-number>-<short-description>.md` (e.g., `124-login-restricted-error-handling.md`)
-   - If no issue number, use a descriptive kebab-case name
+   - Filename: `<NNN>-<short-description>.md` (e.g., `001-login-restricted-error-handling.md`)
+   - `NNN` is a 3-digit sequence number starting from `001`
+   - **Before assigning**: list existing files in `docs/impl-spec/`, find the highest used number, and use `highest + 1` (zero-padded to 3 digits). If the directory is empty or missing, start from `001`.
+   - Never reuse an existing number — if a collision is detected, pick the next available number
    - Create `docs/impl-spec/` if it doesn't exist
 
 ### Phase 2: Code-Verified Review Loop
