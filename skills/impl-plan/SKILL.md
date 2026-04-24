@@ -71,6 +71,14 @@ Rules for disposition:
 
 Apply all ACCEPTED findings to the plan document in `docs/impl-spec/`. The file is the single source of truth -- all updates go directly to it.
 
+**Logging policy** — what to persist in the plan document:
+
+- **ACCEPTED** findings: reflect in the plan body only. Do NOT duplicate them into a log (the body already represents the current state of truth).
+- **REJECTED** findings and **NOTED (out-of-scope)** findings: append to a `## Review Notes` section at the end of the plan document. Each entry should include the finding summary, severity, disposition, and the concrete rationale (file/line evidence or reason for out-of-scope).
+- Iteration numbering is not required — the reason for exclusion matters, not which round it came from. New entries can simply be appended.
+
+Purpose: future reviewers (and the implementer) can see what was deliberately rejected or deferred, without having to re-raise the same concerns. ACCEPTED items live in the body; REJECTED/NOTED items live at the bottom as an audit trail.
+
 #### Step D: Next Iteration
 
 Spawn a **new** fresh-context reviewer with:
@@ -79,7 +87,8 @@ Spawn a **new** fresh-context reviewer with:
 
 The new reviewer:
 - Verifies ACCEPTED items were correctly applied
-- Evaluates REJECTED dispositions -- if the rejection rationale is weak or incorrect, re-raise the finding
+- Reads the plan's `## Review Notes` section to avoid re-raising already-rejected items; may still re-raise if the rationale is weak or incorrect
+- Evaluates REJECTED dispositions from the current round -- if weak, re-raise the finding
 - Checks if the plan updates introduced new issues
 
 #### Loop Exit
@@ -124,6 +133,13 @@ The plan document should follow this structure:
 
 ## Verification
 - [How to verify the changes work]
+
+## Review Notes
+<!-- Appended during Phase 2. Only REJECTED or out-of-scope NOTED findings live here. ACCEPTED findings are already reflected in the body above. -->
+
+| Finding | Severity | Disposition | Rationale |
+|---------|----------|-------------|-----------|
+| [example] Add retry logic | LOW | REJECTED | Out of scope — existing retry covers this per error-metadata.ts:180 |
 ```
 
 $ARGUMENTS
