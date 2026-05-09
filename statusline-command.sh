@@ -123,6 +123,7 @@ def main():
         return
     now = time.time()
     parts = []
+    usage_parts = []
 
     # 1. Model name (bold cyan)
     model = data.get("model", {}).get("display_name", "").replace("Claude ", "")
@@ -173,19 +174,19 @@ def main():
         if lines_removed:
             line_parts.append(f"{RED}-{lines_removed}{RESET}")
         joined = "".join(line_parts)
-        parts.append(f"{DIM}lines{RESET} {joined}")
+        usage_parts.append(f"{DIM}lines{RESET} {joined}")
 
     # 8. Cost (magenta)
     cost = data.get("cost", {}).get("total_cost_usd")
     if cost is not None and cost > 0:
-        parts.append(f"{MAGENTA}${cost:.2f}{RESET}")
+        usage_parts.append(f"{MAGENTA}${cost:.2f}{RESET}")
 
     # 9. Session duration (dim)
     duration_ms = data.get("cost", {}).get("total_duration_ms")
     if duration_ms is not None and duration_ms > 0:
         dur = format_duration(duration_ms / 1000)
         if dur:
-            parts.append(f"{DIM}\u23f1 {dur}{RESET}")
+            usage_parts.append(f"{DIM}\u23f1 {dur}{RESET}")
 
     # 10. Rate limits — 5h session (bar + %, reset countdown)
     rate = data.get("rate_limits", {})
@@ -202,7 +203,7 @@ def main():
             reset_str = format_reset(now, resets_at)
             if reset_str:
                 label += f"{DIM}({reset_str}){RESET}"
-        parts.append(label)
+        usage_parts.append(label)
 
     # 11. Rate limits — 7d weekly (bar + %, reset countdown)
     seven = rate.get("seven_day", {})
@@ -217,10 +218,15 @@ def main():
             reset_str = format_reset(now, resets_at)
             if reset_str:
                 label += f"{DIM}({reset_str}){RESET}"
-        parts.append(label)
+        usage_parts.append(label)
 
     sep = f" {DIM}\u00b7{RESET} "
-    print(sep.join(parts), end="")
+    out_lines = []
+    if parts:
+        out_lines.append(sep.join(parts))
+    if usage_parts:
+        out_lines.append(sep.join(usage_parts))
+    print("\n".join(out_lines), end="")
 
 
 if __name__ == "__main__":
