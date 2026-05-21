@@ -27,9 +27,7 @@
       "Bash(curl *)",
       "Bash(wget *)",
       "Read(.env)",
-      "Read(.env.*)",
-      "Read(**/*secret*)",
-      "Read(**/*credential*)"
+      "Read(.env.*)"
     ]
   },
   "hooks": {
@@ -62,7 +60,8 @@
   },
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
