@@ -13,6 +13,48 @@ The agent that writes a plan develops confirmation bias toward the code it read 
 
 ## Workflow
 
+### Phase 0: Ambiguity Gate
+
+Before plan creation, run a Socratic interview loop to bring the request below an ambiguity threshold. This phase is **always on**; bypass with `--no-interview`.
+
+**Argument parsing:**
+- If `$ARGUMENTS` contains `--no-interview`, strip the flag and skip Phase 0 (go straight to Phase 1 with the remaining text)
+- Otherwise, treat the entire `$ARGUMENTS` as the initial vague request and enter the interview loop
+
+**Ambiguity scoring:**
+
+`ambiguity = 1 - (goal × 0.35 + constraints × 0.25 + criteria × 0.25 + context × 0.15)`
+
+Each dimension is scored 0.0–1.0:
+- **goal** — Can the objective be stated unambiguously in one sentence?
+- **constraints** — Are boundaries (in-scope / out-of-scope) and limitations (perf, compat, deps) explicit?
+- **criteria** — Are acceptance criteria testable?
+- **context** — Is the relationship to existing code understood (which modules, which patterns, which side effects)?
+
+**Loop:**
+
+1. Score the current understanding across the four dimensions
+2. If `ambiguity < 0.2`, exit the loop and proceed to Phase 1
+3. Otherwise, ask **exactly one question** targeting the weakest dimension (never batch questions). Use the `AskUserQuestion` tool with 2–4 concrete options based on common patterns for the domain — "Other" (free-form input) is auto-appended by the tool, so do not include "직접 입력" or similar as a manual option. Fall back to plain text only when the answer space is genuinely unbounded (e.g., naming a file).
+4. Wait for the user's answer, update the understanding, repeat from step 1
+
+Report the current score and weakest dimension at the start of each round so the user can see progress.
+
+**Bounds:**
+- Soft warning at round 10 — note that the interview has run 10 rounds and suggest either narrowing remaining gaps or re-invoking with `--no-interview`
+- Hard cap at round 20 — if `ambiguity ≥ 0.2`, present the current state and ask whether to proceed anyway or abort
+
+**Output:**
+
+Once the gate passes, produce a concise spec block (in-memory, not a separate file) covering:
+- Goal (one sentence)
+- In-scope / out-of-scope
+- Acceptance criteria (testable bullet list)
+- Known constraints
+- Relevant context (files, modules, prior patterns to follow)
+
+This block becomes the input for Phase 1's `planner` agent — pass it in place of the raw `$ARGUMENTS`.
+
 ### Phase 1: Plan Creation
 
 1. **Scope analysis** -- spawn `planner` agent to explore affected files, dependencies, and blast radius
