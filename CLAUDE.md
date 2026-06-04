@@ -15,9 +15,8 @@ Node.js, NestJS, Prisma, Puppeteer, React, Next.js, Electron stack.
 - For bugs, try the simplest possible fix first. Don't propose type refactors or complex algorithms before a straightforward check has failed.
 - Surgical changes: touch only what the request requires. Don't "improve" adjacent code. Remove only what YOUR changes made unused.
 - Investigate root cause before suggesting workarounds or wrappers.
-- One function = one responsibility. Split if over 50 lines. A module has one responsibility.
 - When given a plan or document to implement, start implementation immediately. Don't just read and summarize.
-- Build incrementally — each step small, testable, shippable. No throwaway prototypes.
+- Build incrementally — each step small, independently verifiable, shippable. No throwaway prototypes.
 - Don't report "done" until verified: run the relevant test/build/lint command and confirm it passes. "It should work" ≠ done.
 
 ## Communication
@@ -36,7 +35,6 @@ Node.js, NestJS, Prisma, Puppeteer, React, Next.js, Electron stack.
 - IMPORTANT: After implementation, run the reviewer agent before reporting done.
 - IMPORTANT: After changes to architecture, DB schema, API, or business logic, *suggest* `docs/` updates with specific file/section. Never auto-update without approval.
 - IMPORTANT: Never read .env, secret, or credential files.
-- Break large changes into independently-verifiable stages.
 - If unsure, ask back rather than guess. Get solid evidence before proceeding.
 - Transform tasks into verifiable goals before starting. "Fix the bug" → "Write a test that reproduces it, then make it pass."
 - When saving files, use the correct location. Plans → `docs/`, config → `~/.claude/`. If unspecified, ask.
