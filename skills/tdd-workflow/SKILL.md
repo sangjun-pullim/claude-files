@@ -1,11 +1,18 @@
 ---
-name: tdd
-description: Guides feature development or bug fixing through a strict RED → GREEN → REFACTOR TDD cycle
+name: tdd-workflow
+description: Drives implementing a NEW feature with non-trivial logic, or fixing a bug by first reproducing it with a failing test, through a strict RED → GREEN → REFACTOR cycle. Use when behavior can be pinned by tests. Not for spikes, config/docs/rename-only edits, or untestable work.
 ---
 
 # TDD Workflow
 
 Follow this cycle strictly. Do NOT skip steps.
+
+## Do NOT use when
+
+- Exploratory spikes or throwaway prototypes (code you intend to discard)
+- Config-only or documentation-only changes
+- Simple renames or mechanical refactors with no behavior change
+- Work where a test would be meaningless or impossible to write meaningfully
 
 ## Step 1: Understand (before any code)
 

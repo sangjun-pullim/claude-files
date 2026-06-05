@@ -1,9 +1,15 @@
 ---
-name: db-migrate
-description: Guide safe database migrations with Prisma — zero-downtime patterns, safety checklist, and common pitfalls
+name: db-migrations
+description: Guide safe database migrations with Prisma — zero-downtime patterns, safety checklist, and common pitfalls. Prisma/PostgreSQL 마이그레이션 전용. raw SQL-only/비-Prisma 프로젝트, 프론트엔드/Electron 작업에는 사용하지 않음.
 ---
 
-# Database Migration Patterns (Prisma)
+# Database Migration Patterns (Prisma/PostgreSQL)
+
+## Do NOT use when
+
+- 비-Prisma 프로젝트 (raw SQL-only, TypeORM, Drizzle, Knex 등)
+- 단순 스키마 조회/확인 (마이그레이션 변경이 없는 경우)
+- 프론트엔드/Electron 전용 작업 (DB 스키마 변경과 무관한 경우)
 
 ## Safety Checklist
 
@@ -31,98 +37,16 @@ npx prisma migrate dev --create-only --name <description>
 npx prisma generate
 ```
 
-## Safe Column Addition
+## Core Rules
 
-```prisma
-// GOOD: nullable column
-model User {
-  avatarUrl String? @map("avatar_url")
-}
+- Add columns as nullable or with a default — never NOT NULL without default on an existing table.
+- Rename via expand-contract (add → dual-write → backfill → switch read → drop), never in place.
+- Remove code references before dropping a column.
+- Keep schema changes and data backfills in separate migrations.
+- Backfill large tables in batches, not a single UPDATE.
 
-// GOOD: column with default (Postgres 11+ is instant, no rewrite)
-model User {
-  isActive Boolean @default(true) @map("is_active")
-}
+## Reference
 
-// BAD: NOT NULL without default on existing table → full table rewrite + lock
-model User {
-  role String @map("role")  // This will lock the table!
-}
-```
-
-## Concurrent Index (Custom SQL)
-
-Prisma cannot generate `CONCURRENTLY`. Use `--create-only`:
-
-```bash
-npx prisma migrate dev --create-only --name add_email_index
-```
-
-Then edit the generated SQL:
-
-```sql
--- migration.sql
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_users_email ON users (email);
-```
-
-## Rename Column (Zero-Downtime, Expand-Contract)
-
-Never rename directly in production:
-
-```
-Step 1: Add new column (nullable)          → migration 001
-Step 2: Deploy app writing to BOTH columns
-Step 3: Backfill existing data             → migration 002 (data only)
-Step 4: Deploy app reading from NEW only
-Step 5: Drop old column                    → migration 003
-```
-
-## Remove Column Safely
-
-```
-Step 1: Remove all code references to the column → deploy
-Step 2: Drop the column in next migration        → deploy
-```
-
-Never drop a column before removing the code that uses it.
-
-## Large Data Backfill
-
-```sql
--- BAD: locks entire table
-UPDATE users SET normalized_email = LOWER(email);
-
--- GOOD: batch update
-DO $$
-DECLARE
-  batch_size INT := 10000;
-  rows_updated INT;
-BEGIN
-  LOOP
-    UPDATE users
-    SET normalized_email = LOWER(email)
-    WHERE id IN (
-      SELECT id FROM users
-      WHERE normalized_email IS NULL
-      LIMIT batch_size
-      FOR UPDATE SKIP LOCKED
-    );
-    GET DIAGNOSTICS rows_updated = ROW_COUNT;
-    EXIT WHEN rows_updated = 0;
-    COMMIT;
-  END LOOP;
-END $$;
-```
-
-## Anti-Patterns
-
-| Anti-Pattern | Risk | Do Instead |
-|-------------|------|------------|
-| NOT NULL without default | Table lock + full rewrite | Add nullable, backfill, then add constraint |
-| Inline index on large table | Blocks writes during build | CREATE INDEX CONCURRENTLY |
-| Schema + data in one migration | Long transaction, hard rollback | Separate migrations |
-| Drop column before removing code | Application errors | Remove code first |
-| Edit deployed migration | Drift between environments | Create new migration |
-| Manual SQL in production | No audit trail | Always use migration files |
+Detailed examples (safe column addition, concurrent index, expand-contract rename, batched backfill PL/pgSQL, anti-pattern table) live in `reference.md` in this directory. Read it when you need the exact SQL/Prisma snippets.
 
 $ARGUMENTS
