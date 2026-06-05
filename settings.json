@@ -71,10 +71,13 @@
       }
     }
   },
+  "effortLevel": "high",
+  "skipAutoPermissionPrompt": true,
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "args": ["-y", "@playwright/mcp@latest", "--browser", "chrome"]
     }
-  }
+  },
+  "skipWorkflowUsageWarning": true
 }
