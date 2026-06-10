@@ -29,10 +29,10 @@ Node.js, NestJS, Prisma, Puppeteer, React, Next.js, Electron stack.
 
 ## Task Tier (Risk Triage)
 
-Before planning, classify the task by deterministic signals (touched paths + behavior change), not by gut feel. When uncertain, pick the higher tier (fail-closed). Detail: `rules/risk-triage.md`.
+Before planning, classify the task by deterministic signals (touched paths/content + behavior change), not by gut feel. When uncertain, pick the higher tier (fail-closed). Canonical definitions, special cases (deps / deletion / CI / cache / backfill), and examples: `rules/risk-triage.md` — if this section and that file disagree, that file wins.
 
-- **Risk surface** = touched paths involving auth / payment / permission / DB schema / migration / external API contract.
-- **tier-0**: ≤1 file, no behavior change, no risk surface (typo, rename, comment/doc, `~/.claude/` config). Ceremony optional; lint/build/test still required.
+- **Risk surface** = auth / payment / permission / DB schema / migration / external API contract (full list in `rules/risk-triage.md`; judged by what the change does, not just path).
+- **tier-0**: ≤1 file, no behavior change, no risk surface. Plan ceremony optional; lint/build/test still required; reviewer still required if executable code is touched.
 - **tier-1**: behavior change, no risk surface, <5 files. Lightweight plan + tests + reviewer.
 - **tier-2**: any risk surface OR 5+ files. Full harness (impl-plan → impl-execute → verify).
 - **HARD OVERRIDE**: touches the risk surface, or you can't prove it doesn't → tier-2 regardless of file count.
@@ -40,7 +40,7 @@ Before planning, classify the task by deterministic signals (touched paths + beh
 ## Work Rules
 
 - IMPORTANT: Always skim the project's CLAUDE.md `## Documentation` index and `docs/decisions.md` before starting (every tier). For tier-1+ or any behavior change, follow the full `docs/` Research Order (decisions, architecture, business-logic, bug-fixes first) per `rules/second-brain.md` before diving into source.
-- IMPORTANT: Plan before implementing, then share it and get approval before building — required whenever the change alters behavior or touches 5+ files (tier-1+). tier-0 (closed whitelist: typo / comment-or-doc only / pure format / rename / `~/.claude/` config, no behavior change) may skip the plan ceremony. See `rules/risk-triage.md`.
+- IMPORTANT: Plan before implementing, then share it and get approval before building — required whenever the change alters behavior or touches 5+ files (tier-1+). tier-0 (as defined in `rules/risk-triage.md`) may skip the plan ceremony only.
 - IMPORTANT: For features/bugfixes that are test-pinnable, write tests first (or alongside) and run them to verify. auth/payment/permission/migration changes always get tests regardless of size. Running test/build/lint before reporting "done" is required at every tier.
 - IMPORTANT: After touching any executable code (not prose/`.md`/comments), run the reviewer agent before reporting done. Pure-prose changes (tier-0 docs) are exempt.
 - IMPORTANT: After changes to architecture, DB schema, API, or business logic, *suggest* `docs/` updates with specific file/section. Never auto-update without approval.

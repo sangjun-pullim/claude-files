@@ -25,7 +25,7 @@ Run the project's lint script. Auto-fix what can be fixed. Report remaining issu
 
 ## Phase 4: Tests
 
-Run the project's test script with coverage enabled. Report: total / passed / failed / coverage %. Target: minimum 80% coverage.
+Run the project's test script with coverage enabled. Report: total / passed / failed / coverage %. Target: minimum 80% coverage — hard-fail only for tier-2 / risk-surface changes (`rules/risk-triage.md`); otherwise report as INFO.
 
 ## Phase 5: Security Scan
 

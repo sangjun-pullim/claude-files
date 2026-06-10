@@ -13,6 +13,8 @@ Follow this cycle strictly. Do NOT skip steps.
 - Config-only or documentation-only changes
 - Simple renames or mechanical refactors with no behavior change
 - Work where a test would be meaningless or impossible to write meaningfully
+- EXCEPTION: risk-surface changes (auth/payment/permission/migration per
+  `rules/risk-triage.md`) always require tests — do not skip them as "untestable"
 
 ## Step 1: Understand (before any code)
 

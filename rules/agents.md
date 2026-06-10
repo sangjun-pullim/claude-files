@@ -6,7 +6,7 @@ Use proactively without waiting for user to ask.
 
 | Agent | Purpose | When to Use |
 |-------|---------|-------------|
-| planner | Implementation planning | Complex features, refactoring, 5+ files affected |
+| planner | Implementation planning | Complex features, refactoring, 5+ source files touched (same count as `rules/risk-triage.md`) |
 | reviewer | Code review | After writing code, before commits |
 
 ## Review Post-Processing
