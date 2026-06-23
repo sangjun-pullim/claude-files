@@ -91,6 +91,12 @@ The reviewer's job:
 - **Pattern parity**: find analogous features in the codebase and compare. If an established pattern exists for similar flows but is absent from the plan, raise as a finding.
 - Report findings with severity: CRITICAL / HIGH / MEDIUM / LOW / INFO
 
+**Severity definitions** (apply consistently across every reviewer so the same finding is scored the same way):
+- **CRITICAL** — a plan claim is factually wrong in a way that breaks implementation, or a security / data-loss risk. Blocks loop exit.
+- **HIGH** — wrong line numbers / parameter counts / types, an unaddressed caller, or a missing required step. Must resolve before the next iteration.
+- **MEDIUM** — correct but suboptimal (missing edge case, weak pattern parity). Note it; does not block.
+- **LOW / INFO** — style, naming, wording. Never blocks the loop; surface once and move on.
+
 #### Step B: Disposition
 
 After receiving the review, evaluate each finding **with evidence**:
@@ -132,6 +138,8 @@ The new reviewer:
 - Reads the plan's `## Review Notes` section to avoid re-raising already-rejected items; may still re-raise if the rationale is weak or incorrect
 - Evaluates REJECTED dispositions from the current round -- if weak, re-raise the finding
 - Checks if the plan updates introduced new issues
+
+**Regression / stall check** — before spawning the next iteration, compare this round's findings against the previous round's ACCEPTED findings. If a HIGH/CRITICAL finding of the same category reappears, or no CRITICAL/HIGH was resolved this round (no measurable progress), the loop is STALLED: stop and escalate to the user with the stuck findings instead of burning iterations toward the 5-round cap.
 
 #### Loop Exit
 

@@ -55,6 +55,12 @@ The reviewer's job:
   - Existing tests: do changes break any test expectations?
 - Report findings with severity: CRITICAL / HIGH / MEDIUM / LOW / INFO
 
+**Severity definitions** (apply consistently across every reviewer so the same finding is scored the same way):
+- **CRITICAL** — implementation broken or a security / data-loss risk. Blocks loop exit; fix immediately.
+- **HIGH** — deviates from the plan, a test failure, or wrong logic. Must fix before the next iteration.
+- **MEDIUM** — correct but suboptimal (missing edge case, weak error message). Note it; does not block.
+- **LOW / INFO** — style, naming, readability. Never blocks the loop; surface once and move on.
+
 #### Step B: Disposition
 
 After receiving the review, evaluate each finding **with evidence**:
@@ -87,6 +93,8 @@ The new reviewer:
 - Evaluates REJECTED dispositions -- if the rejection rationale is weak or incorrect, re-raise the finding
 - Checks if the fixes introduced new issues
 - Confirms each plan step is now fully implemented
+
+**Regression / stall check** — before spawning the next iteration, compare this round's findings against the previous round's ACCEPTED findings. If a HIGH/CRITICAL finding of the same category reappears, or no CRITICAL/HIGH was resolved this round (no measurable progress), the loop is STALLED: stop and escalate to the user with the stuck findings instead of burning iterations toward the 5-round cap.
 
 #### Loop Exit
 
