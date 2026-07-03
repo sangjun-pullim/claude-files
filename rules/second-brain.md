@@ -24,6 +24,27 @@ Use Mermaid diagrams in structure-related docs for visual clarity:
 
 Keep diagrams focused — one concept per diagram. Update diagrams when the structure changes.
 
+## Two-Layer Rule & Freshness Stamps
+
+Docs split into two layers by maintenance cost:
+
+- **Hand-written layer** — why, invariants, rejected alternatives, business rules: things code cannot express. Maintained by hand; rarely invalidated.
+- **Derivable layer** — facts reproducible from code (schema, endpoints, field/column mappings, indexes). NEVER hand-maintain these. Either generate them from code, or attach a freshness stamp so staleness is machine-checkable.
+
+Stamp convention (frontmatter at the top of the doc):
+
+```yaml
+---
+verified-against: a1b2c3d   # commit hash the doc was last verified against
+sources: prisma/**, src/payment/**
+---
+```
+
+- `git diff --name-only <hash>..HEAD -- <globs>` empty → doc is fresh; no judgment needed.
+- Non-empty → potentially stale; the diff IS the sync-check scope.
+- `/docs-sync` uses stamps for incremental checking and bumps them after a confirmed sync.
+- When reading a stamped doc for derivable facts, trust it only if the stamp check passes; otherwise verify against code.
+
 ## Lazy Loading Principle
 
 **CLAUDE.md should be lightweight.** It serves as an index, not an encyclopedia.
@@ -39,10 +60,13 @@ Example `## Documentation` section in CLAUDE.md:
 ## Documentation
 
 Detailed docs live in `docs/`. Read as needed:
-- `docs/architecture.md` — System architecture and module relationships
-- `docs/db-schema.md` — Database schema and relations
-- `docs/api-spec.md` — API endpoints and contracts
+- `docs/architecture.md` — System architecture and module relationships (sources: src/**)
+- `docs/db-schema.md` — Database schema and relations (sources: prisma/**)
+- `docs/api-spec.md` — API endpoints and contracts (sources: src/**/*.controller.ts)
 ```
+
+The `(sources: <glob>)` annotation makes update routing a lookup, not a judgment:
+when a change touches a doc's sources glob, that doc is an update candidate.
 
 ## Research Order
 
@@ -63,15 +87,25 @@ Detailed docs live in `docs/`. Read as needed:
 
 Narrow the scope using context from the docs, then descend into code. Be careful not to propose changes that contradict documented decisions.
 
+## impl-spec Lifecycle
+
+`docs/impl-spec/` documents are **frozen history, not maintained docs**. A spec claims "what we planned and why, at the time" — never "how the code is now" — so it is never synced against code drift; that claim cannot go stale. Durable why belongs in `decisions.md` (promote it there), current facts belong in `architecture.md` etc.
+
+- **Born**: `/impl-plan` creates the spec with frontmatter `status: active` + `date` + the snapshot NOTE.
+- **Closed**: `/impl-execute` sets `status: done` and moves the file to `docs/impl-spec/archive/` when implementation passes review.
+- **Superseded**: a new spec replacing an old one marks the old file `status: superseded-by: <NNN>` and archives it.
+- **Reference rule**: only top-level (active) specs participate in planning/implementation routing. `archive/` is for archaeology — intent, background, rejected alternatives — and stays valid for that purpose at any age. Never cite an archived spec as evidence of current code state.
+
 ## Documentation Maintenance
 
 - After completing a task that changes architecture, DB schema, API, or business logic, **suggest** updating the relevant `docs/` file
 - Do NOT auto-update docs without user approval
 - When suggesting, be specific: state which file and what section needs updating
 - Keep docs concise — bullet points and diagrams over prose
+- `bug-fixes.md` is append-only until promotion: when the same root-cause pattern appears 2+ times, promote it to a durable guard (test, lint rule, or a measurable CLAUDE.md rule) via `/docs-sync` Part 4. Promoted entries are compressed to a one-line reference — promotion doubles as compaction.
 
 ## Coexistence with Existing Files
 
 - Standard files coexist with project-specific docs (e.g., `docs/deployment.md`, `docs/troubleshooting.md`)
-- Never delete or rename existing documentation files
+- Never delete or rename existing documentation files (exception: moving closed impl-specs into `docs/impl-spec/archive/` per the lifecycle above)
 - If an existing file covers the same topic as a standard file (e.g., `docs/architecture-proposal.md`), note it and let the user decide whether to merge

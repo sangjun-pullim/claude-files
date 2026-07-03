@@ -69,7 +69,19 @@ This block becomes the input for Phase 1's `planner` agent — pass it in place 
    - `NNN` is a 3-digit sequence number starting from `001`
    - **Before assigning**: list existing files in `docs/impl-spec/`, find the highest used number, and use `highest + 1` (zero-padded to 3 digits). If the directory is empty or missing, start from `001`.
    - Never reuse an existing number — if a collision is detected, pick the next available number
+   - When counting existing numbers, include `docs/impl-spec/archive/` — archived specs keep their numbers
    - Create `docs/impl-spec/` if it doesn't exist
+   - **Lifecycle frontmatter** (required at the top of every spec):
+
+     ```yaml
+     ---
+     status: active            # active | done | superseded-by: <NNN>
+     date: <YYYY-MM-DD>
+     ---
+     > NOTE: Snapshot of the plan at writing time — NOT evidence of current code state.
+     ```
+
+   - **Supersede check**: if this plan replaces an existing spec (same feature re-planned, or the user says so), set the old spec's frontmatter to `status: superseded-by: <new NNN>` and move it to `docs/impl-spec/archive/`
 
 ### Phase 2: Code-Verified Review Loop
 
@@ -163,6 +175,12 @@ Present the final plan with:
 The plan document should follow this structure:
 
 ```markdown
+---
+status: active
+date: <YYYY-MM-DD>
+---
+> NOTE: Snapshot of the plan at writing time — NOT evidence of current code state.
+
 # [Title]
 
 ## Context

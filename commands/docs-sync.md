@@ -2,7 +2,7 @@
 description: Check if project CLAUDE.md and docs/ are in sync with the actual codebase
 ---
 
-Audit the project's CLAUDE.md and docs/ files against the current codebase state. Do NOT modify files — only report findings and suggest updates.
+Audit the project's CLAUDE.md and docs/ files against the current codebase state. Do NOT modify files — only report findings and suggest updates. Sole exception: bumping a doc's `verified-against` stamp after the user confirms the sync report (see Part 3).
 
 ## Part 1: CLAUDE.md Sync
 
@@ -22,7 +22,19 @@ Audit the project's CLAUDE.md and docs/ files against the current codebase state
 
 ## Part 3: docs/ Content Sync
 
-For each existing docs/ file, compare its content against the actual codebase. Use the Explore agent or parallel search agents for efficiency.
+### Incremental mode (stamp-based — check FIRST)
+
+Before any deep comparison, check each docs/ file for a freshness stamp in its frontmatter (`verified-against: <commit>` + `sources: <globs>`, per `rules/second-brain.md`):
+
+- Stamp present → run `git diff --name-only <commit>..HEAD -- <globs>`.
+  - Empty diff → mark the doc **OK (stamp-verified)** and SKIP its deep comparison below.
+  - Non-empty diff → deep-compare ONLY against the changed files (the diff is the scope).
+- Stamp missing → full comparison as below, and suggest adding a stamp in the report.
+- After the user confirms a doc is in sync, bump its `verified-against` to current HEAD (the one allowed write).
+
+### Full comparison
+
+For each docs/ file not cleared by its stamp, compare its content against the actual codebase. Use the Explore agent or parallel search agents for efficiency.
 
 8. **architecture.md** ↔ 실제 모듈 구조
    - 문서에 있는 모듈이 실제로 존재하는지, 새로 추가된 모듈이 누락되지 않았는지
@@ -38,6 +50,19 @@ For each existing docs/ file, compare its content against the actual codebase. U
     - 문서화된 비즈니스 규칙이 현재 구현과 일치하는지
 
 존재하지 않는 docs/ 파일은 건너뛴다. 드리프트 발견 시 **구체적으로 어떤 내용을 추가/수정/삭제해야 하는지** 제안한다.
+
+## Part 4: bug-fixes.md Promotion
+
+Scan `bug-fixes.md` for recurring patterns — 2+ entries sharing a root-cause category (e.g., same API misuse, same race condition shape, same validation gap).
+
+For each recurring pattern, propose ONE promotion target (most durable first):
+1. **Test** — a regression test that pins the behavior
+2. **Lint rule / hook** — a mechanical check that blocks the pattern
+3. **CLAUDE.md / rules line** — only if not machine-checkable; must be measurable form
+
+For entries already covered by an existing guard, propose compaction: compress to a one-line reference (`- <date> <title> → promoted to <guard>`). Promotion doubles as compaction — this keeps the file from growing unboundedly.
+
+Report only; apply promotions and compaction after user approval.
 
 ## Output
 
@@ -64,12 +89,18 @@ For each existing docs/ file, compare its content against the actual codebase. U
 ### docs/ Content Sync
 | File | Status | Drift Details |
 |------|--------|---------------|
-| architecture.md | OK/DRIFT | ... |
-| db-schema.md | OK/DRIFT | ... |
+| architecture.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
+| db-schema.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
 | ... | ... | ... |
+
+### bug-fixes.md Promotion
+| Pattern (2+ entries) | Entries | Proposed Guard | Compaction |
+|----------------------|---------|----------------|------------|
+| ... | ... | test/lint/rule | ... |
 
 ### Suggested Updates
 - (file path, section, and specific change needed)
+- (stamp additions/bumps for confirmed docs)
 ```
 
 If no CLAUDE.md exists at project root, offer to create one by scanning the codebase.

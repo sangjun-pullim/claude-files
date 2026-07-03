@@ -14,7 +14,8 @@ The agent that implements code develops blind spots -- it "knows" what it intend
 ## Inputs
 
 - **Plan document path** (required): typically `docs/impl-spec/<name>.md`, provided as argument or by the user
-- If no path given, check `docs/impl-spec/` for recent plans and ask the user which one to implement
+- If no path given, list specs at the top level of `docs/impl-spec/` (NOT `archive/`) with frontmatter `status: active`, and ask the user which one to implement
+- If the given spec has `status: done` or `superseded-by`, or lives in `archive/`, stop and confirm with the user — it is frozen history, likely not what they meant to implement
 
 ## Workflow
 
@@ -104,9 +105,14 @@ Remaining MEDIUM/LOW items are noted but do not block.
 
 Maximum iterations: **5**. The final confirmation round does not count toward this limit, but any issues found in it trigger iterations that do count.
 
-### Phase 3: Report to User
+### Phase 3: Close Spec & Report
 
-Present the final result:
+1. **Close the spec** — the implementation passed review and verification, so the plan document's lifecycle ends here:
+   - Set frontmatter `status: done` (add the lifecycle frontmatter block first if the spec predates it)
+   - Move the file to `docs/impl-spec/archive/` (create the directory if missing; use `git mv` when the file is tracked)
+   - This is part of the skill's normal completion, not a docs-update suggestion — do it without asking
+
+2. **Report** — present the final result:
 - Implementation summary (what was built, files changed)
 - Review iterations summary (what was caught and fixed across rounds)
 - Any remaining MEDIUM/LOW notes
