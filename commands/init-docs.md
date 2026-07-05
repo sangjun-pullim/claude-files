@@ -46,6 +46,7 @@ Use the Explore agent or parallel search agents to gather information efficientl
 For each missing standard file that the project needs, create it with **real content** derived from Step 4.
 
 Guidelines for content:
+- **Derivable-layer docs (`architecture.md`, `db-schema.md`, `api-spec.md`, `frontend-architecture.md`) MUST start with the freshness stamp frontmatter** (per `rules/second-brain.md`) — `verified-against: <current HEAD short hash>` + `sources: <globs covering the code the doc derives from>` (e.g., `prisma/**` for db-schema, `apps/api/**` for api-spec). Hand-written-layer docs (decisions, bug-fixes, business-logic, glossary) get no stamp.
 - Write concise bullet points over prose
 - Use Mermaid diagrams in `architecture.md` and `frontend-architecture.md` to visualize module relationships, data flow, or component hierarchy
 - For `db-schema.md`, include an ER diagram (Mermaid) for complex relations
@@ -63,8 +64,8 @@ Read the project root `CLAUDE.md`:
 ## Documentation
 
 Detailed docs live in `docs/`. Read as needed:
-- `docs/architecture.md` — System architecture and module relationships
-- [list other created files with one-line descriptions]
+- `docs/architecture.md` — System architecture and module relationships (sources: src/**)
+- [list other created files with one-line descriptions; derivable-layer docs get a `(sources: <glob>)` annotation matching their stamp]
 ```
 
 ## Step 7: Report
