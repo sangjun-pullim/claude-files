@@ -51,7 +51,17 @@ For each docs/ file not cleared by its stamp, compare its content against the ac
 
 존재하지 않는 docs/ 파일은 건너뛴다. 드리프트 발견 시 **구체적으로 어떤 내용을 추가/수정/삭제해야 하는지** 제안한다.
 
-## Part 4: bug-fixes.md Promotion
+## Part 4: impl-spec Lifecycle Hygiene
+
+Audit `docs/impl-spec/` against the lifecycle in `rules/second-brain.md` (specs are frozen snapshots; only the lifecycle frontmatter is maintained):
+
+1. **Frontmatter check**: every `.md` under `docs/impl-spec/` (top level AND `archive/`) must START with the frontmatter block (`status: active|done|superseded-by: <NNN>` + `date: YYYY-MM-DD`). Missing or malformed (e.g., status written as a body bullet) → flag; propose adding it with `date` derived from `git log --diff-filter=A --follow`.
+2. **Closed-but-not-archived**: for each top-level spec with `status: active`, look for completion evidence — a merged PR/commit referencing the spec number, or the spec body itself declaring 구현/완료. Evidence found → propose `status: done` + `git mv` into `docs/impl-spec/archive/`. (Shelved/paused specs stay top-level as `active` with the pause noted in the body.)
+3. **Archived-but-active**: files inside `archive/` whose status is still `active` → flag (must be `done` or `superseded-by`).
+
+Report findings in the table; apply frontmatter additions and moves only after user approval (same write policy as Part 3 stamp bumps).
+
+## Part 5: bug-fixes.md Promotion
 
 Scan `bug-fixes.md` for recurring patterns — 2+ entries sharing a root-cause category (e.g., same API misuse, same race condition shape, same validation gap).
 
@@ -92,6 +102,11 @@ Report only; apply promotions and compaction after user approval.
 | architecture.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
 | db-schema.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
 | ... | ... | ... |
+
+### impl-spec Lifecycle
+| Spec | Issue | Proposed Fix |
+|------|-------|--------------|
+| ... | NO FRONTMATTER / CLOSED-NOT-ARCHIVED / ARCHIVED-ACTIVE | ... |
 
 ### bug-fixes.md Promotion
 | Pattern (2+ entries) | Entries | Proposed Guard | Compaction |

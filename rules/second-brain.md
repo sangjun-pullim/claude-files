@@ -92,7 +92,7 @@ Narrow the scope using context from the docs, then descend into code. Be careful
 
 `docs/impl-spec/` documents are **frozen history, not maintained docs**. A spec claims "what we planned and why, at the time" — never "how the code is now" — so it is never synced against code drift; that claim cannot go stale. Durable why belongs in `decisions.md` (promote it there), current facts belong in `architecture.md` etc.
 
-- **Born**: `/impl-plan` creates the spec with frontmatter `status: active` + `date` + the snapshot NOTE.
+- **Born**: `/impl-plan` creates the spec with frontmatter `status: active` + `date` + the snapshot NOTE. This frontmatter is required for EVERY file created under `docs/impl-spec/`, including specs written ad-hoc (incident response, manual planning) without the skill — a spec file without it is a defect, same as an unstamped derivable doc.
 - **Closed**: `/impl-execute` sets `status: done` and moves the file to `docs/impl-spec/archive/` when implementation passes review.
 - **Superseded**: a new spec replacing an old one marks the old file `status: superseded-by: <NNN>` and archives it.
 - **Reference rule**: only top-level (active) specs participate in planning/implementation routing. `archive/` is for archaeology — intent, background, rejected alternatives — and stays valid for that purpose at any age. Never cite an archived spec as evidence of current code state.
