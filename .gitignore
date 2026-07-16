@@ -18,6 +18,22 @@ plugins/
 ide/
 hud/
 teams/
+sessions/
+jobs/
+chrome/
+.last-cleanup
+.last-update-result.json
+
+# Daemon runtime (control.key is a credential — never commit)
+daemon/
+daemon.log
+
+# Local-only settings & backups
+.claude/settings.local.json
+*.bak
+
+# Skill benchmark output
+skills/benchmark-workspace/
 
 # OMC runtime
 .omc/
