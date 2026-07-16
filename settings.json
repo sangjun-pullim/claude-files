@@ -35,6 +35,7 @@
       "Read(.env.test)"
     ]
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -85,7 +86,8 @@
       }
     }
   },
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
+  "tui": "fullscreen",
   "skipAutoPermissionPrompt": true,
   "mcpServers": {
     "playwright": {
