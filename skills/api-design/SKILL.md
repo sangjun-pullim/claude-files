@@ -7,6 +7,12 @@ description: REST API design patterns for NestJS — resource naming, status cod
 
 Decision checklist and workflow for designing a NestJS REST endpoint. For detailed formats (URL structure, response/error schemas, pagination params, filtering/sorting syntax, validation example, versioning rules), see `reference.md` in this directory.
 
+## Do NOT use when
+
+- GraphQL / tRPC / gRPC interfaces — REST conventions do not apply
+- Changing only the internals of an existing endpoint (the contract stays the same)
+- Frontend work that consumes the API rather than defines it
+
 ## Workflow
 
 1. Name the resource: plural noun, kebab-case, no verbs in the URL.

@@ -7,53 +7,130 @@ description: Security Checklist — perform a security audit on NestJS/Node.js p
 
 Perform a security audit on the current codebase focused on NestJS/Node.js applications.
 
-## Instructions
+## Do NOT use when
 
-Scan the codebase and check each category below. Report findings as a checklist with PASS/FAIL/WARN status for each item.
+- Frontend-only projects (React/Next.js/Electron) — the detection commands assume NestJS structure
+- Fixing one already-identified vulnerability (this is a full sweep, not a targeted fix)
+- Only a dependency CVE check is needed (`npm audit` alone is enough)
 
-## Checklist
+## How to run this
 
-### 1. Authentication & Authorization (OWASP A01/A07)
-- [ ] All endpoints have appropriate Guards (`@UseGuards`)
-- [ ] JWT/session validation is applied globally or per-controller
-- [ ] Role-based access control is enforced where needed
-- [ ] No endpoints are accidentally public without `@Public()` decorator
+Each category has a **Find it** block. Run those first, then judge the results — do not
+answer from reading code impressionistically. Adjust `src/` to the project's actual source
+root. Commands use `rg` (ripgrep); substitute `grep -rn` where it is unavailable.
 
-### 2. Input Validation (OWASP A03)
-- [ ] All DTOs use `class-validator` decorators (`@IsString`, `@IsEmail`, etc.)
-- [ ] `ValidationPipe` is enabled globally or per-endpoint
-- [ ] Array/nested object inputs are validated with `@ValidateNested()` and `@Type()`
-- [ ] Query params and path params are validated (not just body)
+Never pipe a file list into `xargs rg` — run the second search in a shell loop instead.
+An empty list makes `xargs` search the whole working directory and report false hits.
 
-### 3. Injection Prevention (OWASP A03)
-- [ ] No raw SQL queries with string interpolation — use parameterized queries or Prisma
-- [ ] No `eval()`, `new Function()`, or `child_process.exec()` with user input
-- [ ] Template rendering escapes user input (no XSS via server-side rendering)
-- [ ] No unsanitized user input in shell commands, file paths, or redirects
+Report every category as PASS / WARN / FAIL with file:line evidence. A category with no
+mechanical way to verify (marked *manual*) still needs an explicit judgment, not a skip.
 
-### 4. Secrets & Configuration (OWASP A02)
-- [ ] No hardcoded API keys, tokens, passwords, or connection strings in source code
-- [ ] Secrets loaded via `ConfigService` or environment variables only
-- [ ] `.env` files are in `.gitignore`
-- [ ] No secrets logged or exposed in error responses
+## 1. Authentication & Authorization (OWASP A01/A07)
 
-### 5. Data Exposure (OWASP A01)
-- [ ] Sensitive fields excluded from API responses (passwords, tokens, internal IDs)
-- [ ] DTOs or serialization groups control response shape — no raw entity returns
-- [ ] Error responses don't leak stack traces or internal details in production
-- [ ] Logging doesn't include PII or sensitive data
+```bash
+# Controllers with no guard anywhere in the file
+for f in $(rg -l '@Controller\(' src); do rg -q '@UseGuards' "$f" || echo "no guard: $f"; done
+# Is a guard registered globally instead?
+rg -n 'APP_GUARD|useGlobalGuards' src
+# Explicitly public routes — each one needs a reason
+rg -n '@Public\(\)|@SkipAuth' src
+```
 
-### 6. Dependencies & Infrastructure
-- [ ] No known vulnerable dependencies (`npm audit` or equivalent)
-- [ ] Helmet middleware enabled for HTTP header security
-- [ ] CORS configured with explicit allowed origins (not `*` in production)
-- [ ] Rate limiting applied to auth endpoints and public APIs
+- [ ] Every controller is covered by a guard — per-controller or via `APP_GUARD`
+- [ ] Each `@Public()` route is intentionally public
+- [ ] Role/ownership checks exist where a record belongs to a user (*manual* — guards prove authn, not authz)
 
-### 7. Interceptors & Middleware
-- [ ] Logging interceptor doesn't capture sensitive request/response data
-- [ ] Exception filters sanitize error output for production
-- [ ] File upload limits and type validation are configured
-- [ ] Request timeout is configured to prevent slow-loris attacks
+## 2. Input Validation (OWASP A03)
+
+```bash
+# Is ValidationPipe registered, and does it strip unknown fields?
+rg -n 'useGlobalPipes|APP_PIPE|ValidationPipe' src
+rg -n 'whitelist|forbidNonWhitelisted' src
+# DTO classes carrying no class-validator decorator
+for f in $(rg -l 'class \w*Dto' src); do rg -q '@Is[A-Z]' "$f" || echo "unvalidated DTO: $f"; done
+# Nested/array payloads need both to validate at all
+rg -n '@ValidateNested|@Type\(' src
+```
+
+- [ ] `ValidationPipe` is global, with `whitelist: true`
+- [ ] Every DTO has class-validator decorators
+- [ ] Nested objects/arrays use `@ValidateNested()` + `@Type()`
+- [ ] Query and path params are validated, not just bodies
+
+## 3. Injection Prevention (OWASP A03)
+
+```bash
+# Prisma raw escape hatches — Unsafe variants take a plain string
+rg -n '\$queryRawUnsafe|\$executeRawUnsafe' src
+# Template interpolation inside a tagged raw query
+rg -n '\$(query|execute)Raw`[^`]*\$\{' src
+# Code and shell execution
+rg -n '\beval\(|new Function\(|child_process|execSync?\(' src
+```
+
+- [ ] No raw SQL built by string concatenation or interpolation
+- [ ] `$queryRaw` tagged templates only (parameterized), never `*Unsafe` with user input
+- [ ] No `eval`/`new Function`/shell exec reachable from user input
+- [ ] User input never lands in file paths or redirect targets unsanitized
+
+## 4. Secrets & Configuration (OWASP A02)
+
+```bash
+rg -in "(api[_-]?key|secret|password|token)\s*[:=]\s*[\"'][^\"']{8,}" src
+rg -n 'postgres://|mysql://|mongodb(\+srv)?://|redis://' src
+git check-ignore .env && echo ".env ignored OK" || echo "WARN: .env not gitignored"
+git log --all --name-only --pretty=format: -- '*.env' | sort -u   # ever committed?
+```
+
+- [ ] No hardcoded keys, tokens, passwords, or connection strings
+- [ ] Secrets read through `ConfigService` / env only
+- [ ] `.env` is gitignored **and** was never committed historically
+- [ ] Secrets never appear in logs or error responses
+
+## 5. Data Exposure (OWASP A01)
+
+```bash
+# Is any serialization layer in use?
+rg -n 'ClassSerializerInterceptor|@Exclude\(\)|plainToInstance' src
+# Sensitive fields that must never serialize
+rg -n 'password|passwordHash|refreshToken|salt|mfaSecret' src --glob '*.entity.ts' --glob '*.model.ts'
+# Handlers returning a repository/prisma result straight through
+rg -n 'return (await )?this\.\w+\.(find|findMany|findUnique|findOne)' src
+# Stack traces leaking from filters
+rg -n '\.stack' src
+```
+
+- [ ] Sensitive fields excluded from responses (`@Exclude` + `ClassSerializerInterceptor`, or explicit `select`)
+- [ ] Handlers return DTOs, not raw entities
+- [ ] Production error responses carry no stack traces or internal details
+- [ ] Logs contain no PII or credentials
+
+## 6. Dependencies & Infrastructure
+
+```bash
+npm audit --audit-level=high
+rg -n 'helmet\(' src
+rg -n 'enableCors|origin:' src          # look for '*' or true in production config
+rg -n 'ThrottlerModule|@Throttle' src
+```
+
+- [ ] No high/critical advisories outstanding
+- [ ] Helmet enabled
+- [ ] CORS uses an explicit origin allowlist, not `*`/`true`, in production
+- [ ] Rate limiting on auth endpoints and public APIs
+
+## 7. Interceptors & Middleware
+
+```bash
+rg -l 'Interceptor|ExceptionFilter' src
+rg -n 'FileInterceptor|MulterModule|limits:|fileFilter' src
+rg -n 'timeout' src
+```
+
+- [ ] Logging interceptors redact request/response secrets
+- [ ] Exception filters sanitize output in production
+- [ ] File uploads set size `limits` and a `fileFilter`
+- [ ] Request timeout configured
 
 ## Output Format
 
@@ -71,8 +148,11 @@ Scan the codebase and check each category below. Report findings as a checklist 
 | Interceptors | PASS/WARN/FAIL | ... |
 
 ### Critical Issues
-- (list any FAIL items with file paths and recommended fixes)
+- (FAIL items with file:line and the recommended fix)
 
 ### Recommendations
-- (list WARN items with suggested improvements)
+- (WARN items with suggested improvements)
+
+### Not Mechanically Verified
+- (checks marked *manual*, and what judgment was made)
 ```

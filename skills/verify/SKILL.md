@@ -7,6 +7,12 @@ description: Run a 6-phase verification loop (build, types, lint, tests, securit
 
 Run all phases in order. Stop and fix if any phase fails before moving on.
 
+## Do NOT use when
+
+- A quick mid-development check is all that is needed (`/check` — lint/types/tests only)
+- The repository has no build or test scripts (config-only, docs-only repos)
+- Experimental changes that will not be committed
+
 ## Phase 0: Detect Package Manager
 
 Check which package manager the project uses (look for `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, or `package-lock.json`). Use the detected package manager for all commands below. Default to `npm` if none found.
@@ -29,12 +35,23 @@ Run the project's test script with coverage enabled. Report: total / passed / fa
 
 ## Phase 5: Security Scan
 
-Check for common security issues in changed files:
+A fast gate over **changed files only** — this is not a full audit:
+
+```bash
+# Loop rather than `xargs rg` — an empty file list makes xargs scan the whole tree
+for f in $(git diff --name-only); do
+  [ -f "$f" ] && rg -n "(api[_-]?key|secret|password|token)\s*[:=]\s*[\"'][^\"']{8,}|console\.log|\$queryRawUnsafe|\$executeRawUnsafe" "$f"
+done
+```
 
 - Hardcoded secrets (API keys, tokens, passwords)
 - `console.log` left in production code
-- Unvalidated user input
 - Raw SQL with string interpolation
+- Unvalidated user input on new endpoints
+
+If the change touches auth, payment, permissions, or any public route, this gate is not
+enough — run the `security-checklist` skill for the full NestJS audit instead of
+expanding this phase.
 
 ## Phase 6: Diff Review
 

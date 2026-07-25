@@ -7,6 +7,12 @@ description: Analyze impact scope and create an implementation plan, then valida
 
 Create a concrete implementation plan, then validate every claim against the actual codebase through iterative fresh-context reviews until the plan is verified clean.
 
+## Do NOT use when
+
+- tier-0 / tier-1 changes (`rules/risk-triage.md`) — an inline 2–4 line plan is enough
+- The problem itself is still vague — clarify with `grilling` first
+- An approved spec already exists and it is time to build (`impl-execute`)
+
 ## Why the Review Loop Matters
 
 The agent that writes a plan develops confirmation bias toward the code it read -- it tends to gloss over details it already "understands." A fresh-context reviewer reads the code from scratch with no preconceptions, catching discrepancies the planner missed (wrong line numbers, incorrect parameter counts, missing edge cases, overlooked dependencies).
@@ -21,28 +27,29 @@ Before plan creation, run a Socratic interview loop to bring the request below a
 - If `$ARGUMENTS` contains `--no-interview`, strip the flag and skip Phase 0 (go straight to Phase 1 with the remaining text)
 - Otherwise, treat the entire `$ARGUMENTS` as the initial vague request and enter the interview loop
 
-**Ambiguity scoring:**
+**Gate — four binary checks:**
 
-`ambiguity = 1 - (goal × 0.35 + constraints × 0.25 + criteria × 0.25 + context × 0.15)`
+Each check is PASS only if you can write the stated sentence *right now*, from what the
+user has actually said, with no hedging ("probably", "something like", "TBD"). Anything
+less is FAIL. Do not average or weigh these — one FAIL keeps the gate closed.
 
-Each dimension is scored 0.0–1.0:
-- **goal** — Can the objective be stated unambiguously in one sentence?
-- **constraints** — Are boundaries (in-scope / out-of-scope) and limitations (perf, compat, deps) explicit?
-- **criteria** — Are acceptance criteria testable?
-- **context** — Is the relationship to existing code understood (which modules, which patterns, which side effects)?
+- **goal** — one sentence naming what changes and for whom.
+- **constraints** — one sentence for in-scope, one for out-of-scope.
+- **criteria** — at least one acceptance check worded so it can only pass or fail.
+- **context** — the specific files/modules the change lands in, plus what else reads them.
 
 **Loop:**
 
-1. Score the current understanding across the four dimensions
-2. If `ambiguity < 0.2`, exit the loop and proceed to Phase 1
-3. Otherwise, ask **exactly one question** targeting the weakest dimension (never batch questions). Use the `AskUserQuestion` tool with 2–4 concrete options based on common patterns for the domain — "Other" (free-form input) is auto-appended by the tool, so do not include "직접 입력" or similar as a manual option. Fall back to plain text only when the answer space is genuinely unbounded (e.g., naming a file).
+1. Evaluate the four checks
+2. All four PASS → exit the loop and proceed to Phase 1
+3. Otherwise, ask **exactly one question** targeting the first FAIL (never batch questions). Use the `AskUserQuestion` tool with 2–4 concrete options based on common patterns for the domain — "Other" (free-form input) is auto-appended by the tool, so do not include "직접 입력" or similar as a manual option. Fall back to plain text only when the answer space is genuinely unbounded (e.g., naming a file).
 4. Wait for the user's answer, update the understanding, repeat from step 1
 
-Report the current score and weakest dimension at the start of each round so the user can see progress.
+State the four checks as PASS/FAIL at the start of each round so the user can see progress.
 
 **Bounds:**
 - Soft warning at round 10 — note that the interview has run 10 rounds and suggest either narrowing remaining gaps or re-invoking with `--no-interview`
-- Hard cap at round 20 — if `ambiguity ≥ 0.2`, present the current state and ask whether to proceed anyway or abort
+- Hard cap at round 20 — if any check is still FAIL, present the current state and ask whether to proceed anyway or abort
 
 **Output:**
 
@@ -89,7 +96,7 @@ This loop repeats until the reviewer reports no issues.
 
 #### Step A: Fresh-Context Review
 
-Spawn a **new** `planner` agent each iteration (fresh context is critical). Provide it with:
+Spawn a **new** `reviewer` agent each iteration (fresh context is critical) — it runs in plan-verification mode per `agents/reviewer.md`. Provide it with:
 
 - The current plan document
 - If iteration 2+: the previous review's disposition table (Step B output)
@@ -155,7 +162,7 @@ The new reviewer:
 
 #### Loop Exit
 
-When a reviewer reports **no CRITICAL or HIGH findings**, run **one final confirmation review** with a fresh-context `planner` agent. Provide it with the current plan only (disposition table is not needed for this round — a fresh reviewer without prior anchors is the point). Instruct it to re-verify end-to-end, with emphasis on reverse-tracing, second-order effects, and pattern parity. If it also reports no CRITICAL/HIGH findings, the loop exits. If new issues surface, return to Step B (Disposition) and continue the loop.
+When a reviewer reports **no CRITICAL or HIGH findings**, run **one final confirmation review** with a fresh-context `reviewer` agent. Provide it with the current plan only (disposition table is not needed for this round — a fresh reviewer without prior anchors is the point). Instruct it to re-verify end-to-end, with emphasis on reverse-tracing, second-order effects, and pattern parity. If it also reports no CRITICAL/HIGH findings, the loop exits. If new issues surface, return to Step B (Disposition) and continue the loop.
 
 Rationale: a reviewer with prior context tends to anchor on issues it already raised. A fresh reviewer on a "clean" plan occasionally catches things the previous pass missed.
 

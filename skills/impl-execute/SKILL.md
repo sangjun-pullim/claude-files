@@ -7,6 +7,12 @@ description: Execute an implementation plan and validate the result through a fr
 
 Implement changes based on a plan document, then validate the implementation against the plan through iterative fresh-context reviews until the reviewer confirms everything is correct.
 
+## Do NOT use when
+
+- No plan document exists — write one with `impl-plan` first
+- One-line fixes or typos — the review loop costs more than the change
+- The target spec sits in `archive/` or is `status: done` / `superseded-by` (frozen history)
+
 ## Why Fresh-Context Review After Implementation Matters
 
 The agent that implements code develops blind spots -- it "knows" what it intended to write and tends to overlook gaps between intention and reality. A fresh-context reviewer reads the plan and the actual code independently, catching mismatches the implementer missed (forgotten steps, partial implementations, unintended side effects, imports not added).
@@ -38,7 +44,7 @@ This loop repeats until the reviewer confirms the implementation matches the pla
 
 #### Step A: Fresh-Context Review
 
-Spawn a **new** `planner` agent each iteration (fresh context is critical). Provide it with:
+Spawn a **new** `reviewer` agent each iteration (fresh context is critical). Provide it with:
 
 - The plan document (full path)
 - The change summary from Phase 1 (or updated summary from Step C)
