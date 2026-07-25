@@ -1,6 +1,5 @@
 {
   "env": {
-    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin:$PATH:/Users/pullim/.nvm/versions/node/v18.20.8/bin:/Users/pullim/.nvm/versions/node/v20.19.5/bin:/Users/pullim/.nvm/versions/node/v22.21.0/bin",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
@@ -24,6 +23,10 @@
     ],
     "deny": [
       "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(rm -r -f *)",
+      "Bash(rm -f -r *)",
+      "Bash(rm --recursive *)",
       "Bash(curl *)",
       "Bash(wget *)",
       "Read(.env)",
@@ -32,14 +35,21 @@
       "Read(.env.development)",
       "Read(.env.production)",
       "Read(.env.staging)",
-      "Read(.env.test)"
+      "Read(.env.test)",
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Read(**/.env.*.local)",
+      "Read(**/.env.development)",
+      "Read(**/.env.production)",
+      "Read(**/.env.staging)",
+      "Read(**/.env.test)"
     ]
   },
   "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Read",
+        "matcher": "Read|Grep|Bash",
         "hooks": [
           {
             "type": "command",
@@ -55,6 +65,16 @@
             "command": "bash ~/.claude/hooks/block-env-commit.sh"
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -66,12 +86,112 @@
             "command": "bash ~/.claude/hooks/auto-format.sh"
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/pullim/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/pullim/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
       }
     ]
   },
   "statusLine": {
     "type": "command",
-    "command": "python3 /Users/pullim/.claude/statusline-command.sh"
+    "command": "python3 /Users/pullim/.claude/statusline-command.py"
   },
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true,
@@ -88,12 +208,6 @@
   },
   "effortLevel": "xhigh",
   "tui": "fullscreen",
-  "skipAutoPermissionPrompt": true,
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest", "--browser", "chrome"]
-    }
-  },
-  "skipWorkflowUsageWarning": true
+  "skipWorkflowUsageWarning": true,
+  "skipAutoPermissionPrompt": true
 }
