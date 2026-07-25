@@ -25,7 +25,7 @@ const INVENTORY_CONTEXT = `하네스 루트: /Users/pullim/.claude
 [전역 컨텍스트 — 매 세션 시스템 프롬프트에 주입됨]
 - CLAUDE.md (48줄)
 - rules/agents.md (26줄)  — agent delegation 규칙
-- rules/claude-md-audit.md (64줄) — CLAUDE.md 감사 프로토콜
+- docs/claude-md-audit.md (64줄, on-demand — rules/에서 이동해 상시 로딩 제외) — CLAUDE.md 감사 프로토콜
 - rules/second-brain.md (77줄) — docs/ 표준
 - rules/standards.md (44줄) — 네이밍/코드/에러/테스트/git/보안 표준
 (주의: AGENTS.md 없음, .cursor/rules 없음)
@@ -48,7 +48,7 @@ const INVENTORY_CONTEXT = `하네스 루트: /Users/pullim/.claude
 - permissions.deny: Bash(rm -rf *), Bash(curl *), Bash(wget *), Read(.env), Read(.env.*)
 - env: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 - effortLevel: high, skipAutoPermissionPrompt: true
-- statusLine: python3 statusline-command.sh
+- statusLine: python3 statusline-command.py
 - mcpServers: playwright (npx @playwright/mcp@latest)
 - enabledPlugins: typescript-lsp, skill-creator, claude-md-management (claude-plugins-official)
 

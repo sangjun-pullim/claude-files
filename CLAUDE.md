@@ -42,7 +42,7 @@ Before planning, classify the task by deterministic signals (touched paths/conte
 - IMPORTANT: Always skim the project's CLAUDE.md `## Documentation` index and `docs/decisions.md` before starting (every tier). For tier-1+ or any behavior change, follow the full `docs/` Research Order (decisions, architecture, business-logic, bug-fixes first) per `rules/second-brain.md` before diving into source.
 - IMPORTANT: Plan before implementing, then share it and get approval before building — required whenever the change alters behavior or touches 5+ files (tier-1+). tier-0 (as defined in `rules/risk-triage.md`) may skip the plan ceremony only.
 - IMPORTANT: For features/bugfixes that are test-pinnable, write tests first (or alongside) and run them to verify. auth/payment/permission/migration changes always get tests regardless of size. Running test/build/lint before reporting "done" is required at every tier.
-- IMPORTANT: After touching any executable code (not prose/`.md`/comments), run the reviewer agent before reporting done. Pure-prose changes (tier-0 docs) are exempt.
+- IMPORTANT: After touching any executable code (not prose/`.md`/comments), run a review before reporting done — the reviewer agent when agent spawning is available, otherwise a self-review pass against the `agents/reviewer.md` criteria. Either way, state which one ran. Pure-prose changes (tier-0 docs) are exempt.
 - IMPORTANT: After changes to architecture, DB schema, API, or business logic, *suggest* `docs/` updates with specific file/section. Never auto-update without approval.
 - IMPORTANT: Never read .env, secret, or credential files.
 - If unsure, ask back rather than guess. Get solid evidence before proceeding.
@@ -55,4 +55,4 @@ Before planning, classify the task by deterministic signals (touched paths/conte
 - If you notice yourself repeating the same mistake twice in a session, proactively propose a CLAUDE.md update before the user has to ask.
 - Rules added this way MUST be measurable. ❌ "write good tests" / ✅ "mock all external dependencies in tests".
 - Prefer updating an existing rule over appending a new one. Keep this file under 100 lines.
-- When modifying any CLAUDE.md, follow `rules/claude-md-audit.md` (tag → decide → diff → mapping table).
+- When modifying any CLAUDE.md, read and follow `docs/claude-md-audit.md` (tag → decide → diff → mapping table).

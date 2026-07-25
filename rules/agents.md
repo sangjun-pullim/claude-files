@@ -21,12 +21,14 @@ Use proactively without waiting for user to ask (single exception: the mode ques
 
 ## Review Post-Processing
 
+Severity labels are the shared 5-level scale defined in `agents/reviewer.md` (CRITICAL / HIGH / MEDIUM / LOW / INFO) — the same scale `impl-plan` and `impl-execute` key their loop-exit conditions off.
+
 When receiving reviewer results, do NOT pass them through blindly. Evaluate each issue against the current task context:
 
 1. Check whether the issue is relevant to the current change (ignore pre-existing issues outside scope)
-2. For CRITICAL: fix unless it conflicts with the task's intent — explain if skipping
-3. For WARNING: apply if low-cost, otherwise note as future improvement
-4. For INFO: skip unless it directly improves the current change
+2. For CRITICAL/HIGH: fix unless it conflicts with the task's intent — explain if skipping
+3. For MEDIUM: apply if low-cost, otherwise note as future improvement
+4. For LOW/INFO: skip unless it directly improves the current change
 5. Briefly summarize which issues were applied, skipped, and why
 
 ## Context Protection

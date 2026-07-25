@@ -5,9 +5,12 @@
 ## Contents
 
 - `CLAUDE.md` — Global instructions
-- `settings.json` — Global settings (permissions, hooks, mcpServers)
+- `settings.json` — Global settings (permissions, hooks)
 - `commands/` — Slash commands
-- `rules/` — Global rules
+- `rules/` — Global rules (always loaded into every session)
+- `docs/` — On-demand protocols, read only when referenced
 - `agents/` — Agent definitions
 - `hooks/` — Hook scripts
 - `skills/` — Skill definitions
+- `.claude/workflows/` — Workflow scripts (`/harness-legacy-scan`, `/harness-diet`)
+- `statusline-command.py` — Status line renderer

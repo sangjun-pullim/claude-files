@@ -46,7 +46,7 @@ const CHANGE_RESULT = {
 // ---------- Phase 1: Preflight ----------
 phase('Preflight')
 const pre = await agent(
-  `${CONSTRAINTS}\n\n역할: Preflight 검증자. 아래 변경을 적용해도 되는지 실제 파일을 읽어 확인만 한다(이 단계에서는 수정 금지).\n\n확인 항목:\n1. ${ROOT}/CLAUDE.md 에 "구현 전 계획"을 강제하는 규칙(예: "Always plan before implementing")이 아직 살아있는가? (commands/plan.md 를 아카이브로 옮겨도 plan-first 습관이 전역 규칙으로 남는지 확인하는 게이트)\n2. ${ROOT}/commands/plan.md 가 존재하는가?\n3. 다음 스킬들의 실제 frontmatter(name/description)와 본문 줄 수를 읽어 보고하라: api-design, db-migrations, tdd-workflow. 각 스킬의 frontmatter name이 디렉터리명과 일치하는지, description에 스택 가드(예: NestJS/Prisma만)가 있는지, 100줄 초과인지.\n4. CLAUDE.md가 rules/claude-md-audit.md 를 참조하는 위치(참고용, 이번엔 수정 안 함).\n\n실제 파일을 Read로 열어 확인하라. 추측 금지.`,
+  `${CONSTRAINTS}\n\n역할: Preflight 검증자. 아래 변경을 적용해도 되는지 실제 파일을 읽어 확인만 한다(이 단계에서는 수정 금지).\n\n확인 항목:\n1. ${ROOT}/CLAUDE.md 에 "구현 전 계획"을 강제하는 규칙(예: "Always plan before implementing")이 아직 살아있는가? (commands/plan.md 를 아카이브로 옮겨도 plan-first 습관이 전역 규칙으로 남는지 확인하는 게이트)\n2. ${ROOT}/commands/plan.md 가 존재하는가?\n3. 다음 스킬들의 실제 frontmatter(name/description)와 본문 줄 수를 읽어 보고하라: api-design, db-migrations, tdd-workflow. 각 스킬의 frontmatter name이 디렉터리명과 일치하는지, description에 스택 가드(예: NestJS/Prisma만)가 있는지, 100줄 초과인지.\n4. CLAUDE.md가 docs/claude-md-audit.md 를 참조하는 위치(참고용, 이번엔 수정 안 함).\n\n실제 파일을 Read로 열어 확인하라. 추측 금지.`,
   {
     label: 'preflight',
     phase: 'Preflight',
