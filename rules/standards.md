@@ -11,7 +11,6 @@
 
 ## Code
 
-- TypeScript: `no-explicit-any: off` in ESLint, `strictNullChecks: false` in tsconfig. Gradually tightening.
 - One function = one responsibility. Split if over 50 lines. A module has one responsibility.
 - Use an object when parameters exceed 3.
 - Early return pattern (minimize nested if).
