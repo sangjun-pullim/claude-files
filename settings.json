@@ -3,6 +3,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Read",
       "Glob",
@@ -196,7 +197,12 @@
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
+    "claude-md-management@claude-plugins-official": false
+  },
+  "skillOverrides": {
+    "api-design": "off",
+    "db-migrations": "off",
+    "security-checklist": "off"
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
