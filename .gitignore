@@ -24,6 +24,9 @@ chrome/
 .last-cleanup
 .last-update-result.json
 
+# Credentials — never commit
+.credentials.json
+
 # Daemon runtime (control.key is a credential — never commit)
 daemon/
 daemon.log
