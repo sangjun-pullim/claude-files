@@ -28,19 +28,28 @@ The agent that implements code develops blind spots -- it "knows" what it intend
 ### Phase 1: Implementation
 
 1. **Read the plan** -- understand all steps, affected files, and expected changes
-2. **Implement step by step** -- follow the plan's implementation steps in order
+2. **Find the resume point** -- step headings carry a progress marker (`### [ ] Step N` / `### [x] Step N`). `grep -n '^### \[ \]' <spec>` gives the first unimplemented step.
+   - No markers at all (spec predates them) → normal run from Step 1; add `[ ]`/`[x]` markers to the step headings as you go
+   - All `[ ]` → normal run from Step 1
+   - Some `[x]` → this spec was interrupted. Tell the user which steps are already marked done and which one you are resuming from, and get confirmation before proceeding — the codebase may have moved since, and a marked step is only a claim that the code was written, not that it still holds.
+   - A step marked `> BLOCKED: <reason>` needs the blocker resolved or the user's call before you touch it
+3. **Implement step by step** -- follow the plan's implementation steps in order
    - After each step, run relevant checks (build, lint, type-check) to catch issues early
+   - **Then flip that step's marker to `[x]` in the spec file immediately** — not batched at the end. This write is what survives an interrupted session; an in-context summary does not.
+   - If a step cannot be completed, leave it `[ ]` and add a `> BLOCKED: <reason>` line under its heading
    - Keep a running summary of what was done per step
-3. **Run verification** -- execute the plan's verification steps (build, lint, test)
-4. **Generate change summary** -- produce a concise summary of what was implemented:
+4. **Run verification** -- execute the plan's verification steps (build, lint, test)
+5. **Generate change summary** -- produce a concise summary of what was implemented:
    - Which plan steps were completed
    - Files changed with brief description of each change
    - Any deviations from the plan and why
-5. **Collect dependency map** -- for each changed file, grep for files that import it. Include this "affected dependents" list in the change summary. This gives the reviewer visibility into code that might break due to your changes, without requiring a separate analysis phase.
+6. **Collect dependency map** -- for each changed file, grep for files that import it. Include this "affected dependents" list in the change summary. This gives the reviewer visibility into code that might break due to your changes, without requiring a separate analysis phase.
 
 ### Phase 2: Plan-vs-Implementation Review Loop
 
 This loop repeats until the reviewer confirms the implementation matches the plan.
+
+The review always covers **every** step in the spec, including ones already marked `[x]` by an earlier session. A marker records that the code was written, never that it was verified — correctness comes from this loop alone. Reviewing only the steps completed in this run would let an earlier session's mistakes ride out on a checked box.
 
 #### Step A: Fresh-Context Review
 
@@ -113,10 +122,12 @@ Maximum iterations: **5**. The final confirmation round does not count toward th
 
 ### Phase 3: Close Spec & Report
 
-1. **Close the spec** — the implementation passed review and verification, so the plan document's lifecycle ends here:
+1. **Close the spec** — only when every step is marked `[x]`. Verify with `grep -c '^### \[ \]' <spec>` (expect `0`):
    - Set frontmatter `status: done` (add the lifecycle frontmatter block first if the spec predates it)
    - Move the file to `docs/impl-spec/archive/` (create the directory if missing; use `git mv` when the file is tracked)
    - This is part of the skill's normal completion, not a docs-update suggestion — do it without asking
+
+   If any step is still `[ ]`, **do not close or archive**. Leave `status: active`, report which steps remain (and any `> BLOCKED:` reasons), and tell the user `/impl-execute` on this spec will resume from the first unchecked step. A passing review does not close a spec that was never fully implemented.
 
 2. **Report** — present the final result:
 - Implementation summary (what was built, files changed)

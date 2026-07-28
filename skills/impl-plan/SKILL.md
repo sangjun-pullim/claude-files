@@ -68,7 +68,7 @@ This block becomes the input for Phase 1's `planner` agent — pass it in place 
 2. **Draft plan** -- write a structured implementation plan covering:
    - Context (what problem, why now)
    - Affected files with specific line numbers
-   - Step-by-step changes with code snippets
+   - Step-by-step changes with code snippets — each step heading written as `### [ ] Step N: <title>` (see Output Format)
    - Risks and edge cases
    - Verification steps
 3. **Save plan** to the project's `docs/impl-spec/` directory
@@ -198,7 +198,11 @@ date: <YYYY-MM-DD>
 
 ## Implementation Steps
 
-### Step N: [Title]
+Every step heading carries a progress marker: `[ ]` unstarted, `[x]` implemented.
+`/impl-execute` flips these as it works, so the spec shows where a partially
+finished implementation left off. Write them all as `[ ]`.
+
+### [ ] Step N: [Title]
 **File**: `path/to/file.ts`
 - Change description with specific line references
 - Code snippets where helpful
