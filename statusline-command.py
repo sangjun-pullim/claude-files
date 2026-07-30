@@ -71,6 +71,28 @@ def git_info(cwd):
     return branch, git_stat
 
 
+def codex_workers():
+    """Count running `codex exec` delegations.
+
+    Each run spawns two processes -- a node wrapper plus the native binary --
+    so counting `codex exec` matches alone doubles the total. Only the native
+    process is named exactly `codex`, so intersecting the two sets yields one
+    PID per run. Interactive `codex` sessions lack `codex exec` in their command
+    line and are excluded. Counts PIDs only: process command lines can carry
+    credentials and are never read.
+    """
+    def pids(*args):
+        try:
+            out = subprocess.run(
+                ["pgrep", *args], capture_output=True, text=True, timeout=1
+            ).stdout
+            return {p for p in out.split() if p.isdigit()}
+        except Exception:
+            return set()
+
+    return len(pids("-f", "codex exec") & pids("-x", "codex"))
+
+
 def node_version(cwd):
     """Get Node.js version."""
     try:
@@ -130,7 +152,13 @@ def main():
     if model:
         parts.append(f"{BOLD}{CYAN}{model}{RESET}")
 
-    # 2. Context usage — progress bar + %
+    # 2. Codex delegation — GPT is implementing, not this model
+    workers = codex_workers()
+    if workers:
+        suffix = f"×{workers}" if workers > 1 else ""
+        parts.append(f"{BOLD}{MAGENTA}⚡codex{suffix}{RESET}")
+
+    # 3. Context usage — progress bar + %
     ctx_pct = data.get("context_window", {}).get("used_percentage")
     if ctx_pct is not None:
         pct = round(ctx_pct)
