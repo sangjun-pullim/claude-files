@@ -20,6 +20,7 @@ Backend + Fullstack developer.
 
 ## Communication
 
+- Answer before acting. Never open a turn with a tool call: lead with the answer, or one line naming what you're about to check or change. Going silent into tool calls is the failure — not the acting itself.
 - Conversation in Korean. Code comments in English. Commit messages in Korean.
 - For each change: code + one-line reasoning. Never output unchanged code.
 - When multiple options exist, compare tradeoffs and recommend one.
