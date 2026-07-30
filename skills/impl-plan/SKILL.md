@@ -85,7 +85,7 @@ This block becomes the input for Phase 1's `planner` agent — pass it in place 
      status: active            # active | done | superseded-by: <NNN>
      date: <YYYY-MM-DD>
      ---
-     > NOTE: Snapshot of the plan at writing time — NOT evidence of current code state.
+     > NOTE: This is the plan, not a description of the code — never read it as evidence of current code state. While `status: active`, edit it in place as the plan changes; once archived it is frozen.
      ```
 
    - **Supersede check**: if this plan replaces an existing spec (same feature re-planned, or the user says so), set the old spec's frontmatter to `status: superseded-by: <new NNN>` and move it to `docs/impl-spec/archive/`
@@ -186,7 +186,7 @@ The plan document should follow this structure:
 status: active
 date: <YYYY-MM-DD>
 ---
-> NOTE: Snapshot of the plan at writing time — NOT evidence of current code state.
+> NOTE: This is the plan, not a description of the code — never read it as evidence of current code state. While `status: active`, edit it in place as the plan changes; once archived it is frozen.
 
 # [Title]
 

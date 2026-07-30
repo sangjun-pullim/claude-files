@@ -80,7 +80,13 @@ when a change touches a doc's sources glob, that doc is an update candidate.
 
 ## impl-spec Lifecycle
 
-`docs/impl-spec/` documents are **frozen history, not maintained docs**. A spec claims "what we planned and why, at the time" — never "how the code is now" — so it is never synced against code drift; that claim cannot go stale. Durable why belongs in `decisions.md` (promote it there), current facts belong in `architecture.md` etc.
+A spec's status decides whether it is editable. **Active specs are working documents; archived specs are frozen history.** Neither is ever synced against code drift — a spec claims what we planned, never "how the code is now" — but that is a reason not to *maintain* them as current-state docs, not a reason to preserve superseded instructions inside an active one.
+
+- **Active (`status: active`, top level) — edit in place.** When the plan changes, rewrite the affected steps to say what you now intend. Do NOT append "update notes" alongside text you no longer mean: `/impl-plan`'s review loop already treats the body as the single source of truth, and `/impl-execute` hands the file to the implementer — Codex reads it verbatim as its instruction set, down to line numbers. A spec carrying both the original and a correction is ambiguous to a machine and will sometimes get implemented as written. The original plan is not lost: these files are tracked, so `git log -p` is the record of what you planned at the time.
+  - **Exception — steps already marked `[x]`.** A marker asserts "implemented as written here", so editing that step's instructions makes it lie and corrupts the resume logic. Either flip it back to `[ ]` so it gets redone, or leave it and add the change as a new step.
+- **Archived (`status: done` / `superseded-by`, or under `archive/`) — never edit.** This is the record of what we decided and why, at the time. Frozen means frozen.
+
+Durable why belongs in `decisions.md` (promote a genuine change of direction there), current facts belong in `architecture.md` etc.
 
 - **Born**: `/impl-plan` creates the spec with frontmatter `status: active` + `date` + the snapshot NOTE. This frontmatter is required for EVERY file created under `docs/impl-spec/`, including specs written ad-hoc (incident response, manual planning) without the skill — a spec file without it is a defect, same as an unstamped derivable doc.
 - **Closed**: `/impl-execute` sets `status: done` and moves the file to `docs/impl-spec/archive/` once every implementation step is marked `[x]` *and* the review passes. A spec with unchecked steps stays `active` no matter how clean the review — it was never fully implemented.
