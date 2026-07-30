@@ -17,13 +17,44 @@ Implement changes based on a plan document, then validate the implementation aga
 
 The agent that implements code develops blind spots -- it "knows" what it intended to write and tends to overlook gaps between intention and reality. A fresh-context reviewer reads the plan and the actual code independently, catching mismatches the implementer missed (forgotten steps, partial implementations, unintended side effects, imports not added).
 
+This is why the reviewer is a separate agent when *you* implemented — and why it does not need to be when Codex implemented. Delegating implementation makes you the fresh context; a second layer buys nothing there.
+
 ## Inputs
 
 - **Plan document path** (required): typically `docs/impl-spec/<name>.md`, provided as argument or by the user
 - If no path given, list specs at the top level of `docs/impl-spec/` (NOT `archive/`) with frontmatter `status: active`, and ask the user which one to implement
 - If the given spec has `status: done` or `superseded-by`, or lives in `archive/`, stop and confirm with the user — it is frozen history, likely not what they meant to implement
 
-## Workflow
+## Who implements — you or Codex
+
+Default: **you implement** (Phase 1 below). Delegate to Codex only when the user asked for it — "codex로 구현", "codex한테 시켜", "GPT로 진행" or equivalent. Never switch to delegation on your own initiative; a plan being large is not a reason.
+
+**If you are Codex** (this skill was invoked by Codex, not by Claude): you are the implementer. Ignore Phase 1-C and Phase 2 entirely — run Phase 1 directly, then report facts and stop. Do not spawn workers, do not run the review loop, do not close the spec. The Claude orchestrator that dispatched you owns review and closing.
+
+When the user did ask for Codex, run **Phase 1-C** instead of Phase 1, then continue at Phase 2.
+
+### Phase 1-C: Delegated implementation (Codex)
+
+1. **Read the plan** and find the resume point exactly as in Phase 1 steps 1–2.
+2. **Decide the split.** Judge parallelizability from the plan yourself — the spec does not annotate it. Group the unchecked steps into workers so that:
+   - **file sets are disjoint** — two concurrent workers must never touch the same file
+   - a step that changes an exported signature, renames an export, or edits a schema/barrel/shared type is **serialized**: run it alone, before or after the parallel batch, never inside it
+   - steps that change a signature and steps that change its callers go in the **same** worker
+   - if a clean disjoint split isn't available, run sequentially — one worker at a time. Sequential is the correct answer more often than not.
+3. **Ask the mode question** required by `rules/agents.md` (orca worktree vs in-place), once for the whole task.
+4. **Dispatch** one `codex-worker` per group. Give each worker the **spec file path** and the step numbers it owns — do not paraphrase the spec into the prompt. Phrase the task as "codex로 구현하라", never "편집하라" (see `rules/agents.md`).
+5. **Gate each worker's report mechanically** as it returns — this is a check, not a review:
+   - `codex 호출 0회`, missing session id, or no `OpenAI Codex v` banner in `out.txt` → the change did not come from Codex. Failed run; re-dispatch.
+   - any `검증: … → exit` non-zero → failed; send the failing output back to that worker's Codex session as a rework request
+   - `스펙 외 변경 파일` non-empty → inspect those paths before accepting
+   - all clear → confirm that group's steps are `[x]` in the spec. Codex marks them as it goes; if it did not, mark them yourself now so the resume point stays accurate.
+   Do not review the diff here. A failing gate costs one rework round-trip and no review tokens.
+6. **After every worker is clear, assemble the union** — Phase 2 reviews one combined change, not N separate ones.
+   - **in-place mode**: everything is already in one checkout. `git status --porcelain` + `git diff` is the union.
+   - **orca worktree mode**: each worker's work sits on its own branch, so there is no combined tree yet. Create an integration branch off the base (`git switch -c <task>-integration <base>`) and merge each worker branch into it. Never merge into the base branch here — that is the user's call, per `rules/agents.md`.
+     - A **merge conflict is a cross-worker collision** — two workers touched the same region. Resolve it only if the resolution is mechanical and obvious; otherwise treat it as a finding and send it back to the owning sessions.
+     - After merging, **run build/lint/test on the integration branch**. Each worktree passing individually proves nothing about the union: stale imports and mismatched signatures only fail here. This is the cheapest cross-worker check there is — run it before spending any review effort.
+   - Then go to Phase 2 with the union diff (`git diff <base>...HEAD` on the integration branch).
 
 ### Phase 1: Implementation
 
@@ -53,7 +84,18 @@ The review always covers **every** step in the spec, including ones already mark
 
 #### Step A: Fresh-Context Review
 
-Spawn a **new** `reviewer` agent each iteration (fresh context is critical). Provide it with:
+**Who reviews depends on who implemented.**
+
+- **You implemented (Phase 1)** → spawn a `reviewer` agent, as below. You wrote the code, so you carry the blind spot this loop exists to defeat.
+- **Codex implemented (Phase 1-C)** → **review it yourself, no reviewer agent.** You never wrote this code, so you already are the fresh context. Read the union diff against the plan and apply the same checklist below. This is also where cross-worker breakage becomes visible for the first time — a per-worker reviewer could not have seen it, since each worker only produced part of the change.
+
+  Spawn a `reviewer` agent in the Codex path only when one of these holds, and then **one reviewer over the whole union** — never one per worker:
+  - the change touches the risk surface (`rules/risk-triage.md` requires a reviewer regardless)
+  - the union diff is too large to read without crowding out the rest of the task
+
+Whichever runs, the checklist, severities, and loop-exit rules below are identical.
+
+When spawning a reviewer, spawn a **new** one each iteration (fresh context is critical). Provide it with:
 
 - The plan document (full path)
 - The change summary from Phase 1 (or updated summary from Step C)
@@ -97,9 +139,13 @@ Rules for disposition:
 
 Fix all ACCEPTED findings. Update the change summary with what was fixed.
 
+**Codex path**: do not fix the code yourself. Send each ACCEPTED finding back to the Codex session that produced that step — re-spawn `codex-worker` against the same worktree with the session id and state the correction plainly. The worker passes it to Codex verbatim; it will not diagnose for you. Group findings by owning worker so each session gets one rework request rather than several. Then gate the returned reports again (Phase 1-C step 5) before re-reviewing.
+
+Exception: if no session id survives for that step, or the fix is a one-line mechanical correction that costs less than a round-trip, fix it yourself and say so in the report.
+
 #### Step D: Next Iteration
 
-Spawn a **new** fresh-context reviewer with:
+Re-review with the updated change summary and the disposition table from Step B. If Step A used a `reviewer` agent, spawn a **new** one (never reuse — fresh context is the point) with:
 - The plan document
 - The updated change summary
 - The disposition table from Step B
@@ -134,5 +180,6 @@ Maximum iterations: **5**. The final confirmation round does not count toward th
 - Review iterations summary (what was caught and fixed across rounds)
 - Any remaining MEDIUM/LOW notes
 - Verification results (build, lint, test status)
+- **Codex path**: who implemented what — worker → steps owned → Codex session id — plus how many rework round-trips each took. Name the integration branch and the worker branches on it, and state plainly that nothing was merged into the base branch — that decision is the user's.
 
 $ARGUMENTS
