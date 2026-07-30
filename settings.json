@@ -3,7 +3,6 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Read",
       "Glob",
@@ -44,9 +43,15 @@
       "Read(**/.env.production)",
       "Read(**/.env.staging)",
       "Read(**/.env.test)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
-  "model": "opus[1m]",
+  "model": "claude-fable-5[1m]",
+  "skillOverrides": {
+    "api-design": "off",
+    "db-migrations": "off",
+    "security-checklist": "off"
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -199,11 +204,6 @@
     "skill-creator@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": false
   },
-  "skillOverrides": {
-    "api-design": "off",
-    "db-migrations": "off",
-    "security-checklist": "off"
-  },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
@@ -214,6 +214,7 @@
   },
   "effortLevel": "xhigh",
   "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true
 }
