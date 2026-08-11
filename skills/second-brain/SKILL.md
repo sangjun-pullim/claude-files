@@ -99,7 +99,7 @@ Durable why belongs in `decisions.md` (promote a genuine change of direction the
 - Do NOT auto-update docs without user approval
 - When suggesting, be specific: state which file and what section needs updating
 - Keep docs concise — bullet points and diagrams over prose
-- `bug-fixes.md` is append-only until promotion: when the same root-cause pattern appears 2+ times, promote it to a durable guard (test, lint rule, or a measurable CLAUDE.md rule) via `/docs-sync` Part 4. Promoted entries are compressed to a one-line reference — promotion doubles as compaction.
+- `bug-fixes.md` is append-only until promotion: when the same root-cause pattern appears 2+ times, promote it to a durable guard (test, lint rule, or a measurable CLAUDE.md rule) via `/docs-sync` Part 5. Promoted entries are compressed to a one-line reference — promotion doubles as compaction.
 
 ## Coexistence with Existing Files
 

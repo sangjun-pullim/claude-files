@@ -2,7 +2,7 @@
 description: Analyze changes and create a Conventional Commits format commit
 ---
 
-1. If reviewer has not been run in this session, run it before proceeding
+1. Run the reviewer first per `rules/risk-triage.md` — skip it only for tier-0 changes with no executable code touched (prose/docs)
 2. Check `git diff --staged` (if empty, check `git diff`)
 3. Analyze the changes
 4. Generate a Conventional Commits message

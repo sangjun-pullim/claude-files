@@ -22,47 +22,23 @@ const PRINCIPLES = `감사 원칙:
 
 const INVENTORY_CONTEXT = `하네스 루트: /Users/pullim/.claude
 
+파일 목록·줄 수·설정 값을 이 프롬프트에 하드코딩하지 않는다 — 과거 실행의 하드코딩 스냅샷이 낡아 감사를 오염시켰다. 아래 카테고리를 라이브로 직접 열거·검증하라 (git ls-files + 디렉토리 목록 기준):
+
 [전역 컨텍스트 — 매 세션 시스템 프롬프트에 주입됨]
-- CLAUDE.md (48줄)
-- rules/agents.md (26줄)  — agent delegation 규칙
-- docs/claude-md-audit.md (64줄, on-demand — rules/에서 이동해 상시 로딩 제외) — CLAUDE.md 감사 프로토콜
-- rules/second-brain.md (77줄) — docs/ 표준
-- rules/standards.md (44줄) — 네이밍/코드/에러/테스트/git/보안 표준
-(주의: AGENTS.md 없음, .cursor/rules 없음)
+- CLAUDE.md, rules/*.md 전부
 
-[커스텀 Skill — .claude/skills/*/SKILL.md, on-demand]
-- api-design (118줄), db-migrations (128줄), impl-execute (107줄), impl-plan (187줄), security-checklist (78줄), tdd-workflow (64줄), verify (70줄)
+[on-demand 컨텍스트]
+- docs/*.md, skills/*/SKILL.md (+ reference.md), commands/*.md, agents/*.md, .claude/workflows/*.js
 
-[커스텀 Command — .claude/commands/*.md]
-- docs-sync.md, check.md, weekly-report.md, init-docs.md, plan.md, commit.md, orchestrate.md
+[Hook]
+- hooks/*.sh + settings.json의 hooks 와이어링 (이벤트/matcher 포함)
 
-[커스텀 Agent — .claude/agents/*.md]
-- reviewer.md, planner.md
-
-[Hook — .claude/hooks/, settings.json에 연결]
-- block-env-commit.sh (PreToolUse, Bash matcher — git add .env 차단)
-- auto-format.sh (PostToolUse, Write|Edit matcher — prettier 실행)
-
-[settings.json 핵심]
-- permissions.allow: Read, Glob, Grep, Bash(npm/npx/pnpm/yarn/node *), Bash(git status/diff/log/add/commit/branch/checkout/stash *)
-- permissions.deny: Bash(rm -rf *), Bash(curl *), Bash(wget *), Read(.env), Read(.env.*)
-- env: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
-- effortLevel: high, skipAutoPermissionPrompt: true
-- statusLine: python3 statusline-command.py
-- mcpServers: playwright (npx @playwright/mcp@latest)
-- enabledPlugins: typescript-lsp, skill-creator, claude-md-management (claude-plugins-official)
-
-[.claude/settings.local.json]
-- allow: WebFetch(domain:raw.githubusercontent.com), Bash(git -C /Users/pullim/.claude diff --stat CLAUDE.md)
-
-[MCP (auth cache 기준, 제품/계정 레벨 가능성)]
-- claude.ai Gmail / Google Calendar / Google Drive
-
-[플러그인 oh-my-claudecode (omc)]
-- .omc-config.json: defaultExecutionMode=ultrawork, team.maxAgents=3
+[settings.json — 키 단위로만 읽는다]
+- permissions(allow/deny/defaultMode), skillOverrides, enabledPlugins, effortLevel, statusLine
+- env 블록의 값은 읽지도 인용하지도 않는다 (시크릿 가능)
 
 [제품 기본 기능 참고 — 중복 판단용]
-Claude Code 기본 제공: /commit, /code-review, /security-review, /init, /plan(skill), verify(skill), run(skill), update-config(skill), claude-md-management 플러그인(revise-claude-md, claude-md-improver), skill-creator. 즉 commit/plan/check/verify/docs/orchestrate/claude-md-audit 류는 제품 기능과 겹칠 수 있다.`
+Claude Code 내장 커맨드/스킬/플러그인과 겹치는 커스텀 항목은 중복 후보다. 내장 목록도 하드코딩된 과거 지식이 아니라 현재 세션에서 확인해 판단하라.`
 
 const FINDING_ITEM = {
   type: 'object',

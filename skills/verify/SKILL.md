@@ -50,8 +50,9 @@ done
 - Unvalidated user input on new endpoints
 
 If the change touches auth, payment, permissions, or any public route, this gate is not
-enough — run the `security-checklist` skill for the full NestJS audit instead of
-expanding this phase.
+enough — read `~/.claude/skills/security-checklist/SKILL.md` and run its full NestJS
+audit instead of expanding this phase. (That skill is disabled in skillOverrides, so
+load it by reading the file, not via the Skill tool.)
 
 ## Phase 6: Diff Review
 
