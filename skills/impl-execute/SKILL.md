@@ -48,7 +48,7 @@ When the user did ask for Codex, run **Phase 1-C** instead of Phase 1, then cont
    - any `검증: … → exit` non-zero → failed; send the failing output back to that worker's Codex session as a rework request
    - `스펙 외 변경 파일` non-empty → inspect those paths before accepting
    - all clear → confirm that group's steps are `[x]` in the spec. Codex marks them as it goes; if it did not, mark them yourself now so the resume point stays accurate.
-   Do not review the diff here. A failing gate costs one rework round-trip and no review tokens.
+   Do not review the diff here. A failing gate costs one rework round-trip and no review tokens. Each gate result is reported to the user in the turn it arrives (`rules/agents.md` Background Agent Turn Discipline) — never gate silently.
 6. **After every worker is clear, assemble the union** — Phase 2 reviews one combined change, not N separate ones.
    - **in-place mode**: everything is already in one checkout. `git status --porcelain` + `git diff` is the union.
    - **orca worktree mode**: each worker's work sits on its own branch, so there is no combined tree yet. Create an integration branch off the base (`git switch -c <task>-integration <base>`) and merge each worker branch into it. Never merge into the base branch here — that is the user's call, per `rules/agents.md`.
@@ -94,6 +94,8 @@ The review always covers **every** step in the spec, including ones already mark
   - the union diff is too large to read without crowding out the rest of the task
 
 Whichever runs, the checklist, severities, and loop-exit rules below are identical.
+
+Review results are reported in the turn they arrive — findings table first, then disposition. Going idle between review completion and the report is not an allowed state.
 
 When spawning a reviewer, spawn a **new** one each iteration (fresh context is critical). Provide it with:
 

@@ -31,6 +31,14 @@ Use proactively without waiting for user to ask (single exception: the mode ques
 - **Parallel split**: judge parallelizability at dispatch time, never at planning time. Disjoint file sets per worker; a step touching an exported signature, schema, barrel file, or shared type runs alone — never inside the parallel batch; a signature change and its callers stay in one worker; no clean split → sequential (the right answer more often than parallel).
 - **Review once over the union, never per worker** — cross-worker breakage (stale imports, mismatched signatures) only shows in the combined diff. When codex implemented, you are already the fresh context: review it yourself, and delegate to a `reviewer` agent only on the risk surface or when the union diff would crowd out the rest of the task.
 
+## Background Agent Turn Discipline
+
+Spawned agents run in the background; yielding the turn while they run is normal — going silent is not:
+
+- **Yield with a status line.** A turn that spawns or waits on background agents must end with text naming each running agent (role + what it owns) and what happens when it returns. Ending a spawn turn with no text is a failure.
+- **Report on arrival.** The turn a completion notification triggers must end with that agent's outcome visible to the user: per-worker gate verdict, review findings + dispositions, or verification results. The user cannot see agent output — only your text. Consuming a result and going idle without reporting it is a spec violation.
+- **Describe agents by role, not ad-hoc label.** Labels like `union-review` are transient; say what the agent did ("union diff review over 3 worker branches"), label in parentheses at most.
+
 ## Review Post-Processing
 
 Severity labels are the shared 5-level scale defined in `agents/reviewer.md` (CRITICAL / HIGH / MEDIUM / LOW / INFO) — the same scale `impl-plan` and `impl-execute` key their loop-exit conditions off.
