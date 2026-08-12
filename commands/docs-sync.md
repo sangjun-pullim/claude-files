@@ -16,7 +16,7 @@ Audit the project's CLAUDE.md and docs/ files against the current codebase state
 ## Part 2: docs/ Structure
 
 7. **Docs Existence**: Check `docs/` folder for standard Second Brain files.
-   - Report which standard files exist vs missing (architecture.md, db-schema.md, api-spec.md, frontend-architecture.md, business-logic.md, decisions.md, bug-fixes.md)
+   - Report which standard files exist vs missing (architecture.md, db-schema.md, api-spec.md, frontend-architecture.md, business-logic.md, decisions.md, bug-fixes.md, glossary.md — the latter only flagged as missing when domain vocabulary is non-obvious, per the `second-brain` skill criterion)
    - Check if CLAUDE.md has `## Documentation` section with lazy-load references to `docs/`
    - If CLAUDE.md has inline content (Architecture/DB Schema/API sections longer than 20 lines), suggest extracting to `docs/`
 

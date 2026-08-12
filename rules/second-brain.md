@@ -12,6 +12,7 @@ when writing an impl-spec. This file keeps only what every task needs up front.
 ### Common Principles
 
 - For any task type, skim `docs/decisions.md` at least once — to avoid proposing changes that conflict with past decisions.
+- If `docs/glossary.md` exists, use its canonical identifiers when naming or discussing domain concepts, and never introduce a banned alias.
 - The source of truth for **current code state** is the code itself and `architecture.md` — never `docs/impl-spec/`, which records what was planned, not what was built. An **archived** spec is frozen history: read it for intent, background, and rationale ("why did we do it this way?"), never as evidence of current state. An **active** spec is a working document and gets edited in place as the plan changes — see the `second-brain` skill for the editing rules.
 - If relevant docs are missing or appear stale, say so to the user and proceed.
 

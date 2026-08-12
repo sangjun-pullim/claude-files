@@ -15,13 +15,33 @@ Every project should maintain these documentation files under `docs/`:
 
 | File | Purpose | When Required |
 |------|---------|---------------|
-| `architecture.md` | System architecture, module relationships, data flow | Always |
-| `db-schema.md` | Database schema, relations, indexes, migration notes | Prisma/DB projects |
-| `api-spec.md` | API endpoints, request/response formats, auth | Projects with controllers/routes |
+| `architecture.md` | High-level map — module boundaries, integration points, data flow (not an exhaustive structure listing) | Always |
+| `db-schema.md` | Modeling rationale, constraints, migration notes (the schema itself lives in `schema.prisma`) | Prisma/DB projects |
+| `api-spec.md` | External API contract — the contract is the truth, not the code | APIs with external consumers (internal-only: route code is the doc) |
 | `frontend-architecture.md` | Component tree, state management, routing | React/Next.js projects |
-| `business-logic.md` | Domain rules, workflows, edge cases | Complex business logic |
+| `business-logic.md` | Domain rules, workflows, edge cases — intended behavior, the baseline for judging bugs | Complex business logic |
 | `decisions.md` | ADR (Architecture Decision Records) | Always |
 | `bug-fixes.md` | Notable bug investigations and fixes | Always |
+| `glossary.md` | Domain term ↔ canonical code identifier mapping, with banned aliases | Only when a term has confused the model or a teammate at least once |
+
+## glossary.md Format
+
+One line per term, table-only. The 금지 표현 (banned aliases) column is the highest-value
+part — negative constraints stop naming drift across sessions and subagents better than
+definitions do.
+
+```markdown
+| 용어 | Canonical identifier | 정의 (1줄) | 금지 표현 |
+|------|---------------------|-----------|----------|
+| 정산 | `settlement` | 월말 판매대금 정산 프로세스 | adjustment, payout |
+```
+
+- A definition that outgrows one line (behavior rules, state transitions) belongs in
+  `business-logic.md`; the glossary row keeps only a link. Never let the two files
+  describe the same rule independently.
+- Hand-written layer: no freshness stamp, effectively append-only.
+- Creation criterion: a term has confused the model or a teammate at least once.
+  Projects with obvious vocabulary skip this file.
 
 ## Mermaid Diagrams
 
@@ -39,6 +59,7 @@ Docs split into two layers by maintenance cost:
 
 - **Hand-written layer** — why, invariants, rejected alternatives, business rules: things code cannot express. Maintained by hand; rarely invalidated.
 - **Derivable layer** — facts reproducible from code (schema, endpoints, field/column mappings, indexes). NEVER hand-maintain these. Either generate them from code, or attach a freshness stamp so staleness is machine-checkable.
+- **Keep the derivable layer thin.** Agentic code search regenerates structure cheaply; a derivable doc earns its place by curation (high-level map, integration points, modeling rationale), not enumeration. A section that merely restates what code or schema already shows is a deletion candidate — a stale doc grounds the model in the wrong direction, which is worse than no doc.
 
 Stamp convention (frontmatter at the top of the doc):
 

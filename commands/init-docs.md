@@ -15,10 +15,11 @@ Check for these indicators to determine which standard files are needed:
 | Indicator | Files to Include |
 |-----------|-----------------|
 | `prisma/schema.prisma` exists | `db-schema.md` |
-| `src/**/*.controller.ts` or `src/**/routes*` exists | `api-spec.md` |
+| Controllers/routes exist AND the API has external consumers (internal-only: route code is the doc) | `api-spec.md` |
 | `package.json` has react/next dependencies | `frontend-architecture.md` |
 | Always | `architecture.md`, `decisions.md`, `bug-fixes.md` |
 | Complex domain logic detected | `business-logic.md` |
+| Non-obvious domain vocabulary (Korean business terms, ambiguous English mappings) | `glossary.md` |
 
 ## Step 3: Check for Similar Files
 
@@ -38,6 +39,7 @@ Before writing any docs, thoroughly explore the project to gather real content:
 - **business-logic.md**: Identify domain services, workflow logic, state machines, validation rules, and edge case handling.
 - **decisions.md**: Check git log and existing comments/docs for any architectural decisions already made.
 - **bug-fixes.md**: Start with an empty log structure (no fake entries).
+- **glossary.md**: Collect domain terms from model names, service names, and CLAUDE.md; map each business term to its canonical code identifier with a one-line definition and banned aliases (format in the `second-brain` skill). Only include terms with real confusion potential — never pad with obvious vocabulary.
 
 Use the Explore agent or parallel search agents to gather information efficiently. Do NOT guess — only document what you can confirm from the code.
 
