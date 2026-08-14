@@ -16,7 +16,7 @@ Audit the project's CLAUDE.md and docs/ files against the current codebase state
 ## Part 2: docs/ Structure
 
 7. **Docs Existence**: Check `docs/` folder for standard Second Brain files.
-   - Report which standard files exist vs missing (architecture.md, db-schema.md, api-spec.md, frontend-architecture.md, business-logic.md, decisions.md, bug-fixes.md, glossary.md — the latter only flagged as missing when domain vocabulary is non-obvious, per the `second-brain` skill criterion)
+   - Report which standard files exist vs missing (architecture.md, db-schema.md, api-spec.md, frontend-architecture.md, business-logic.md, decisions.md, bug-fixes.md, glossary.md — flag the latter as missing only per the `second-brain` skill's creation criterion)
    - Check if CLAUDE.md has `## Documentation` section with lazy-load references to `docs/`
    - If CLAUDE.md has inline content (Architecture/DB Schema/API sections longer than 20 lines), suggest extracting to `docs/`
 
@@ -24,7 +24,7 @@ Audit the project's CLAUDE.md and docs/ files against the current codebase state
 
 ### Incremental mode (stamp-based — check FIRST)
 
-Before any deep comparison, check each docs/ file for a freshness stamp in its frontmatter (`verified-against: <commit>` + `sources: <globs>`, per the `second-brain` skill):
+Before any deep comparison: skip the files the `second-brain` skill exempts from stamping, and for the rest read the stamp it defines.
 
 - Stamp present → run `git diff --name-only <commit>..HEAD -- <globs>`.
   - Empty diff → mark the doc **OK (stamp-verified)** and SKIP its deep comparison below.
@@ -55,8 +55,8 @@ For each docs/ file not cleared by its stamp, compare its content against the ac
 
 Audit `docs/impl-spec/` against the lifecycle in the `second-brain` skill. Specs are never synced against code drift — they record what was planned, not what exists — so this audit only checks lifecycle state, never spec content. Archived specs are frozen; active ones are working documents their owner edits directly:
 
-1. **Frontmatter check**: every `.md` under `docs/impl-spec/` (top level AND `archive/`) must START with the frontmatter block (`status: active|done|superseded-by: <NNN>` + `date: YYYY-MM-DD`). Missing or malformed (e.g., status written as a body bullet) → flag; propose adding it with `date` derived from `git log --diff-filter=A --follow`.
-2. **Closed-but-not-archived**: for each top-level spec with `status: active`, look for completion evidence — a merged PR/commit referencing the spec number, or the spec body itself declaring 구현/완료. Evidence found → propose `status: done` + `git mv` into `docs/impl-spec/archive/`. (Shelved/paused specs stay top-level as `active` with the pause noted in the body.)
+1. **Frontmatter check**: every `.md` under `docs/impl-spec/` (top level AND `archive/`) must START with the frontmatter block that `impl-plan`'s `## Output Format` defines (that skill owns the field list). Missing or malformed (e.g., status written as a body bullet) → flag; propose adding it with `date` derived from `git log --diff-filter=A --follow`. Specs predating a field are not defects — flag only a missing or malformed block.
+2. **Closed-but-not-archived**: for each top-level spec with `status: active`, look for completion evidence — a merged PR/commit referencing the spec number, or the spec body itself declaring 구현/완료. Evidence found → propose `status: done` + `git mv` into `docs/impl-spec/archive/` **only when `impl-execute` Phase 3 step 1's close conditions all hold — read them there, do not work from memory**. Any `UNRESOLVED` row in the spec's `## Review Notes` is a mechanical no: flag it as "close via `/impl-execute`". This command is not a second door to `done`. (Shelved/paused specs stay top-level as `active` with the pause noted in the body.)
 3. **Archived-but-active**: files inside `archive/` whose status is still `active` → flag (must be `done` or `superseded-by`).
 
 Report findings in the table; apply frontmatter additions and moves only after user approval (same write policy as Part 3 stamp bumps).

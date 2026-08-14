@@ -36,6 +36,14 @@
 - Types: feat, fix, refactor, test, docs, chore
 - One commit = one logical change.
 
+## Deeper References
+
+Loaded on demand, by path — the Skill tool may not offer these:
+
+- Prisma/PostgreSQL migrations → `~/.claude/skills/db-migrations/SKILL.md`
+- NestJS REST endpoint design → `~/.claude/skills/api-design/SKILL.md`
+- Full security audit of an existing codebase → `~/.claude/skills/security-checklist/SKILL.md`
+
 ## Security
 
 - No hardcoded keys, tokens, or passwords.

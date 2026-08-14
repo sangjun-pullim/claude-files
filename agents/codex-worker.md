@@ -48,7 +48,7 @@ The parent reads `last.txt` and greps `out.txt`, so both paths must appear in yo
 Use what the parent gave you. Save it to `<scratch>/prompt.md` unchanged except for mechanical assembly:
 
 - If the parent named a spec file, tell codex to read that file — do not paraphrase its contents into the prompt.
-- You may append literal context codex cannot see (absolute repo path, branch, "do not commit", "do not modify docs/"). Nothing else.
+- You may append literal context codex cannot see (absolute repo path, branch, "do not modify docs/"). Nothing else. **"Do not commit" is in-place mode only** — in orca worktree mode the parent merges your branch, so uncommitted work assembles as an empty union.
 - Do NOT restructure the task into your own phases, steps, or line-level instructions. That is the parent's job and the spec's job.
 
 ## Orca worktree mode
@@ -62,12 +62,13 @@ Use what the parent gave you. Save it to `<scratch>/prompt.md` unchanged except 
    - `--command` runs through a shell (`&&`, `<`, `|` verified working).
    - The trailing `; exit` is REQUIRED: without it the terminal drops back to a shell prompt and `wait --for exit` never fires (measured).
    - `tee` keeps live output visible in the card AND a durable log for session-id extraction.
-4. `orca worktree set --worktree path:<worktree> --comment "GPT 구현 중"`, then block on `orca terminal wait --terminal <handle> --for exit --timeout-ms 540000 --json` (Bash timeout 600000). On timeout, check progress with `orca terminal read` and wait again.
+4. `orca worktree set --worktree path:<worktree> --comment "GPT 구현 중"`, then block on `orca terminal wait --terminal <handle> --for exit --timeout-ms 540000 --json` (Bash timeout 600000). On timeout, check progress with `orca terminal read` and wait again — but bound it: two consecutive waits with no new output means codex is hung. Close the terminal, set the card comment, and report `codex 미실행` with the log path. A worker that never reports leaves the parent with nothing to tell the user.
 5. Capture the codex session id from the log, not the terminal scrollback: `grep -m1 "session id:" <scratch>/out.txt`. Also count invocations: `grep -c "OpenAI Codex v" <scratch>/out.txt`.
 6. Ensure dependencies BEFORE running tests: if the worktree has a lockfile but no installed deps (setup hook may be empty — and codex's sandbox has no network, so codex cannot install them itself), run the project's install command in the worktree yourself. Never attribute missing-dependency failures to codex's change.
 7. Collect facts inside the worktree — gather, do not judge:
    - `git -C <worktree> status --porcelain` (plain `git diff` misses newly created files)
-   - `git -C <worktree> diff --stat`
+   - `git -C <worktree> diff --stat` — uncommitted work only
+   - `git -C <worktree> diff <base-branch>...HEAD --stat` and `--name-only` — codex may have committed, and then the two commands above both come back empty and the run looks like nothing happened. Report both views and say which one carried the change. The parent supplies `<base-branch>`; do not guess it.
    - the project's relevant test/lint commands with cwd = the worktree — record each command and its **exit code**; on non-zero, keep only the failing lines
    - which changed paths fall outside the spec's stated scope (list them; do not rule on whether that is acceptable)
 8. Set a factual card comment — the observed outcome, not a verdict: `"codex 완료 — 테스트 exit 0"` / `"codex 완료 — 테스트 exit 1"` / `"codex 미실행"`. Close the codex terminal if still open (`orca terminal close`). Do NOT remove the worktree and do NOT merge.
@@ -87,7 +88,8 @@ In-place codex produces no orca card, so the report is the parent's only window 
 codex: session id <id> | codex 호출 <N>회 | 로그 <out.txt 절대경로>
 codex 최종 메시지: <last.txt 절대경로>
 워크트리: <path> | 브랜치: <branch>        (in-place면 "in-place, 브랜치 <branch>")
-변경: <git diff --stat 출력 그대로>
+변경(미커밋): <git diff --stat 출력 그대로>
+변경(커밋됨): <git diff <base-branch>...HEAD --stat 출력 그대로 — 없으면 "없음">
 검증: <명령> → exit <code>                (실패 시 실패 라인만, 한 줄씩)
 스펙 외 변경 파일: <목록 또는 "없음">
 ```
@@ -99,7 +101,17 @@ Rules for the report:
 
 ## Rework requests
 
-If the spawn prompt points to an EXISTING worktree (path given), do NOT create a new one: reuse that worktree/card, set its comment to "재작업 중", and resume the given codex session with the parent's corrections verbatim (`cd <worktree> && codex exec resume <session-id> "<corrections>"`). Never `resume --last`: parallel workers make it pick the wrong session.
+**A rework round writes its own logs** to a fresh path (`<scratch>/<task>/rework-N/`). Steps 5–9 read `out.txt` and `last.txt` to count invocations and extract the session id — reuse the first run's files and the gate passes on stale evidence from a run that already ended.
+
+`codex exec resume` takes `[SESSION_ID] [PROMPT]` plus `-o <file>`; it has **no `-C` flag** (verified on codex-cli 0.147.0), so cd first.
+
+If the spawn prompt points to an EXISTING worktree (path given), do NOT create a new one: reuse that worktree/card, set its comment to "재작업 중", and resume the given codex session with the parent's corrections verbatim, inside the card so output still streams:
+
+`orca terminal create --worktree path:<worktree> --title codex-rework --command "cd <worktree> && codex exec resume <session-id> -o <scratch>/rework-N/last.txt '<corrections>' 2>&1 | tee <scratch>/rework-N/out.txt; exit" --json`
+
+then block on `orca terminal wait` as in orca-mode step 4. Never `resume --last`: parallel workers make it pick the wrong session.
+
+**In-place rework** (the original run was in-place, so there is no worktree to point at): `cd <repo-root> && codex exec resume <session-id> -o <scratch>/rework-N/last.txt "<corrections>" 2>&1 | tee <scratch>/rework-N/out.txt`, run via background Bash exactly as in In-place mode. Do NOT fall back to Mode selection and create a worktree mid-task; that splits one change across two checkouts.
 
 Pass the parent's corrections through as given — do not diagnose, expand, or convert them into your own step list. If no session id is provided, grep `session id:` from the previous log if available, else from `orca terminal read` of that card; only fall back to a fresh `codex exec` (original spec + corrections) if none is found. Then collect facts and report exactly as in steps 5–9.
 

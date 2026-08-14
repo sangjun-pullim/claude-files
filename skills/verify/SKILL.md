@@ -31,7 +31,7 @@ Run the project's lint script. Auto-fix what can be fixed. Report remaining issu
 
 ## Phase 4: Tests
 
-Run the project's test script with coverage enabled. Report: total / passed / failed / coverage %. Target: minimum 80% coverage — hard-fail only for tier-2 / risk-surface changes (`rules/risk-triage.md`); otherwise report as INFO.
+Run the project's test script with coverage enabled. Report: total / passed / failed / coverage %. Target: minimum 80% coverage — hard-fail only when `rules/risk-triage.md` puts the change at tier-2 through code it touched; a change that reaches tier-2 only by the control-plane count adds no code, so report INFO. Otherwise report INFO.
 
 ## Phase 5: Security Scan
 
@@ -49,10 +49,9 @@ done
 - Raw SQL with string interpolation
 - Unvalidated user input on new endpoints
 
-If the change touches auth, payment, permissions, or any public route, this gate is not
-enough — read `~/.claude/skills/security-checklist/SKILL.md` and run its full NestJS
-audit instead of expanding this phase. (That skill is disabled in skillOverrides, so
-load it by reading the file, not via the Skill tool.)
+If the change is on `rules/risk-triage.md`'s risk surface, this gate is not enough — run the
+`security-checklist` skill's full audit instead of expanding this phase. If the Skill tool
+does not offer it, read `~/.claude/skills/security-checklist/SKILL.md` directly.
 
 ## Phase 6: Diff Review
 
@@ -67,6 +66,11 @@ Review each changed file for:
 - Potential edge cases
 - Files that shouldn't be committed (.env, node_modules, etc.)
 
+**Your own pass over the diff is not the review.** Run the reviewer `rules/risk-triage.md`'s
+tier table requires for this change, handing it the diff written to a file plus the changed-file
+list. `READY` is unreachable without it: the producer clearing its own work is exactly what this
+phase would otherwise do.
+
 ## Output
 
 ```
@@ -78,6 +82,7 @@ Lint:      [PASS/FAIL] (X warnings)
 Tests:     [PASS/FAIL] (X/Y passed, Z% coverage)
 Security:  [PASS/FAIL] (X issues)
 Diff:      [X files changed]
+Review:    [PASS/FAIL/NOT REQUIRED] (reviewer agent — cite the tier)
 
 Overall:   [READY / NOT READY] for PR
 

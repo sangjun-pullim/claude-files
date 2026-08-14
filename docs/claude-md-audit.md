@@ -34,13 +34,13 @@ For each `[abstract]` line, in order:
 
 For `[measurable]` lines, never remove based on your own judgment. If you believe one is obsolete, surface it as a question.
 
-## Step 3 — Show diff before applying (global only)
+## Step 3 — Show the diff before applying
 
-For `~/.claude/CLAUDE.md`:
-- Show the proposed change as a unified diff or before/after block.
-- Get explicit user approval before writing.
+Always show the proposed change as a unified diff or before/after block, and produce whatever plan artifact `rules/risk-triage.md`'s tier table assigns to the change. Do not assume the diff satisfies that — at higher tiers it does not.
 
-For project `CLAUDE.md` and `rules/*.md`: direct edit is OK, but include the mapping table in Step 4.
+Approval differs by file:
+- `~/.claude/CLAUDE.md` — get explicit user approval before writing, on top of whatever the tier requires.
+- Project `CLAUDE.md` and `rules/*.md` — direct edit is OK once the tier's ceremony is met; include the mapping table in Step 4.
 
 ## Step 4 — Mapping table after change
 
