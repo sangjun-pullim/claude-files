@@ -4,6 +4,7 @@ projects/
 plans/
 cache/
 paste-cache/
+image-cache/
 debug/
 telemetry/
 statsig/
