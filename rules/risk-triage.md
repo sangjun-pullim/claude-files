@@ -22,9 +22,8 @@ unknown before that), and BEFORE sharing a plan.
    input. YES: error-message text, constant values, runtime dependency/lockfile
    bumps, data-access path (cache, index, query rewrite), deleting or renaming an
    exported symbol. NO: comments, docs, pure formatting, local-only renames,
-   type-only changes with identical runtime, adding log lines. "Docs" here means
-   documentation *about* code; a file whose text changes how a model behaves is
-   control-plane, not docs, and counts as YES — see Special cases.
+   type-only changes with identical runtime, adding log lines. A file whose text changes
+   how a model behaves is control-plane, not docs — YES; see Special cases.
 3. **Blast radius** — production source files touched (tests/snapshots/fixtures
    excluded), plus control-plane files per Special cases. 5+ combined → tier-2. Count the
    CUMULATIVE files of one logical change, even across multiple turns or commits —
@@ -49,9 +48,9 @@ No tier weakens the verification and safety rules in `CLAUDE.md`, or the reading
 
 - auth / payment / permission / migration → always write tests, regardless of size.
 - Deny-list hooks stay on.
-- A control-plane or tier-2 change with no `reviewer` agent spawn is never reported done —
-  surface it as unreviewed, and say that an unreviewed control-plane edit is already in force
-  for every new session until it is reviewed or reverted.
+- A control-plane or tier-2 change with no `reviewer` agent spawn is never reported done:
+  surface it as unreviewed. For a control-plane edit, add that it is already in force in every
+  new session until reviewed or reverted.
 
 ## Special cases (not caught by the three signals)
 
@@ -61,27 +60,20 @@ No tier weakens the verification and safety rules in `CLAUDE.md`, or the reading
 - CI / build / deploy config (Dockerfile, CI yaml, tsconfig, lint config) → min tier-1.
 - Cache / DB index / query-path change → min tier-1 (index = DB schema → tier-2).
 - Production data backfill / fix scripts → tier-2 (even without schema change).
-- **Control-plane instruction/config** — files whose text changes how a model behaves in
-  future sessions, as opposed to product code that runs: `~/.claude/**` (rules, agents,
-  skills, commands, hooks, docs, settings.json) and any repo's `.claude/**`, plus `CLAUDE.md`
-  / `AGENTS.md` at any level. For a path not listed, the test is binary: *would a model's
-  future behavior differ if this file's text changed?* → **min tier-1, and a `reviewer` agent
-  spawn is required** — the `CLAUDE.md` self-review fallback does not satisfy it — even
-  though no `.ts`/`.py` file was touched. Control-plane files count toward signal 3's 5+
-  threshold together with production source: one combined count, never two separate ones.
-  - **tier-2 regardless of file count**: `settings.json`'s `permissions` or `hooks` blocks and
-    `~/.claude/hooks/**` — signal 1's permission surface, and the enforcement path for the
-    `.env` rule in `CLAUDE.md`.
-  - **stays tier-0** when the edit cannot change what an instruction means — reflowing,
-    formatting, and spelling fixes. No reviewer spawn, but **show the user the diff**: a
-    one-character edit can invert a rule ("do not" → "do now"), and "it's just a typo" judged
-    silently is the only thing between that and a live rule change. Anything that changes what
-    the words say — including adding a single rule — is tier-1. Carve-outs written in other files govern their own
-    ceremonies and never widen this one.
-  - **also tier-0**: artifacts no human authors — auto-memory under
-    `~/.claude/projects/**/memory/`, session state, generated output under
-    `~/.claude/skills/benchmark-workspace/**`, and vendored `~/.claude/plugins/**` (installing
-    or updating a plugin is a dependency change — see the dependency row above).
+- **Control-plane instruction/config** — files whose text changes how a model behaves in future
+  sessions: `~/.claude/**` and any repo's `.claude/**`, plus `CLAUDE.md` / `AGENTS.md` at any
+  level. Unlisted path? Binary test: *would a model's future behavior differ if this file's text
+  changed?* → **min tier-1 with a required `reviewer` agent spawn** (the `CLAUDE.md` self-review
+  fallback does not satisfy it). Counts toward signal 3 together with production source — one
+  combined count. Carve-outs in other files govern their own ceremonies, never this one.
+  - **tier-2 regardless of count**: `settings.json`'s `permissions`/`hooks`, `~/.claude/hooks/**`.
+  - **tier-0**: edits that cannot change what an instruction means — reflow, formatting,
+    spelling. No reviewer, but **show the user the diff**; a one-character edit can invert a
+    rule. Any change to what the words say, including adding one rule, is tier-1.
+  - **tier-0**: artifacts no human authors — `~/.claude/projects/**/memory/`, session state,
+    `~/.claude/skills/benchmark-workspace/**`, and *editing* vendored `~/.claude/plugins/**`.
+    **Installing or updating a plugin is a dependency change** — see the dependency row above.
+    A plugin ships hooks, agents, and commands that go live in every session.
 
 ## Retry rule
 

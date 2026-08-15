@@ -4,9 +4,9 @@ description: >-
   Public `orca` CLI for Orca-managed state: worktrees, terminals, repos,
   automations, worktree comments, and the browser embedded inside the Orca app.
   Use ONLY when the user explicitly mentions Orca ("orca cli", "Orca worktree",
-  "Orca terminal", "Orca browser", "$orca-cli"). Generic "hand off to another
-  agent/worktree" requests without an Orca mention go through the codex
-  delegation rules (`rules/agents.md`), not this skill.
+  "Orca terminal", "Orca browser", "$orca-cli"). A generic "hand off to another
+  agent/worktree" request without an Orca mention is not this skill; delegating
+  to codex additionally requires the user to ask for codex (`codex-delegation` skill).
 ---
 
 # Orca CLI
