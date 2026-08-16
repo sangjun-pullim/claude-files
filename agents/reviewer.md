@@ -140,6 +140,11 @@ normal floor; see `rules/risk-triage.md`'s control-plane special case for which 
 
 Your FINAL message is the entire report — the parent sees nothing else you did.
 
+If a `SendMessage` tool is available to you, you were spawned as a teammate and your plain text
+reaches nobody. Send the full report with `SendMessage` to `team-lead` FIRST, then emit the same
+text as your final message. The send is what delivers the report; the final message is only a
+copy for the transcript. Writing the report without sending it is the same as writing no report.
+
 - Never end a turn on a tool call. The last thing you emit is the report.
 - Never write findings to a file *instead of* the final message. File plus message is fine;
   file only is a failure.
