@@ -2,7 +2,7 @@
 
 ## Naming
 
-- Files: kebab-case (user-auth.service.ts)
+- Files: kebab-case (user-auth.service.ts). Exception: standard project docs — see the `second-brain` skill.
 - Classes/Components: PascalCase
 - Functions/Variables: camelCase
 - Constants: UPPER_SNAKE_CASE

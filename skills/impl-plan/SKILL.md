@@ -23,14 +23,16 @@ The agent that writes a plan develops confirmation bias toward the code it read 
 
 Before plan creation, run a Socratic interview loop to bring the request below an ambiguity threshold. This phase is **always on**; bypass with `--no-interview`.
 
+**PRD check (always runs, `--no-interview` included):** look under `docs/PRD/` for an entry covering this work. If one exists, load it — gate checks it already answers count as PASS, and carry its number into the spec's Context as a reference (never restate its content). If the `second-brain` skill's PRD criteria apply and no PRD exists, suggest writing one first; proceed without it only on the user's explicit call.
+
 **Argument parsing:**
-- If `$ARGUMENTS` contains `--no-interview`, strip the flag and skip Phase 0 (go straight to Phase 1 with the remaining text)
+- If `$ARGUMENTS` contains `--no-interview`, strip the flag and skip the interview loop below — the PRD check above still runs — then go straight to Phase 1 with the remaining text
 - Otherwise, treat the entire `$ARGUMENTS` as the initial vague request and enter the interview loop
 
 **Gate — four binary checks:**
 
 Each check is PASS only if you can write the stated sentence *right now*, from what the
-user has actually said, with no hedging ("probably", "something like", "TBD"). Anything
+user has actually said or the loaded PRD states, with no hedging ("probably", "something like", "TBD"). Anything
 less is FAIL. Do not average or weigh these — one FAIL keeps the gate closed.
 
 - **goal** — one sentence naming what changes and for whom.
@@ -67,7 +69,7 @@ This block becomes the input for Phase 1's `planner` agent — pass it in place 
 1. **Scope analysis** -- spawn a `planner` agent; see `agents/planner.md` for what it returns. Adopt its findings, never its formatting: within this skill you are the sole author of the spec's step grammar.
    - If its `## Open Questions` is non-empty, resolve them with the user under Phase 0's loop and bounds before drafting. Nothing downstream reopens that channel, so an unanswered question here becomes a silent guess in the spec.
 2. **Draft plan** -- write a structured implementation plan covering:
-   - Context (what problem, why now)
+   - Context (what problem, why now; reference the PRD entry if one exists — never restate it)
    - The tier and risk-surface judgment (`rules/risk-triage.md`), recorded in the frontmatter — every later gate reads it from there. Re-judge it against the plan you drafted, not the scope that was surveyed: the planner judged what it explored, and a step you added can reach further.
    - The dependents the change must not break, and the conventions analogous features follow — these are the planner's costliest findings and they reach the implementer only if they land in the spec
    - Affected files with specific line numbers

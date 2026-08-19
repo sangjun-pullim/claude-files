@@ -7,7 +7,7 @@ Ceremony is gated by tier; the floors below are not.
 
 ## When to judge
 
-Judge the tier AFTER skimming the docs index + `docs/decisions.md` (impact scope is
+Judge the tier AFTER skimming the docs index + `docs/ADR.md` (impact scope is
 unknown before that), and BEFORE sharing a plan.
 
 ## Deterministic signals (priority order)
@@ -35,7 +35,7 @@ If you cannot prove the change avoids the risk surface, treat it as tier-2 (fail
 
 | tier | condition | plan | tests | reviewer | docs read |
 |---|---|---|---|---|---|
-| 0 | ≤1 file, no behavior change, no risk surface | skip | skip | only if exec code or a control-plane file touched (prose/doc → skip) | decisions.md skim only |
+| 0 | ≤1 file, no behavior change, no risk surface | skip | skip | only if exec code or a control-plane file touched (prose/doc → skip) | ADR.md skim only |
 | 1 | behavior change, no risk surface, <5 files | inline 2–4 line | yes (if test-pinnable) | yes (exec code or control-plane) | Research Order, scoped |
 | 2 | any risk surface OR 5+ files | impl-plan, share+approve | yes (always for risk surface; n/a when tier-2 comes only from the control-plane count — the reviewer pass is the verification) | yes | full Research Order |
 

@@ -11,7 +11,7 @@ Surface architectural friction and propose **deepening opportunities** — refac
 This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 
 - Call the Skill tool with "codebase-design" — it owns the architecture vocabulary and principles. Use its canonical terms exactly in every suggestion; never substitute an alias it bans.
-- The domain language in `docs/glossary.md` gives names to good seams; `docs/decisions.md` records decisions this command should not re-litigate.
+- The domain language in `docs/GLOSSARY.md` gives names to good seams; `docs/ADR.md` records decisions this command should not re-litigate.
 
 ## Process
 
@@ -40,9 +40,9 @@ Publish the review as an Artifact. Load the `artifact-design` and `artifact-diag
 
 Render one card per candidate and a closing **Top recommendation** — [REPORT.md](REPORT.md) owns the card anatomy, report structure, diagram patterns, and vocabulary rules.
 
-**Use `docs/glossary.md` vocabulary for the domain, and the codebase-design vocabulary for the architecture.** If the glossary defines "정산" as `settlement`, talk about "the settlement module" — not "the FooBarHandler," and not a banned alias.
+**Use `docs/GLOSSARY.md` vocabulary for the domain, and the codebase-design vocabulary for the architecture.** If the glossary defines "정산" as `settlement`, talk about "the settlement module" — not "the FooBarHandler," and not a banned alias.
 
-**Decision conflicts**: if a candidate contradicts an entry in `docs/decisions.md`, only surface it when the friction is real enough to warrant revisiting the decision. Mark it clearly in the card (e.g. a warning callout: _"contradicts the 2026-03 event-sourcing decision — but worth reopening because…"_). Don't list every theoretical refactor a past decision forbids.
+**Decision conflicts**: if a candidate contradicts an entry in `docs/ADR.md`, only surface it when the friction is real enough to warrant revisiting the decision. Mark it clearly in the card (e.g. a warning callout: _"contradicts the 2026-03 event-sourcing decision — but worth reopening because…"_). Don't list every theoretical refactor a past decision forbids.
 
 Do NOT propose interfaces yet. After publishing, give the user the Artifact link and ask: "Which of these would you like to explore?"
 
@@ -52,7 +52,7 @@ Once the user picks a candidate, call the Skill tool with "grilling" to walk the
 
 As decisions crystallize, propose the matching docs updates — applied only with the user's approval, per the maintenance rules in the `second-brain` skill:
 
-- **Naming a deepened module after a concept not in `docs/glossary.md`?** Propose the glossary row.
+- **Naming a deepened module after a concept not in `docs/GLOSSARY.md`?** Propose the glossary row.
 - **Sharpening a fuzzy term during the conversation?** Propose the correction right there.
-- **User rejects the candidate with a load-bearing reason?** Offer a `docs/decisions.md` entry when it meets the recording criteria in the `second-brain` skill, framed as: _"이걸 decisions.md에 기록해서 다음 아키텍처 리뷰가 같은 걸 다시 제안하지 않게 할까요?"_ Skip ephemeral reasons ("not worth it right now") and self-evident ones.
+- **User rejects the candidate with a load-bearing reason?** Offer a `docs/ADR.md` entry when it meets the recording criteria in the `second-brain` skill, framed as: _"이걸 ADR.md에 기록해서 다음 아키텍처 리뷰가 같은 걸 다시 제안하지 않게 할까요?"_ Skip ephemeral reasons ("not worth it right now") and self-evident ones.
 - **Want to explore alternative interfaces for the deepened module?** Call the Skill tool with "codebase-design" and use its design-it-twice parallel sub-agent pattern.

@@ -19,7 +19,7 @@ The diagrams carry the weight. Prose is sparse, plain, and uses the glossary ter
 - **Problem** — one sentence. What hurts.
 - **Solution** — one sentence. What changes.
 - **Wins** — bullets, ≤6 words each. e.g. "Tests hit one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
-- **Decision callout** (if applicable) — one line in a warning-tinted box when the candidate contradicts `docs/decisions.md`.
+- **Decision callout** (if applicable) — one line in a warning-tinted box when the candidate contradicts `docs/ADR.md`.
 
 No paragraphs of explanation. If the diagram needs a paragraph to be understood, redraw the diagram.
 

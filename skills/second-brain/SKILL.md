@@ -17,16 +17,37 @@ The **Layer** column decides stamping: derivable-layer docs carry a freshness st
 
 | File | Layer | Purpose | When Required |
 |------|-------|---------|---------------|
-| `architecture.md` | derivable | High-level map — module boundaries, integration points, data flow (not an exhaustive structure listing) | Always |
-| `db-schema.md` | derivable | Modeling rationale, constraints, migration notes (the schema itself lives in `schema.prisma`) | Prisma/DB projects |
-| `api-spec.md` | derivable | External API contract — the contract is the truth, not the code | APIs with external consumers (internal-only: route code is the doc) |
-| `frontend-architecture.md` | derivable | Component tree, state management, routing | React/Next.js projects |
-| `business-logic.md` | hand-written | Domain rules, workflows, edge cases — intended behavior, the baseline for judging bugs | Complex business logic |
-| `decisions.md` | hand-written | ADR (Architecture Decision Records) | Always |
-| `bug-fixes.md` | hand-written | Notable bug investigations and fixes | Always |
-| `glossary.md` | hand-written | Domain term ↔ canonical code identifier mapping, with banned aliases | Only when a term has confused the model or a teammate at least once |
+| `PRD/` | hand-written | Product requirements — what we're building and why (see PRD section below) | New projects; substantial features (see PRD section) |
+| `ARCHITECTURE.md` | derivable | High-level map — module boundaries, integration points, data flow (not an exhaustive structure listing) | Always |
+| `DB-SCHEMA.md` | derivable | Modeling rationale, constraints, migration notes (the schema itself lives in `schema.prisma`) | Prisma/DB projects |
+| `API-SPEC.md` | derivable | External API contract — the contract is the truth, not the code | APIs with external consumers (internal-only: route code is the doc) |
+| `FRONTEND-ARCHITECTURE.md` | derivable | Component tree, state management, routing | React/Next.js projects |
+| `BUSINESS-LOGIC.md` | hand-written | Domain rules, workflows, edge cases — intended behavior, the baseline for judging bugs | Complex business logic |
+| `ADR.md` | hand-written | ADR (Architecture Decision Records) | Always |
+| `BUG-FIXES.md` | hand-written | Notable bug investigations and fixes | Always |
+| `GLOSSARY.md` | hand-written | Domain term ↔ canonical code identifier mapping, with banned aliases | Only when a term has confused the model or a teammate at least once |
 
-## glossary.md Format
+**Naming**: standard doc files are UPPERCASE — the README/CONTRIBUTING convention marking
+project meta-docs, and the one deliberate exception to `rules/standards.md` file naming.
+Legacy lowercase names (`decisions.md`, `glossary.md`, …) are the same docs: read them
+wherever the uppercase name is named; `/docs-sync` proposes migrating them.
+
+## PRD/ — What We're Building
+
+`docs/PRD/` holds product requirements — the *what and why* layer every other doc hangs from:
+
+- `000-product.md` — the product-level PRD: problem, target users, goal, scope, success criteria.
+- `NNN-<feature>.md` — one per substantial feature, numbered from `001` like impl-spec.
+
+Rules:
+
+- **Required** for new projects, and for features large enough to need their own impl-spec (roughly the 5+ file scale of `rules/risk-triage.md` signal 3). A risk-surface-only tier-2 — one file touching auth, say — does not by itself require a PRD. Optional below that.
+- Hand-written layer, no stamp. Update when product direction changes — a PRD states current intent, not history (history lives in git).
+- A vague request gets sharpened with the `grilling` skill first; the PRD is written from the settled frontier afterwards.
+- **Boundary vs impl-spec**: the PRD owns the product-level what/why and success criteria ("무엇이 되면 성공"); `docs/impl-spec/` owns the code-level how and verification commands ("어떤 테스트로 확인"). A spec references its PRD by number — never restates it.
+- Downstream docs (`ARCHITECTURE.md`, `ADR.md`, …) update as decisions land, consistent with the PRD.
+
+## GLOSSARY.md Format
 
 One line per term, table-only. The 금지 표현 (banned aliases) column is the highest-value
 part — negative constraints stop naming drift across sessions and subagents better than
@@ -39,13 +60,13 @@ definitions do.
 ```
 
 - A definition that outgrows one line (behavior rules, state transitions) belongs in
-  `business-logic.md`; the glossary row keeps only a link. Never let the two files
+  `BUSINESS-LOGIC.md`; the glossary row keeps only a link. Never let the two files
   describe the same rule independently.
 - Hand-written layer: no freshness stamp, effectively append-only.
 - Creation criterion: a term has confused the model or a teammate at least once.
   Projects with obvious vocabulary skip this file.
 
-## decisions.md — When to Record
+## ADR.md — When to Record
 
 Record a decision only when all three hold; if any is missing, skip it:
 
@@ -61,9 +82,9 @@ An entry can be a single paragraph — context, decision, why. The value is reco
 
 Use Mermaid diagrams in structure-related docs for visual clarity:
 
-- `architecture.md`: System overview, module dependency graph, data flow
-- `frontend-architecture.md`: Component hierarchy, state flow
-- `db-schema.md`: ER diagrams for complex relations
+- `ARCHITECTURE.md`: System overview, module dependency graph, data flow
+- `FRONTEND-ARCHITECTURE.md`: Component hierarchy, state flow
+- `DB-SCHEMA.md`: ER diagrams for complex relations
 
 Keep diagrams focused — one concept per diagram. Update diagrams when the structure changes.
 
@@ -106,9 +127,9 @@ Example `## Documentation` section in CLAUDE.md:
 ## Documentation
 
 Detailed docs live in `docs/`. Read as needed:
-- `docs/architecture.md` — System architecture and module relationships (sources: src/**)
-- `docs/db-schema.md` — Database schema and relations (sources: prisma/**)
-- `docs/api-spec.md` — API endpoints and contracts (sources: src/**/*.controller.ts)
+- `docs/ARCHITECTURE.md` — System architecture and module relationships (sources: src/**)
+- `docs/DB-SCHEMA.md` — Database schema and relations (sources: prisma/**)
+- `docs/API-SPEC.md` — API endpoints and contracts (sources: src/**/*.controller.ts)
 ```
 
 The `(sources: <glob>)` annotation makes update routing a lookup, not a judgment:
@@ -122,7 +143,7 @@ A spec's status decides whether it is editable. **Active specs are working docum
   - **Exception — steps already marked `[x]`.** A marker asserts "implemented as written here", so editing that step's instructions makes it lie and corrupts the resume logic. Either flip it back to `[ ]` so it gets redone, or leave it and add the change as a new step.
 - **Archived (`status: done` / `superseded-by`, or under `archive/`) — never edit.** This is the record of what we decided and why, at the time. Frozen means frozen.
 
-Durable why belongs in `decisions.md` (promote a genuine change of direction there when it meets the recording criteria above), current facts belong in `architecture.md` etc.
+Durable why belongs in `ADR.md` (promote a genuine change of direction there when it meets the recording criteria above), current facts belong in `ARCHITECTURE.md` etc.
 
 - **Born**: `/impl-plan` creates the spec with the frontmatter block defined in that skill's `## Output Format`, plus the snapshot NOTE — `impl-plan` owns the field list; never restate it elsewhere. The block is required for every file **created** under `docs/impl-spec/`, including specs written ad-hoc (incident response, manual planning) without the skill — a newly created spec without it is a defect, same as an unstamped derivable doc. A spec that predates a later-added field is not a defect.
 - **Closed**: `/impl-execute` sets `status: done` and moves the file to `docs/impl-spec/archive/` on the conditions its Phase 3 step 1 defines — that skill owns them. A spec with unchecked steps stays `active` no matter how clean the review; it was never fully implemented.
@@ -135,7 +156,7 @@ Durable why belongs in `decisions.md` (promote a genuine change of direction the
 - Do NOT auto-update docs without user approval
 - When suggesting, be specific: state which file and what section needs updating
 - Keep docs concise — bullet points and diagrams over prose
-- `bug-fixes.md` is append-only until promotion: when the same root-cause pattern appears 2+ times, promote it to a durable guard (test, lint rule, or a measurable CLAUDE.md rule) via `/docs-sync` Part 5. Promoted entries are compressed to a one-line reference — promotion doubles as compaction.
+- `BUG-FIXES.md` is append-only until promotion: when the same root-cause pattern appears 2+ times, promote it to a durable guard (test, lint rule, or a measurable CLAUDE.md rule) via `/docs-sync` Part 5. Promoted entries are compressed to a one-line reference — promotion doubles as compaction.
 
 ## Coexistence with Existing Files
 

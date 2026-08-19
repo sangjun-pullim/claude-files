@@ -2,7 +2,7 @@
 description: Check if project CLAUDE.md and docs/ are in sync with the actual codebase
 ---
 
-Audit the project's CLAUDE.md and docs/ files against the current codebase state. Do NOT modify files — only report findings and suggest updates. Sole exception: bumping a doc's `verified-against` stamp after the user confirms the sync report (see Part 3).
+Audit the project's CLAUDE.md and docs/ files against the current codebase state. Do NOT modify files except after explicit user approval; the `verified-against` stamp bump is the only write that follows automatically from the user confirming the sync report (see Part 3).
 
 ## Part 1: CLAUDE.md Sync
 
@@ -16,7 +16,8 @@ Audit the project's CLAUDE.md and docs/ files against the current codebase state
 ## Part 2: docs/ Structure
 
 7. **Docs Existence**: Check `docs/` folder for standard Second Brain files.
-   - Report which standard files exist vs missing (architecture.md, db-schema.md, api-spec.md, frontend-architecture.md, business-logic.md, decisions.md, bug-fixes.md, glossary.md — flag the latter as missing only per the `second-brain` skill's creation criterion)
+   - Report which standard files exist vs missing (PRD/, ARCHITECTURE.md, DB-SCHEMA.md, API-SPEC.md, FRONTEND-ARCHITECTURE.md, BUSINESS-LOGIC.md, ADR.md, BUG-FIXES.md, GLOSSARY.md — flag PRD/ and GLOSSARY.md as missing only per the `second-brain` skill's required-when/creation criteria)
+   - A legacy lowercase file (`decisions.md` for `ADR.md`, etc.) counts as EXISTS — report it as `EXISTS (legacy name)` and add a `git mv` rename to the uppercase name in Suggested Updates (apply only with user approval)
    - Check if CLAUDE.md has `## Documentation` section with lazy-load references to `docs/`
    - If CLAUDE.md has inline content (Architecture/DB Schema/API sections longer than 20 lines), suggest extracting to `docs/`
 
@@ -36,17 +37,17 @@ Before any deep comparison: skip the files the `second-brain` skill exempts from
 
 For each docs/ file not cleared by its stamp, compare its content against the actual codebase. Use the Explore agent or parallel search agents for efficiency.
 
-8. **architecture.md** ↔ 실제 모듈 구조
+8. **ARCHITECTURE.md** ↔ 실제 모듈 구조
    - 문서에 있는 모듈이 실제로 존재하는지, 새로 추가된 모듈이 누락되지 않았는지
    - 모듈 간 의존관계나 데이터 흐름 다이어그램이 현재 코드와 일치하는지
-9. **db-schema.md** ↔ `prisma/schema.prisma`
+9. **DB-SCHEMA.md** ↔ `prisma/schema.prisma`
    - 문서의 모델/필드/관계가 실제 스키마와 일치하는지
    - 새로 추가되거나 삭제된 모델, 변경된 필드 탐지
-10. **api-spec.md** ↔ 실제 controller/route 파일
+10. **API-SPEC.md** ↔ 실제 controller/route 파일
     - 문서에 없는 새 엔드포인트, 삭제된 엔드포인트, 변경된 request/response 형식 탐지
-11. **frontend-architecture.md** ↔ 실제 컴포넌트/라우팅 구조
+11. **FRONTEND-ARCHITECTURE.md** ↔ 실제 컴포넌트/라우팅 구조
     - 컴포넌트 트리, 상태 관리, 라우팅 설정이 현재 코드와 일치하는지
-12. **business-logic.md** ↔ 도메인 서비스/워크플로우
+12. **BUSINESS-LOGIC.md** ↔ 도메인 서비스/워크플로우
     - 문서화된 비즈니스 규칙이 현재 구현과 일치하는지
 
 존재하지 않는 docs/ 파일은 건너뛴다. 드리프트 발견 시 **구체적으로 어떤 내용을 추가/수정/삭제해야 하는지** 제안한다.
@@ -61,9 +62,9 @@ Audit `docs/impl-spec/` against the lifecycle in the `second-brain` skill. Specs
 
 Report findings in the table; apply frontmatter additions and moves only after user approval (same write policy as Part 3 stamp bumps).
 
-## Part 5: bug-fixes.md Promotion
+## Part 5: BUG-FIXES.md Promotion
 
-Scan `bug-fixes.md` for recurring patterns — 2+ entries sharing a root-cause category (e.g., same API misuse, same race condition shape, same validation gap).
+Scan `BUG-FIXES.md` for recurring patterns — 2+ entries sharing a root-cause category (e.g., same API misuse, same race condition shape, same validation gap).
 
 For each recurring pattern, propose ONE promotion target (most durable first):
 1. **Test** — a regression test that pins the behavior
@@ -92,15 +93,15 @@ Report only; apply promotions and compaction after user approval.
 ### docs/ Structure
 | File | Status | Details |
 |------|--------|---------|
-| architecture.md | EXISTS/MISSING | ... |
-| db-schema.md | EXISTS/MISSING/N/A | ... |
+| ARCHITECTURE.md | EXISTS/MISSING | ... |
+| DB-SCHEMA.md | EXISTS/MISSING/N/A | ... |
 | ... | ... | ... |
 
 ### docs/ Content Sync
 | File | Status | Drift Details |
 |------|--------|---------------|
-| architecture.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
-| db-schema.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
+| ARCHITECTURE.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
+| DB-SCHEMA.md | OK (stamp-verified)/OK/DRIFT/NO STAMP | ... |
 | ... | ... | ... |
 
 ### impl-spec Lifecycle
@@ -108,7 +109,7 @@ Report only; apply promotions and compaction after user approval.
 |------|-------|--------------|
 | ... | NO FRONTMATTER / CLOSED-NOT-ARCHIVED / ARCHIVED-ACTIVE | ... |
 
-### bug-fixes.md Promotion
+### BUG-FIXES.md Promotion
 | Pattern (2+ entries) | Entries | Proposed Guard | Compaction |
 |----------------------|---------|----------------|------------|
 | ... | ... | test/lint/rule | ... |
