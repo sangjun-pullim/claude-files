@@ -23,7 +23,7 @@ The agent that writes a plan develops confirmation bias toward the code it read 
 
 Before plan creation, run a Socratic interview loop to bring the request below an ambiguity threshold. This phase is **always on**; bypass with `--no-interview`.
 
-**PRD check (always runs, `--no-interview` included):** look under `docs/PRD/` for an entry covering this work. If one exists, load it — gate checks it already answers count as PASS, and carry its number into the spec's Context as a reference (never restate its content). If the `second-brain` skill's PRD criteria apply and no PRD exists, suggest writing one first; proceed without it only on the user's explicit call.
+**PRD check (always runs, `--no-interview` included):** look under `docs/PRD/` for an entry covering this work. If one exists, load it — gate checks it already answers count as PASS, and carry its number into the spec's Context as a reference (never restate its content). If the request contradicts the loaded PRD, surface the mismatch before planning — an intent change means proposing a PRD update first (applied with the user's approval), a mistaken request means correcting course; only a PRD consistent with the request feeds the gate; if the user declines the update, proceed on their explicit call with the PRD excluded from the gate and unreferenced in the spec's Context. If the `second-brain` skill's PRD criteria apply and no PRD exists, suggest writing one first; proceed without it only on the user's explicit call.
 
 **Argument parsing:**
 - If `$ARGUMENTS` contains `--no-interview`, strip the flag and skip the interview loop below — the PRD check above still runs — then go straight to Phase 1 with the remaining text
