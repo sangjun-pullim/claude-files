@@ -58,6 +58,8 @@
 
 비활성(`settings.json` skillOverrides): api-design, db-migrations, orchestration, security-checklist. `benchmark-workspace/`는 평가 실행 기록용.
 
+> **출처**: `tdd`, `diagnosing-bugs`, `codebase-design`, `writing-for-agents`, `resolving-merge-conflicts`, `improve-codebase-architecture`, `grilling`은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계, risk-triage 규칙)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.
+
 ### Agents
 
 | 이름 | 역할 |
