@@ -12,5 +12,4 @@
 - `agents/` — Agent definitions
 - `hooks/` — Hook scripts
 - `skills/` — Skill definitions
-- `.claude/workflows/` — Workflow scripts (`/harness-legacy-scan`)
 - `statusline-command.py` — Status line renderer
