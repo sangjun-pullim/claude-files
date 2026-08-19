@@ -22,39 +22,39 @@
 
 기능 하나가 흘러가는 순서대로:
 
-| 이름 | 언제 | 무엇을 해주나 |
-|------|------|--------------|
-| `grilling` | 아이디어·요구사항이 아직 모호할 때 ("갈궈줘") | 답할 수 있는 질문 전부를 라운드로 묶어 캐물어서 설계를 명확하게 만든다. 확정된 용어·결정은 세션 끝에 GLOSSARY/ADR 갱신으로 제안 |
-| `codebase-design` | 새 모듈의 인터페이스를 잡거나, 테스트 걸 곳(seam)이 애매하거나, mock이 덕지덕지 붙을 때 | deep module 설계 어휘와 원칙 제공. 필요시 서브에이전트 3안 병렬 설계 비교(design-it-twice) |
-| `impl-plan` | tier-2 작업(위험 영역 or 5+ 파일)을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/` 스펙 작성 → 코드와 대조하는 리뷰 루프. PRD가 있으면 로드해서 인터뷰 단축 |
-| `impl-execute` | 승인된 impl-spec을 실제로 구현할 때 | 스펙의 첫 미완료 단계부터 구현 → 전체 diff 독립 리뷰 → 조건 충족 시 스펙 종료·보관 |
-| `tdd` | 테스트 먼저 개발하고 싶을 때 ("red-green") | seam 합의 → 실패 테스트 → 최소 구현 반복. 좋은 테스트/안티패턴 기준 포함 |
-| `diagnosing-bugs` | 원인이 바로 안 보이는 어려운 버그·성능 저하 | 가설보다 먼저 "빨간불 뜨는 재현 루프"를 만들게 강제하는 6단계 진단 규율. 명백한 버그는 그냥 고치면 됨 |
-| `resolving-merge-conflicts` | merge/rebase 충돌이 났을 때 | 양쪽 의도를 파악해 해소하고 검사 실행. 판단 불가 hunk는 사용자에게 넘김 |
-| `/improve-codebase-architecture` (수동) | 코드베이스 구조 개선 지점을 찾고 싶을 때 | 핫스팟 스캔 → 개선 후보를 Before/After 다이어그램 리포트(Artifact)로 제시 → 고른 후보를 grilling으로 구체화 |
+| 이름 | 언제 | 무엇을 해주나 | 예시 |
+|------|------|--------------|------|
+| `grilling` | 아이디어·요구사항이 아직 모호할 때 ("갈궈줘") | 답할 수 있는 질문 전부를 라운드로 묶어 캐물어서 설계를 명확하게 만든다. 확정된 용어·결정은 세션 끝에 GLOSSARY/ADR 갱신으로 제안 | "정산 재처리 기능 만들려는데 갈궈줘" |
+| `codebase-design` | 새 모듈의 인터페이스를 잡거나, 테스트 걸 곳(seam)이 애매하거나, mock이 덕지덕지 붙을 때 | deep module 설계 어휘와 원칙 제공. 필요시 서브에이전트 3안 병렬 설계 비교(design-it-twice) | "수집 재시도 모듈 인터페이스 어떻게 잡는 게 좋을까?" |
+| `impl-plan` | tier-2 작업(위험 영역 or 5+ 파일)을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/` 스펙 작성 → 코드와 대조하는 리뷰 루프. PRD가 있으면 로드해서 인터뷰 단축 | "/impl-plan 주문 출고 재처리 기능" |
+| `impl-execute` | 승인된 impl-spec을 실제로 구현할 때 | 스펙의 첫 미완료 단계부터 구현 → 전체 diff 독립 리뷰 → 조건 충족 시 스펙 종료·보관 | "/impl-execute 042 스펙 구현해줘" |
+| `tdd` | 테스트 먼저 개발하고 싶을 때 ("red-green") | seam 합의 → 실패 테스트 → 최소 구현 반복. 좋은 테스트/안티패턴 기준 포함 | "이 기능 테스트 먼저 쓰면서 만들자" |
+| `diagnosing-bugs` | 원인이 바로 안 보이는 어려운 버그·성능 저하 | 가설보다 먼저 "빨간불 뜨는 재현 루프"를 만들게 강제하는 6단계 진단 규율. 명백한 버그는 그냥 고치면 됨 | "수집 워커가 간헐적으로 멈춰. diagnose 해줘" |
+| `resolving-merge-conflicts` | merge/rebase 충돌이 났을 때 | 양쪽 의도를 파악해 해소하고 검사 실행. 판단 불가 hunk는 사용자에게 넘김 | "rebase 하다 충돌났어, 해결해줘" |
+| `/improve-codebase-architecture` (수동) | 코드베이스 구조 개선 지점을 찾고 싶을 때 | 핫스팟 스캔 → 개선 후보를 Before/After 다이어그램 리포트(Artifact)로 제시 → 고른 후보를 grilling으로 구체화 | "/improve-codebase-architecture collector 모듈 위주로" |
 
 ### 문서 (Second Brain)
 
-| 이름 | 언제 | 무엇을 해주나 |
-|------|------|--------------|
-| `second-brain` | docs/ 문서를 만들거나 고칠 때 자동 로드 | 표준 문서 세트(PRD/, ARCHITECTURE.md, ADR.md 등)와 작성·유지 규칙. ADR 기록 판정 3-게이트 포함 |
-| `/init-docs` | 기존 프로젝트에 표준 docs/를 처음 깔 때 | 코드베이스를 분석해 문서를 실제 내용으로 채워 생성. PRD는 템플릿만 |
-| `/docs-sync` | 코드 변경 후 문서가 낡았는지 확인할 때 | freshness stamp 기반으로 코드↔문서 드리프트를 보고. 수정은 승인 후 |
+| 이름 | 언제 | 무엇을 해주나 | 예시 |
+|------|------|--------------|------|
+| `second-brain` | docs/ 문서를 만들거나 고칠 때 자동 로드 | 표준 문서 세트(PRD/, ARCHITECTURE.md, ADR.md 등)와 작성·유지 규칙. ADR 기록 판정 3-게이트 포함 | "BUSINESS-LOGIC.md에 정산 규칙 정리해줘" |
+| `/init-docs` | 기존 프로젝트에 표준 docs/를 처음 깔 때 | 코드베이스를 분석해 문서를 실제 내용으로 채워 생성. PRD는 템플릿만 | "/init-docs" |
+| `/docs-sync` | 코드 변경 후 문서가 낡았는지 확인할 때 | freshness stamp 기반으로 코드↔문서 드리프트를 보고. 수정은 승인 후 | "/docs-sync" |
 
 ### Git
 
-| 이름 | 언제 | 무엇을 해주나 |
-|------|------|--------------|
-| `/commit` | 변경사항을 커밋할 때 | 변경 분석 후 Conventional Commits 형식(한국어 설명)으로 커밋 |
-| `/weekly-report` | 주간 보고 쓸 때 | git 이력 기반 주간업무보고서 생성 |
+| 이름 | 언제 | 무엇을 해주나 | 예시 |
+|------|------|--------------|------|
+| `/commit` | 변경사항을 커밋할 때 | 변경 분석 후 Conventional Commits 형식(한국어 설명)으로 커밋 | "/commit" |
+| `/weekly-report` | 주간 보고 쓸 때 | git 이력 기반 주간업무보고서 생성 | "/weekly-report" |
 
 ### 위임·기타
 
-| 이름 | 언제 | 무엇을 해주나 |
-|------|------|--------------|
-| `codex-delegation` | 사용자가 "codex로/GPT로 구현해"라고 명시했을 때만 | codex-worker 위임 계약: 모드 질문, 디스패치, 게이팅, union 리뷰 |
-| `orca-cli` | Orca를 직접 언급했을 때만 | orca CLI로 워크트리·터미널·자동화 관리 |
-| `writing-for-agents` | 스킬·CLAUDE.md 등 에이전트용 문서를 쓸 때 | context pointer, progressive disclosure, no-op 사냥 등 작성 원칙 |
+| 이름 | 언제 | 무엇을 해주나 | 예시 |
+|------|------|--------------|------|
+| `codex-delegation` | 사용자가 "codex로/GPT로 구현해"라고 명시했을 때만 | codex-worker 위임 계약: 모드 질문, 디스패치, 게이팅, union 리뷰 | "이 스펙 codex한테 구현시켜" |
+| `orca-cli` | Orca를 직접 언급했을 때만 | orca CLI로 워크트리·터미널·자동화 관리 | "orca 워크트리 목록 보여줘" |
+| `writing-for-agents` | 스킬·CLAUDE.md 등 에이전트용 문서를 쓸 때 | context pointer, progressive disclosure, no-op 사냥 등 작성 원칙 | "디버깅용 스킬 하나 새로 만들자" |
 
 비활성(`settings.json` skillOverrides): api-design, db-migrations, orchestration, security-checklist. `benchmark-workspace/`는 평가 실행 기록용.
 
