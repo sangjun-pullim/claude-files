@@ -45,6 +45,18 @@ definitions do.
 - Creation criterion: a term has confused the model or a teammate at least once.
   Projects with obvious vocabulary skip this file.
 
+## decisions.md — When to Record
+
+Record a decision only when all three hold; if any is missing, skip it:
+
+1. **Hard to reverse** — changing your mind later costs something real.
+2. **Surprising without context** — a future reader would look at the code and wonder "why did they do it this way?"
+3. **A real trade-off** — genuine alternatives existed and one was picked for specific reasons.
+
+What qualifies: architectural shape; integration patterns between modules; technology choices that carry lock-in (not every library — the ones that would take a quarter to swap); boundary and scope decisions (the explicit no-s are as valuable as the yes-s); deliberate deviations from the obvious path (these stop the next engineer from "fixing" something deliberate); constraints not visible in the code; rejected alternatives when the rejection is non-obvious.
+
+An entry can be a single paragraph — context, decision, why. The value is recording *that* a decision was made and *why*, not filling out sections.
+
 ## Mermaid Diagrams
 
 Use Mermaid diagrams in structure-related docs for visual clarity:
@@ -110,7 +122,7 @@ A spec's status decides whether it is editable. **Active specs are working docum
   - **Exception — steps already marked `[x]`.** A marker asserts "implemented as written here", so editing that step's instructions makes it lie and corrupts the resume logic. Either flip it back to `[ ]` so it gets redone, or leave it and add the change as a new step.
 - **Archived (`status: done` / `superseded-by`, or under `archive/`) — never edit.** This is the record of what we decided and why, at the time. Frozen means frozen.
 
-Durable why belongs in `decisions.md` (promote a genuine change of direction there), current facts belong in `architecture.md` etc.
+Durable why belongs in `decisions.md` (promote a genuine change of direction there when it meets the recording criteria above), current facts belong in `architecture.md` etc.
 
 - **Born**: `/impl-plan` creates the spec with the frontmatter block defined in that skill's `## Output Format`, plus the snapshot NOTE — `impl-plan` owns the field list; never restate it elsewhere. The block is required for every file **created** under `docs/impl-spec/`, including specs written ad-hoc (incident response, manual planning) without the skill — a newly created spec without it is a defect, same as an unstamped derivable doc. A spec that predates a later-added field is not a defect.
 - **Closed**: `/impl-execute` sets `status: done` and moves the file to `docs/impl-spec/archive/` on the conditions its Phase 3 step 1 defines — that skill owns them. A spec with unchecked steps stays `active` no matter how clean the review; it was never fully implemented.
