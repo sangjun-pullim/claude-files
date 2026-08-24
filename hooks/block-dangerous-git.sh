@@ -36,7 +36,6 @@ check() {
   printf '%s' "$COMMAND" | grep -qE "$1" && BLOCKED="$2"
 }
 
-check "${G}push${E}"                                                  "git push"
 check "${G}reset[^;&|]*[[:space:]]--hard${E}"                         "git reset --hard"
 check "${G}clean[^;&|]*[[:space:]](-[a-zA-Z]*f[a-zA-Z]*|--force)${E}" "git clean (force)"
 check "${G}branch[^;&|]*[[:space:]]-[a-zA-Z]*D[a-zA-Z]*${E}"          "git branch -D"
