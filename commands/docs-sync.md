@@ -16,7 +16,7 @@ Audit the project's CLAUDE.md and docs/ files against the current codebase state
 ## Part 2: docs/ Structure
 
 7. **Docs Existence**: Check `docs/` folder for standard Second Brain files.
-   - Report which standard files exist vs missing (PRD/, ARCHITECTURE.md, DB-SCHEMA.md, API-SPEC.md, FRONTEND-ARCHITECTURE.md, BUSINESS-LOGIC.md, ADR.md, BUG-FIXES.md, GLOSSARY.md — flag PRD/ and GLOSSARY.md as missing only per the `second-brain` skill's required-when/creation criteria)
+   - Report which standard files exist vs missing (PRD.md, ARCHITECTURE.md, DB-SCHEMA.md, API-SPEC.md, FRONTEND-ARCHITECTURE.md, BUSINESS-LOGIC.md, ADR.md, BUG-FIXES.md, GLOSSARY.md — flag PRD.md and GLOSSARY.md as missing only per the `second-brain` skill's required-when/creation criteria)
    - A legacy lowercase file (`decisions.md` for `ADR.md`, etc.) counts as EXISTS — report it as `EXISTS (legacy name)` and add a `git mv` rename to the uppercase name in Suggested Updates (apply only with user approval)
    - Check if CLAUDE.md has `## Documentation` section with lazy-load references to `docs/`
    - If CLAUDE.md has inline content (Architecture/DB Schema/API sections longer than 20 lines), suggest extracting to `docs/`

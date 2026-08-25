@@ -19,7 +19,7 @@ what every task needs up front.
 ### Order by Task Type
 
 - **Bug fixing / debugging**: `BUG-FIXES.md` (similar cases) → `BUSINESS-LOGIC.md` (expected behavior) → `ADR.md` → relevant section of `ARCHITECTURE.md`
-- **New feature implementation**: the feature's `docs/PRD/` entry, if any (see the `second-brain` skill for when one is required) → `ARCHITECTURE.md` (integration points) → `BUSINESS-LOGIC.md` → `ADR.md` → *in-progress (unmerged) impl-spec, if any, for reference*
+- **New feature implementation**: `docs/PRD.md`, if any — its `## Scope` subsection for the feature and `## Non-goals` (see the `second-brain` skill for when one is required) → `ARCHITECTURE.md` (integration points) → `BUSINESS-LOGIC.md` → `ADR.md` → *in-progress (unmerged) impl-spec, if any, for reference*
 - **Refactoring / structural changes**: `ADR.md` (past decisions first) → `ARCHITECTURE.md` → `BUG-FIXES.md` (regression awareness)
 - **DB / API / frontend changes**: the matching type above, plus `DB-SCHEMA.md` / `API-SPEC.md` / `FRONTEND-ARCHITECTURE.md`
 

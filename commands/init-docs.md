@@ -18,14 +18,14 @@ Check for these indicators to determine which standard files are needed:
 | Controllers/routes exist AND the API has external consumers (internal-only: route code is the doc) | `API-SPEC.md` |
 | `package.json` has react/next dependencies | `FRONTEND-ARCHITECTURE.md` |
 | Always | `ARCHITECTURE.md`, `ADR.md`, `BUG-FIXES.md` |
-| New project (per the `second-brain` skill's required-when) | `PRD/` (template only — see Step 4) |
+| PRD required-when is met (see the `second-brain` skill) | `PRD.md` (template only — see Step 4) |
 | Complex domain logic detected | `BUSINESS-LOGIC.md` |
 | The `second-brain` skill's `GLOSSARY.md` creation criterion is met | `GLOSSARY.md` |
 
 ## Step 3: Check for Similar Files
 
 Before creating each standard file, check if a similar file already exists:
-- Search for files containing keywords like "architecture", "schema", "api", "decision", "glossary", "business", "bug" in `docs/`
+- Search for files containing keywords like "prd", "product", "requirement", "architecture", "schema", "api", "decision", "glossary", "business", "bug" in `docs/`
 - If found (e.g., `docs/architecture-proposal.md`), report it and skip creating that standard file
 - A legacy lowercase file (`decisions.md` for `ADR.md`, etc.) counts as EXISTS — on a case-insensitive filesystem the uppercase path resolves to the *same file*, so writing it would overwrite the legacy doc. Never write it; report `EXISTS (legacy name)` instead (`/docs-sync` owns the rename proposal)
 - **Never overwrite or rename existing files**
@@ -41,7 +41,7 @@ Before writing any docs, thoroughly explore the project to gather real content:
 - **BUSINESS-LOGIC.md**: Identify domain services, workflow logic, state machines, validation rules, and edge case handling.
 - **ADR.md**: Check git log and existing comments/docs for any architectural decisions already made.
 - **BUG-FIXES.md**: Start with an empty log structure (no fake entries).
-- **PRD/**: do NOT derive from code — intent is not in the code. Create `docs/PRD/000-product.md` with the template headings only (problem, target users, goal, scope, success criteria) and leave the content to the user; suggest a `grilling` session to fill it if the product intent is unclear.
+- **PRD.md**: do NOT derive from code — intent is not in the code. Create `docs/PRD.md` with the section headings from the `second-brain` skill only and leave the content to the user; suggest a `grilling` session to fill it if the product intent is unclear.
 - **GLOSSARY.md**: Collect domain terms from model names, service names, and CLAUDE.md; map each business term to its canonical code identifier with a one-line definition and banned aliases (format in the `second-brain` skill). Only include terms with real confusion potential — never pad with obvious vocabulary.
 
 Use the Explore agent or parallel search agents to gather information efficiently. Do NOT guess — only document what you can confirm from the code.

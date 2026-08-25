@@ -23,7 +23,7 @@ The agent that writes a plan develops confirmation bias toward the code it read 
 
 Before plan creation, run a Socratic interview loop to bring the request below an ambiguity threshold. This phase is **always on**; bypass with `--no-interview`.
 
-**PRD check (always runs, `--no-interview` included):** look under `docs/PRD/` for an entry covering this work. If one exists, load it — gate checks it already answers count as PASS, and carry its number into the spec's Context as a reference (never restate its content). If the request contradicts the loaded PRD, surface the mismatch before planning — an intent change means proposing a PRD update first (applied with the user's approval), a mistaken request means correcting course; only a PRD consistent with the request feeds the gate; if the user declines the update, proceed on their explicit call with the PRD excluded from the gate and unreferenced in the spec's Context. If the `second-brain` skill's PRD criteria apply and no PRD exists, suggest writing one first; proceed without it only on the user's explicit call.
+**PRD check (always runs, `--no-interview` included):** if `docs/PRD.md` exists, load it whole and find the `## Scope` subsection covering this work — gate checks it already answers count as PASS, and carry the section reference into the spec's Context (never restate its content). If the request contradicts the PRD (a `## Non-goals` entry, or a `## Scope` statement), surface the mismatch before planning — an intent change means proposing a PRD update first (applied with the user's approval), a mistaken request means correcting course; only a PRD consistent with the request feeds the gate; if the user declines the update, proceed on their explicit call with the PRD excluded from the gate and unreferenced in the spec's Context. If the `second-brain` skill's PRD criteria apply and the work has no `## Scope` subsection (or no PRD exists), suggest adding it first; proceed without it only on the user's explicit call.
 
 **Argument parsing:**
 - If `$ARGUMENTS` contains `--no-interview`, strip the flag and skip the interview loop below — the PRD check above still runs — then go straight to Phase 1 with the remaining text
@@ -69,7 +69,7 @@ This block becomes the input for Phase 1's `planner` agent — pass it in place 
 1. **Scope analysis** -- spawn a `planner` agent; see `agents/planner.md` for what it returns. Adopt its findings, never its formatting: within this skill you are the sole author of the spec's step grammar.
    - If its `## Open Questions` is non-empty, resolve them with the user under Phase 0's loop and bounds before drafting. Nothing downstream reopens that channel, so an unanswered question here becomes a silent guess in the spec.
 2. **Draft plan** -- write a structured implementation plan covering:
-   - Context (what problem, why now; reference the PRD entry if one exists — never restate it)
+   - Context (what problem, why now; reference the PRD section if one exists — never restate it)
    - The tier and risk-surface judgment (`rules/risk-triage.md`), recorded in the frontmatter — every later gate reads it from there. Re-judge it against the plan you drafted, not the scope that was surveyed: the planner judged what it explored, and a step you added can reach further.
    - The dependents the change must not break, and the conventions analogous features follow — these are the planner's costliest findings and they reach the implementer only if they land in the spec
    - Affected files with specific line numbers

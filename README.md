@@ -37,7 +37,7 @@
 
 | 이름 | 언제 | 무엇을 해주나 | 예시 |
 |------|------|--------------|------|
-| `second-brain` | docs/ 문서를 만들거나 고칠 때 자동 로드 | 표준 문서 세트(PRD/, ARCHITECTURE.md, ADR.md 등)와 작성·유지 규칙. ADR 기록 판정 3-게이트 포함 | "BUSINESS-LOGIC.md에 정산 규칙 정리해줘" |
+| `second-brain` | docs/ 문서를 만들거나 고칠 때 자동 로드 | 표준 문서 세트(PRD.md, ARCHITECTURE.md, ADR.md 등)와 작성·유지 규칙. ADR 기록 판정 3-게이트 포함 | "BUSINESS-LOGIC.md에 정산 규칙 정리해줘" |
 | `/init-docs` | 기존 프로젝트에 표준 docs/를 처음 깔 때 | 코드베이스를 분석해 문서를 실제 내용으로 채워 생성. PRD는 템플릿만 | "/init-docs" |
 | `/docs-sync` | 코드 변경 후 문서가 낡았는지 확인할 때 | freshness stamp 기반으로 코드↔문서 드리프트를 보고. 수정은 승인 후 | "/docs-sync" |
 

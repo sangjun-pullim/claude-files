@@ -17,7 +17,7 @@ The **Layer** column decides stamping: derivable-layer docs carry a freshness st
 
 | File | Layer | Purpose | When Required |
 |------|-------|---------|---------------|
-| `PRD/` | hand-written | Product requirements — what we're building and why (see PRD section below) | New projects; substantial features (see PRD section) |
+| `PRD.md` | hand-written | Product requirements — what we're building, what we're not, and why (see PRD section below) | New projects; substantial features (see PRD section) |
 | `ARCHITECTURE.md` | derivable | High-level map — module boundaries, integration points, data flow (not an exhaustive structure listing) | Always |
 | `DB-SCHEMA.md` | derivable | Modeling rationale, constraints, migration notes (the schema itself lives in `schema.prisma`) | Prisma/DB projects |
 | `API-SPEC.md` | derivable | External API contract — the contract is the truth, not the code | APIs with external consumers (internal-only: route code is the doc) |
@@ -32,19 +32,23 @@ project meta-docs, and the one deliberate exception to `rules/standards.md` file
 Legacy lowercase names (`decisions.md`, `glossary.md`, …) are the same docs: read them
 wherever the uppercase name is named; `/docs-sync` proposes migrating them.
 
-## PRD/ — What We're Building
+## PRD.md — What We're Building
 
-`docs/PRD/` holds product requirements — the *what and why* layer every other doc hangs from:
+`docs/PRD.md` is a single file holding product requirements — the *what and why* layer every other doc hangs from. One file, because a PRD states current intent as a coherent whole; numbered per-feature files are the shape of event records (that is `impl-spec/`), not of intent. Sections:
 
-- `000-product.md` — the product-level PRD: problem, target users, goal, scope, success criteria.
-- `NNN-<feature>.md` — one per substantial feature, numbered from `001` like impl-spec.
+- `## Problem / Users`
+- `## Goal`
+- `## Scope` — one subsection per product surface, each stating what the surface does; a substantial feature is added here as a subsection, never as a new file.
+- `## Non-goals` — what the product deliberately does not do, each with its reason, one line. This is the section that pays for the document: a rejected direction is findable here. When the rejection meets `ADR.md`'s recording criteria, the line links that ADR entry instead of restating its reasoning.
+- `## Success criteria`
 
 Rules:
 
-- **Required** for new projects, and for features large enough to need their own impl-spec (roughly the 5+ file scale of `rules/risk-triage.md` signal 3). A risk-surface-only tier-2 — one file touching auth, say — does not by itself require a PRD. Optional below that.
+- **Required** for new projects, and for features whose blast radius reaches `rules/risk-triage.md` signal 3 — such a feature must appear in `## Scope` before its spec is written. A risk-surface-only tier-2 — one file touching auth, say — does not by itself require a PRD entry. Optional below that.
+- **Size**: keep it under ~200 lines. Past that, the PRD is absorbing spec content — move the overflow into the active impl-spec's Context; if none exists or the relevant spec is archived, the overflow is product-level and belongs in `ARCHITECTURE.md` / `ADR.md` — never into an archived spec, never into a second PRD file.
 - Hand-written layer, no stamp. Update when product direction changes — a PRD states current intent, not history (history lives in git).
 - A vague request gets sharpened with the `grilling` skill first; the PRD is written from the settled frontier afterwards.
-- **Boundary vs impl-spec**: the PRD owns the product-level what/why and success criteria ("무엇이 되면 성공"); `docs/impl-spec/` owns the code-level how and verification commands ("어떤 테스트로 확인"). A spec references its PRD by number — never restates it.
+- **Boundary vs impl-spec**: the PRD owns the product-level what/why and success criteria ("무엇이 되면 성공"); `docs/impl-spec/` owns the code-level how and verification commands ("어떤 테스트로 확인"). A spec references its PRD by section (`PRD.md §Scope/<surface>`) — never restates it.
 - Downstream docs (`ARCHITECTURE.md`, `ADR.md`, …) update as decisions land, consistent with the PRD.
 
 ## GLOSSARY.md Format
