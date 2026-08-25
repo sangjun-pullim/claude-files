@@ -3,24 +3,15 @@
 ## Naming
 
 - Files: kebab-case (user-auth.service.ts). Exception: standard project docs — see the `second-brain` skill.
-- Classes/Components: PascalCase
-- Functions/Variables: camelCase
-- Constants: UPPER_SNAKE_CASE
-- Booleans: is/has/can/should prefix
 - DB tables (Prisma): PascalCase model name, snake_case columns via @map
 
 ## Code
 
 - One function = one responsibility. Split if over 50 lines. A module has one responsibility.
-- Use an object when parameters exceed 3.
-- Early return pattern (minimize nested if).
-- No magic numbers. Extract to named constants.
-- Use framework logger instead of console.log.
 
 ## Error Handling
 
 - Use custom error classes. Avoid bare `throw new Error()`.
-- Never swallow errors in catch. At minimum, log them.
 - Separate user-facing errors from internal errors.
 
 ## Testing

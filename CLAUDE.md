@@ -36,7 +36,7 @@ Before planning, classify the task by deterministic signals (touched paths/conte
 - The tier gates the ceremony — plan, tests, reviewer, which docs to read. Apply the table and the non-negotiable floors in `rules/risk-triage.md`; they are the spec, not a summary of one.
 - Share the plan and get approval at the tiers `rules/risk-triage.md` requires it for; take the plan format from its tier table.
 - Review before reporting done, per the tier's reviewer requirement in `rules/risk-triage.md`. State which one ran. The implementer never reviews its own work.
-  - **Cannot spawn a reviewer where one is required?** A subagent returns its work marked `UNREVIEWED` with the changed paths and lets its spawner own the review. At top level, do not report done — say it is unreviewed, note that a control-plane edit is already live in every new session, and offer to revert.
+  - **Cannot spawn a reviewer where one is required?** A subagent returns its work marked `UNREVIEWED` with the changed paths and lets its spawner own the review. At top level, apply the floor in `rules/risk-triage.md` and offer to revert.
   - **A self-review is a fallback, never a substitute**, and only where the tier does not require a reviewer agent. Attempt the spawn first and quote the error alongside the self-review label — "spawning was unavailable" judged about yourself, with no attempt on record, is not evidence.
 - After changes to architecture, DB schema, API, or business logic, *suggest* `docs/` updates with a specific file/section — never auto-update without approval.
 - IMPORTANT: Never read .env, secret, or credential files.
@@ -48,7 +48,6 @@ Before planning, classify the task by deterministic signals (touched paths/conte
 
 - When the user says "don't repeat this mistake" or "add this to CLAUDE.md", immediately propose which file/section to update and what exact lines to add — wait for approval before writing.
 - If you notice yourself repeating the same mistake twice in a session, proactively propose a CLAUDE.md update before the user has to ask.
-- Rules added this way MUST be measurable. ❌ "write good tests" / ✅ "mock all external dependencies in tests".
+- Any rule added to a control-plane file must be a condition you can check (❌ "write good tests" / ✅ "mock all external dependencies in tests").
 - **Point at other files; never restate them.** In any control-plane text, `see <file>` is the only permitted reference to another file's content — no summarizing it, quoting its rule, characterizing what it "makes non-negotiable", or explaining why it agrees with you. A pointer cannot go stale; an assertion about another file's contents is a fact that rots the moment that file changes, and it rots silently. Constants obey the same rule: define once, reference everywhere, never repeat the number.
-- Prefer updating an existing rule over appending a new one. Keep this file under 100 lines.
-- When modifying any CLAUDE.md, read and follow `~/.claude/docs/claude-md-audit.md` (tag → decide → diff → mapping table).
+- Removing a rule from any human-authored control-plane file (see `rules/risk-triage.md` for which files those are): quote every removed line verbatim and wait for approval before writing; the `reviewer` agent is the audit.

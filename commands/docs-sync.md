@@ -69,7 +69,7 @@ Scan `BUG-FIXES.md` for recurring patterns — 2+ entries sharing a root-cause c
 For each recurring pattern, propose ONE promotion target (most durable first):
 1. **Test** — a regression test that pins the behavior
 2. **Lint rule / hook** — a mechanical check that blocks the pattern
-3. **CLAUDE.md / rules line** — only if not machine-checkable; must be measurable form
+3. **CLAUDE.md / rules line** — only if not machine-checkable; must meet the Self-Improvement bar in `~/.claude/CLAUDE.md`
 
 For entries already covered by an existing guard, propose compaction: compress to a one-line reference (`- <date> <title> → promoted to <guard>`). Promotion doubles as compaction — this keeps the file from growing unboundedly.
 

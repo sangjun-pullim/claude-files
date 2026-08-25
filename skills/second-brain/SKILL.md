@@ -156,7 +156,7 @@ Durable why belongs in `ADR.md` (promote a genuine change of direction there whe
 - Do NOT auto-update docs without user approval
 - When suggesting, be specific: state which file and what section needs updating
 - Keep docs concise — bullet points and diagrams over prose
-- `BUG-FIXES.md` is append-only until promotion: when the same root-cause pattern appears 2+ times, promote it to a durable guard (test, lint rule, or a measurable CLAUDE.md rule) via `/docs-sync` Part 5. Promoted entries are compressed to a one-line reference — promotion doubles as compaction.
+- `BUG-FIXES.md` is append-only until promotion: when the same root-cause pattern appears 2+ times, promote it to a durable guard via `/docs-sync` Part 5 (that command owns the target list). Promoted entries are compressed to a one-line reference — promotion doubles as compaction.
 
 ## Coexistence with Existing Files
 
