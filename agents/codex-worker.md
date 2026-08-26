@@ -84,12 +84,6 @@ In-place codex produces no orca card, so the report is the parent's only window 
 
 ## Report format (fixed — no prose outside these fields)
 
-If a `SendMessage` tool is available to you, you were spawned as a teammate and your plain text
-reaches nobody. Send the report block below with `SendMessage` to `team-lead` FIRST, then emit
-the same text as your final message. The send is what delivers the report; the final message is
-only a copy for the transcript. Reporting without sending is the same as not reporting.
-
-
 ```
 codex: session id <id> | codex 호출 <N>회 | 로그 <out.txt 절대경로>
 codex 최종 메시지: <last.txt 절대경로>

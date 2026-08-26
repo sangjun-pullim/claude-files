@@ -28,7 +28,7 @@ The **Layer** column decides stamping: derivable-layer docs carry a freshness st
 | `GLOSSARY.md` | hand-written | Domain term ↔ canonical code identifier mapping, with banned aliases | Only when a term has confused the model or a teammate at least once |
 
 **Naming**: standard doc files are UPPERCASE — the README/CONTRIBUTING convention marking
-project meta-docs, and the one deliberate exception to `rules/standards.md` file naming.
+project meta-docs, and the one deliberate exception to the global `CLAUDE.md` file naming rule.
 Legacy lowercase names (`decisions.md`, `glossary.md`, …) are the same docs: read them
 wherever the uppercase name is named; `/docs-sync` proposes migrating them.
 
@@ -44,7 +44,7 @@ wherever the uppercase name is named; `/docs-sync` proposes migrating them.
 
 Rules:
 
-- **Required** for new projects, and for features whose blast radius reaches `rules/risk-triage.md` signal 3 — such a feature must appear in `## Scope` before its spec is written. A risk-surface-only tier-2 — one file touching auth, say — does not by itself require a PRD entry. Optional below that.
+- **Required** for new projects, and for features touching 5+ production files — such a feature must appear in `## Scope` before its spec is written. A small change on a risk surface — one file touching auth, say — does not by itself require a PRD entry. Optional below that.
 - **Size**: keep it under ~200 lines. Past that, the PRD is absorbing spec content — move the overflow into the active impl-spec's Context; if none exists or the relevant spec is archived, the overflow is product-level and belongs in `ARCHITECTURE.md` / `ADR.md` — never into an archived spec, never into a second PRD file.
 - Hand-written layer, no stamp. Update when product direction changes — a PRD states current intent, not history (history lives in git).
 - A vague request gets sharpened with the `grilling` skill first; the PRD is written from the settled frontier afterwards.

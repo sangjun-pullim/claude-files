@@ -13,7 +13,7 @@ Don't mock:
 - Internal collaborators
 - Anything you control
 
-A test double *or* an isolated test instance (test DB, temp filesystem) both satisfy the external-dependency rule in `~/.claude/rules/standards.md`; what's banned is hitting a shared or real service.
+A test double *or* an isolated test instance (test DB, temp filesystem) both satisfy the external-dependency rule in the global `CLAUDE.md`; what's banned is hitting a shared or real service.
 
 ## Designing for Mockability
 

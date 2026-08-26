@@ -1,6 +1,6 @@
 ---
 name: writing-for-agents
-description: Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.
+description: Writing documents for agents. Use when creating or editing skills, agent definitions, rules, or any control-plane file (~/.claude/**, a repo's .claude/**, AGENTS.md, CLAUDE.md).
 ---
 
 Reference for writing any document an agent consumes — a skill, an `AGENTS.md` / `CLAUDE.md`, a doc reached by a pointer. The packaging differs; the writing does not: the same levers make each one predictable — the agent taking the same _process_ every run, not producing the same output.
@@ -72,6 +72,15 @@ Hunt for opportunities to refactor with leading words. A triad spelled out at th
 You win twice: fewer tokens, and a sharper hook for the agent to hang its thinking on. Assume every document is carrying restatements that leading words retire — go find them.
 
 **Negation** is the failure mode beside this lever: steering by prohibition drags the forbidden behaviour into context and makes it _more_ available, not less. _Don't think of an elephant_, and the elephant is all there is; the negation is a weak modifier the strongly-activated concept overruns, so the ban half-reads as an instruction to do the thing. Prompt the **positive** — state the target behaviour ("write one-line comments") so the banned one is never spoken. A prohibition earns its place only as a hard guardrail you cannot phrase positively; even then, pair it with the positive target so attention lands on what to do.
+
+## Control-plane files
+
+`~/.claude/**`, a repo's `.claude/**`, `CLAUDE.md` / `AGENTS.md`: the text changes model behaviour in every new session.
+
+- Every rule is a condition the agent can check (❌ "write good tests" / ✅ "mock all external dependencies in tests").
+- Point at other files; never restate them — `see <file>` is the only permitted reference to another file's content. A pointer cannot go stale; a summary of another file rots silently. Constants likewise: define once, reference everywhere.
+- When the user says "don't repeat this mistake" or "add this to CLAUDE.md", propose the exact file, section, and lines, then wait for approval before writing.
+- Removing a rule: quote every removed line verbatim in the report, and run a `reviewer` agent on the result.
 
 ## Pruning
 

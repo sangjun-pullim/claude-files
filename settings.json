@@ -1,7 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
   "permissions": {
     "allow": [
       "Read",
@@ -45,13 +42,6 @@
       "Read(**/.env.test)"
     ],
     "defaultMode": "auto"
-  },
-  "model": "claude-fable-5[1m]",
-  "skillOverrides": {
-    "api-design": "off",
-    "db-migrations": "off",
-    "orchestration": "off",
-    "security-checklist": "off"
   },
   "hooks": {
     "PreToolUse": [
@@ -210,9 +200,7 @@
     "command": "python3 /Users/pullim/.claude/statusline-command.py"
   },
   "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false
+    "typescript-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
@@ -222,41 +210,17 @@
       }
     }
   },
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "xhigh"
+    },
+    "claude-fable-5": {
+      "effortLevel": "high"
+    }
+  },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "skipAutoPermissionPrompt": true,
-  "autoMode": {
-    "soft_deny": [
-      "$defaults",
-      "Bash(aws s3 rm:*) in this repo — mass/irreversible delete of collector buckets (luxury-collector-raw-993249606761, luxury-raw)",
-      "Bash(terraform apply:*) under infra/terraform/** — protected IaC scope, prod-deploy-pending"
-    ],
-    "environment": [
-      "### Org-wide",
-      "**Organization**: None configured",
-      "**Cloud provider(s)**: AWS (S3/MinIO-compatible storage, ALB, VPC — per infra/terraform and .env.example)",
-      "**Repository visibility**: Private — pullim-dev/luxury-collector",
-      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
-      "**Secrets management**: Terraform/Secrets Manager injection for prod (per .env.example header); CI secrets referenced by name only (e.g. AWS_DEPLOY_ROLE_ARN, DB_PASSWORD, GEMINI_API_KEY, BUNJANG_SELLER_SALT, SLACK_WEBHOOK_URL, BOARD_PASSWORD, TF_STATE_BUCKET) — values never in repo",
-      "**Default / protected branches**: main (default). Rulesets: none listed. Protected branches: none listed via gh — treat as unprotected absent further evidence",
-      "**CI/CD deploy targets**: None configured",
-      "**Network posture**: Outbound collection via proxy pool (residential/static, worker-side); SSRF-guarded image URL allowlist for /appraisal endpoints",
-      "**Source control**: The trusted repo (pullim-dev/luxury-collector) and its origin remote only (no additional orgs configured)",
-      "**Trusted internal domains**: None configured",
-      "**Trusted cloud buckets**: luxury-collector-raw-993249606761 (usage-corroborated — seen in transcript-mining bucket usage), luxury-raw (usage-corroborated — seen in transcript-mining bucket usage)",
-      "**Key internal services**: hooks.slack.com (Slack webhook, night-health alerting — ADR-84)",
-      "**Internal package registry**: None configured",
-      "**Sensitive data locations & audiences**: .env / .env.development and any credential or secret files (never read per project CLAUDE.md); infra/terraform/*.tfvars, terraform.tfstate, terraform.tfstate.backup, bootstrap/terraform.tfvars — treat as containing infra credentials/state; BUNJANG_SELLER_SALT and other CI secret names — preserve exact handles, share only with cleared audiences",
-      "**Data retention / declassification**: None configured",
-      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment; prod deploy of q-buyback/appraisal service is explicitly pending (049/ADR-96·97)",
-      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
-      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment; infra/terraform/** (VPC_ID, ALB_LISTENER_ARN, ALB_SG_ID, FCK_NAT_SUBNET_ID, LUX365_TASK_SG_ID, AWS_ACCOUNT_ID, AWS_DEPLOY_ROLE_ARN) treated as protected IaC scope given prod-deploy-pending status",
-      "### User-specific",
-      "**Primary use of Claude Code**: software development (NestJS/Prisma backend collector pipeline)",
-      "**Trusted repo**: /Users/pullim/Documents/workspace/luxury-collector and its origin remote (https://github.com/pullim-dev/luxury-collector.git) — private repo, so confidential material is fine to commit there but secrets/credentials are never cleared into it by visibility alone",
-      "**Org-specific CLIs**: None configured (aws, terraform, gh are standard tooling, not org-specific)"
-    ]
-  }
+  "skipAutoPermissionPrompt": true
 }

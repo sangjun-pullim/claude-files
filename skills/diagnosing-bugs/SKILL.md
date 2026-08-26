@@ -11,7 +11,7 @@ Before exploring the codebase, follow the bug-fixing Research Order in `~/.claud
 
 ## Do NOT use when
 
-- The cause is already visible — a stack trace names the line, or the defect is an obvious typo. Per the simplest-fix discipline in `~/.claude/CLAUDE.md`, apply the straightforward fix first; return here only when it fails.
+- The cause is already visible — a stack trace names the line, or the defect is an obvious typo. Apply the straightforward fix first; return here only when it fails.
 - An existing test/build command already reproduces the failure — that IS the feedback loop; start at Phase 2.
 
 ## Redact
@@ -122,7 +122,7 @@ Write the regression test **before the fix** — but only if there is a **correc
 
 A correct seam is one where the test exercises the **real bug pattern** as it occurs at the call site. If the only available seam is too shallow (single-caller test when the bug needs multiple callers, unit test that can't replicate the chain that triggered the bug), a regression test there gives false confidence.
 
-**If no correct seam exists, that itself is the finding.** Note it. The codebase architecture is preventing the bug from being locked down. Flag this for the next phase. Surface it to the user — it is a finding, not a completion condition. Where the non-negotiable floors in `~/.claude/rules/risk-triage.md` apply, this exit is unavailable: write the best available regression test anyway and note the seam problem alongside it.
+**If no correct seam exists, that itself is the finding.** Note it. The codebase architecture is preventing the bug from being locked down. Flag this for the next phase. Surface it to the user — it is a finding, not a completion condition. On a risk surface (global `CLAUDE.md` Hard Rules), this exit is unavailable: write the best available regression test anyway and note the seam problem alongside it.
 
 If a correct seam exists:
 
@@ -137,7 +137,7 @@ If a correct seam exists:
 Required before declaring done:
 
 - [ ] Original repro no longer reproduces (re-run the Phase 1 loop)
-- [ ] Regression test passes (or absence of seam is documented and surfaced to the user — never where the floors in `~/.claude/rules/risk-triage.md` require a test)
+- [ ] Regression test passes (or absence of seam is documented and surfaced to the user — never on a risk surface, where global `CLAUDE.md` Hard Rules require a test)
 - [ ] All `[DEBUG-...]` instrumentation removed (`grep` the prefix)
 - [ ] Throwaway prototypes deleted (or moved to a clearly-marked debug location)
 - [ ] The hypothesis that turned out correct is stated in the commit / PR message — so the next debugger learns

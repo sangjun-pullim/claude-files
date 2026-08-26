@@ -4,11 +4,10 @@
 
 ## Contents
 
-- `CLAUDE.md` — Global instructions
+- `CLAUDE.md` — Global instructions (communication, standards, hard rules, agents)
 - `settings.json` — Global settings (permissions, hooks)
+- `rules/` — Always-loaded rules (`second-brain.md`: docs research order)
 - `commands/` — Slash commands
-- `rules/` — Global rules (always loaded into every session)
-- `docs/` — On-demand protocols, read only when referenced
 - `agents/` — Agent definitions
 - `hooks/` — Hook scripts
 - `skills/` — Skill definitions
@@ -26,8 +25,8 @@
 |------|------|--------------|------|
 | `grilling` 🅼 | 아이디어·요구사항이 아직 모호할 때 ("갈궈줘") | 답할 수 있는 질문 전부를 라운드로 묶어 캐물어서 설계를 명확하게 만든다. 확정된 용어·결정은 세션 끝에 GLOSSARY/ADR 갱신으로 제안 | "정산 재처리 기능 만들려는데 갈궈줘" |
 | `codebase-design` 🅼 | 새 모듈의 인터페이스를 잡거나, 테스트 걸 곳(seam)이 애매하거나, mock이 덕지덕지 붙을 때 | deep module 설계 어휘와 원칙 제공. 필요시 서브에이전트 3안 병렬 설계 비교(design-it-twice) | "수집 재시도 모듈 인터페이스 어떻게 잡는 게 좋을까?" |
-| `impl-plan` | tier-2 작업(위험 영역 or 5+ 파일)을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/` 스펙 작성 → 코드와 대조하는 리뷰 루프. PRD가 있으면 로드해서 인터뷰 단축 | "/impl-plan 주문 출고 재처리 기능" |
-| `impl-execute` | 승인된 impl-spec을 실제로 구현할 때 | 스펙의 첫 미완료 단계부터 구현 → 전체 diff 독립 리뷰 → 조건 충족 시 스펙 종료·보관 | "/impl-execute 042 스펙 구현해줘" |
+| `impl-plan` | 프로덕션 파일 5개 이상을 건드리는 변경을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/` 스펙 작성 → 코드와 대조하는 리뷰 루프(최대 3회). PRD가 있으면 대조 | "/impl-plan 주문 출고 재처리 기능" |
+| `impl-execute` | 승인된 impl-spec을 실제로 구현할 때 | 스펙의 첫 미완료 단계부터 구현 → 전체 diff 독립 리뷰(최대 3회) → 조건 충족 시 스펙 종료·보관 | "/impl-execute 042 스펙 구현해줘" |
 | `tdd` 🅼 | 테스트 먼저 개발하고 싶을 때 ("red-green") | seam 합의 → 실패 테스트 → 최소 구현 반복. 좋은 테스트/안티패턴 기준 포함 | "이 기능 테스트 먼저 쓰면서 만들자" |
 | `diagnosing-bugs` 🅼 | 원인이 바로 안 보이는 어려운 버그·성능 저하 | 가설보다 먼저 "빨간불 뜨는 재현 루프"를 만들게 강제하는 6단계 진단 규율. 명백한 버그는 그냥 고치면 됨 | "수집 워커가 간헐적으로 멈춰. diagnose 해줘" |
 | `resolving-merge-conflicts` 🅼 | merge/rebase 충돌이 났을 때 | 양쪽 의도를 파악해 해소하고 검사 실행. 판단 불가 hunk는 사용자에게 넘김 | "rebase 하다 충돌났어, 해결해줘" |
@@ -54,18 +53,18 @@
 |------|------|--------------|------|
 | `codex-delegation` | 사용자가 "codex로/GPT로 구현해"라고 명시했을 때만 | codex-worker 위임 계약: 모드 질문, 디스패치, 게이팅, union 리뷰 | "이 스펙 codex한테 구현시켜" |
 | `orca-cli` | Orca를 직접 언급했을 때만 | orca CLI로 워크트리·터미널·자동화 관리 | "orca 워크트리 목록 보여줘" |
-| `writing-for-agents` 🅼 | 스킬·CLAUDE.md 등 에이전트용 문서를 쓸 때 | context pointer, progressive disclosure, no-op 사냥 등 작성 원칙 | "디버깅용 스킬 하나 새로 만들자" |
+| `writing-for-agents` 🅼 | 스킬·CLAUDE.md 등 에이전트용 문서를 쓸 때 | context pointer, progressive disclosure, no-op 사냥, control-plane 파일 편집 규칙 | "디버깅용 스킬 하나 새로 만들자" |
 
-비활성(`settings.json` skillOverrides): api-design, db-migrations, orchestration, security-checklist. `benchmark-workspace/`는 평가 실행 기록용.
+`benchmark-workspace/`는 평가 실행 기록용.
 
-> **출처**: 🅼 표시가 붙은 스킬은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계, risk-triage 규칙)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.
+> **출처**: 🅼 표시가 붙은 스킬은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.
 
 ### Agents
 
 | 이름 | 역할 |
 |------|------|
 | `planner` | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사 |
-| `reviewer` | 코드/계획/구현 리뷰. control-plane·tier-2 변경엔 필수 |
+| `reviewer` | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
 | `codex-worker` | codex CLI 실행·전달만 하는 워커 (판단은 부모가) |
 
 ### Hooks
@@ -74,5 +73,9 @@
 |----------|----------|
 | `block-env-read.sh` | .env 등 시크릿 파일 읽기 |
 | `block-env-commit.sh` | .env 파일 git 추가/커밋 |
-| `block-dangerous-git.sh` | git push, reset --hard, clean -f, branch -D, checkout/restore로 트리 폐기 |
+| `block-dangerous-git.sh` | reset --hard, clean -f, branch -D, checkout/restore로 트리 폐기 |
 | `auto-format.sh` | (차단 아님) Write/Edit 후 자동 포맷 |
+
+## 2026-08 정리 이력
+
+Fable 5 / Opus 5 기준으로 모델이 기본으로 하는 행동을 규제하던 항목을 제거했다: `CLAUDE.md` Discipline·Self-Improvement 섹션, `rules/risk-triage.md`(티어 표) · `rules/agents.md` · `rules/standards.md`(CLAUDE.md에 흡수), `docs/review-loop.md`(스킬에 인라인), 꺼져 있던 스킬 4개(api-design, db-migrations, orchestration, security-checklist), agent teams 플래그. 항상 로드되는 컨텍스트 약 250줄 → 약 70줄. 복구는 git 이력에서.
