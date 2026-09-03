@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{제품명}} — UX 정리안</title>
+<style>
+/* assets/base.css 내용을 여기에 그대로 인라인한다. 파일 하나로 열려야 한다. */
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="sidebar">
+    <h1>{{제품명}} — UX 정리안</h1>
+    <div class="sub">{{근거 문서·버전}}을 기술 명세로 두고<br>화면·문구만 다시 짠 것</div>
+
+    <div class="navgroup">먼저 읽기</div>
+    <button class="navitem on" data-s="s0">무엇을 바꿨나<span class="code">요약</span></button>
+
+    <div class="navgroup">페이지 — 실제 사이드바에 있는 것</div>
+    <!-- 들여쓰기(lv1/lv2)가 곧 위계다. lv1 = 페이지에서 열리는 것, lv2 = 그 아래. shared = 여러 부모에서 열리는 공용 모달 -->
+    <button class="navitem" data-s="s1">{{페이지 A}}<span class="code">SC-AAA · 첫 진입</span></button>
+    <button class="navitem lv1" data-s="s2">{{페이지 A의 상세}}<span class="code">SC-BBB · 행 클릭으로만</span></button>
+    <button class="navitem lv2" data-s="s3">{{모달}}<span class="code">SC-CCC · 모달</span></button>
+    <button class="navitem" data-s="s4">{{페이지 B}}<span class="code">SC-DDD</span></button>
+    <button class="navitem lv1 shared" data-s="s5">{{공용 모달}}<span class="code">SC-EEE · 공용 모달</span></button>
+
+    <div class="navgroup">상태 화면</div>
+    <button class="navitem" data-s="s9">빈 상태 · 오류<span class="code">SC-*-E · SC-*-X</span></button>
+
+    <div class="navnote"><strong>이 내비게이션 자체가 위계도입니다.</strong> 들여쓴 것은 페이지가 아니라 부모가 여는 모달·drawer입니다. <span class="sharemark">→</span> 표시는 여러 화면에서 열리는 공용 모달입니다.</div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="title" id="stitle">무엇을 바꿨나</div>
+        <div class="meta" id="smeta">요약</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="legend"><span class="chipx">SC-000</span> 요소 ID · <span class="co">1</span> 주석</div>
+      <div class="toggle"><button id="vD" class="on">데스크톱</button><button id="vM">모바일</button></div>
+    </div>
+
+    <div class="canvas">
+
+    <!-- ========== s0 무엇을 바꿨나 (요약 시트) ========== -->
+    <section class="screen on" id="s0">
+      <div class="sheet">
+        <h2>무엇을 바꿨나</h2>
+        <p class="muted" style="margin-bottom:16px">{{원안의 장점 한 문장}}. 문제는 {{핵심 진단 한 문장}}. 아래 {{N}}가지만 분리하면 같은 계약으로 훨씬 쉬운 화면이 됩니다.</p>
+
+        <h3>1. {{문제 제목 — 가장 위험한 것부터}}</h3>
+        <p>{{증상을 사용자 사고 시나리오로}}</p>
+        <table class="t">
+          <thead><tr><th style="width:150px">축</th><th>원안</th><th>정리안</th></tr></thead>
+          <tbody>
+            <tr><td>{{축}}</td><td>{{원안 표기}}</td><td><strong>{{정리안 표기}}</strong> — {{이유 한 구절}}</td></tr>
+          </tbody>
+        </table>
+
+        <h3>화면 위계 — 무엇이 페이지이고 무엇이 모달인가</h3>
+        <p>사이드바에는 <strong>페이지 {{N}}개</strong>만 둡니다. 나머지는 전부 그 아래에서 열립니다.</p>
+        <div class="ia">
+          <div class="ia-col">
+            <div class="ia-node root">{{페이지 A}}<span>SC-AAA · 첫 진입</span></div>
+            <div class="ia-arrow">행 클릭</div>
+            <div class="ia-node page">{{상세}}<span>SC-BBB</span></div>
+            <div class="ia-kids">
+              <div class="ia-node modal">{{모달}}<span>SC-CCC · 모달</span></div>
+            </div>
+          </div>
+          <div class="ia-col">
+            <div class="ia-node root">{{페이지 B}}<span>SC-DDD</span></div>
+            <div class="ia-arrow">버튼</div>
+            <div class="ia-kids nogap">
+              <div class="ia-node modal shared">{{공용 모달}}<span>SC-EEE · 공용</span></div>
+            </div>
+            <div class="ia-note">{{이 가지에 대한 한 줄 메모}}</div>
+          </div>
+        </div>
+        <div class="ia-legend"><span class="ia-key root"></span> 사이드바 페이지 &nbsp; <span class="ia-key page"></span> 페이지(사이드바에 없음) &nbsp; <span class="ia-key modal"></span> 모달·drawer &nbsp; <span class="sharemark">→</span> 여러 부모에서 열리는 공용 모달</div>
+
+        <h3>위계 규칙</h3>
+        <table class="t">
+          <thead><tr><th style="width:30px">#</th><th style="width:230px">규칙</th><th>이유</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><strong>{{규칙}}</strong></td><td>{{이유 — 어기면 무엇이 헷갈리는지}}</td></tr>
+          </tbody>
+        </table>
+
+        <h3>어디서 무엇이 열리나</h3>
+        <table class="t">
+          <thead><tr><th style="width:190px">화면</th><th style="width:70px">종류</th><th>여기서 열립니다</th></tr></thead>
+          <tbody>
+            <tr><td>{{화면}} <code>SC-AAA</code></td><td>페이지</td><td>{{진입 경로 전부}}</td></tr>
+          </tbody>
+        </table>
+
+        <h3>원안 대비 화면 수</h3>
+        <table class="t">
+          <thead><tr><th>원안</th><th>정리안</th><th>이유</th></tr></thead>
+          <tbody><tr><td>{{화면 N개}}</td><td>{{화면 M개}}</td><td>{{통합·삭제한 이유}}</td></tr></tbody>
+        </table>
+
+        <h3>바꾸지 않은 것</h3>
+        <ul>
+          <li>{{명령·상태 코드·정책 등 계약 그대로인 것}}</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ========== s1 페이지 예시 (데스크톱 + 모바일) ========== -->
+    <section class="screen" id="s1">
+      <div class="framelabel">SC-AAA · {{페이지 A}}</div>
+      <div class="frame desktop">
+        <div class="sec">
+          <div class="banner strong"><span class="eid abs">SC-AAA-010</span>
+            <span class="co">1</span>
+            <div><strong>{{원인 배너 — 결과보다 위}}</strong><div class="tiny">{{한 줄 설명 · 시각}}</div></div>
+            <div class="spacer"></div><span class="btn sm">{{행동}}</span>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="row" style="margin-bottom:11px"><span class="eid abs">SC-AAA-020</span>
+            <span class="field ph" style="width:230px">{{검색 placeholder}}</span>
+            <span class="chip on">전체</span><span class="chip">{{필터}}</span><span class="chip dash">{{파생 필터}}</span>
+            <div class="spacer"></div><span class="tiny">{{N}}건</span>
+          </div>
+          <table class="t">
+            <thead><tr><th>{{열}}</th><th>{{열}}</th><th class="chcol">{{상태 열}}</th><th style="width:56px"></th></tr></thead>
+            <tbody>
+              <tr class="hi"><td>{{값}}</td><td>{{값}}</td><td class="chcol"><span class="st up">{{상태}}</span> <span class="co">2</span></td><td><span class="btn sm ghost">열기</span></td></tr>
+              <tr><td>{{값}}</td><td>{{값}}</td><td class="chcol"><span class="st none">{{상태}}</span></td><td><span class="btn sm ghost">열기</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="framelabel" style="margin-top:24px">SC-AAA · 모바일 — {{모바일에서 하는 일 한 구절}}</div>
+      <div class="frame mobile">
+        <div class="sec">
+          <div class="sech">{{제목}} <span class="eid">SC-AAA-020</span></div>
+          <div class="stack">
+            <div class="box"><div style="font-size:12px;font-weight:600">{{요약 항목}}</div><div class="tiny">{{부제}}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <h3>주석 — {{페이지 A}}</h3>
+        <ol>
+          <li><strong>{{결정}}</strong> {{이유 — 사용자가 무엇을 오해·실수하는지}}</li>
+          <li>{{결정}} {{이유}}</li>
+        </ol>
+        <div class="uses">조회 — {{이 화면이 읽는 API}}<br>명령 — {{이 화면이 보내는 명령. 없으면 「없음. 이동뿐」}}</div>
+      </div>
+    </section>
+
+    <!-- ========== s2 자리표시 — 실제 화면으로 바꾼다 ========== -->
+    <section class="screen" id="s2">
+      <div class="framelabel">SC-BBB · {{페이지 A의 상세}} (페이지)</div>
+      <div class="frame desktop"><div class="sec" style="text-align:center;padding:52px 16px"><span class="eid abs">SC-BBB-010</span><span class="co">1</span> <div class="muted">{{이 화면을 그린다}}</div></div></div>
+      <div class="notes"><h3>주석 — {{페이지 A의 상세}}</h3><ol><li>{{결정}} {{이유}}</li></ol><div class="uses">조회 — {{…}}<br>명령 — {{…}}</div></div>
+    </section>
+
+    <!-- ========== s3 모달 예시 ========== -->
+    <section class="screen" id="s3">
+      <div class="framelabel">SC-CCC · {{모달}} (모달)</div>
+      <div class="dim">
+        <div class="modal wide">
+          <div class="mh"><h3>{{모달 제목 — 동사}}</h3><span class="muted">{{대상}}</span><div class="spacer"></div><span class="chip">닫기</span></div>
+          <div class="mb">
+            <div class="banner"><span class="eid abs">SC-CCC-010</span><span class="co">1</span>
+              <div>{{첫 줄은 지시문 — 지금 무엇이 나가는지 / 무엇을 하라는지}}</div>
+            </div>
+            <div class="sech" style="margin-top:14px">{{구역}} <span class="eid">SC-CCC-020</span></div>
+            <table class="t">
+              <thead><tr><th style="width:34px"></th><th>{{대상}}</th><th>지금</th><th>{{누르면}}</th></tr></thead>
+              <tbody>
+                <tr><td><span class="chip">✓</span></td><td>{{대상}}</td><td><span class="st up">{{상태}}</span></td><td><span class="tiny"><strong>{{결과를 문장으로}}</strong></span></td></tr>
+                <tr><td><span class="chip dash">·</span></td><td>{{대상}}</td><td><span class="st down">{{상태}}</span></td><td><span class="tiny"><span class="co">2</span> {{선택하면 무슨 일이 생기는지}}</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mf"><span class="eid">SC-CCC-030</span>
+            <span class="tiny" style="margin-right:auto">{{결과를 어디서 보는지}}</span>
+            <span class="chip">닫기</span><span class="btn">{{대상 수}}개에 {{동사}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <h3>주석 — {{모달}}</h3>
+        <ol>
+          <li>{{결정}} {{이유}}</li>
+          <li>{{결정}} {{이유}}</li>
+        </ol>
+        <div class="uses">조회 — 없음(부모 화면 데이터)<br>명령 — {{명령 이름(필드)}}</div>
+      </div>
+    </section>
+
+    <!-- ========== s4 자리표시 — 실제 화면으로 바꾼다 ========== -->
+    <section class="screen" id="s4">
+      <div class="framelabel">SC-DDD · {{페이지 B}} (페이지)</div>
+      <div class="frame desktop"><div class="sec" style="text-align:center;padding:52px 16px"><span class="eid abs">SC-DDD-010</span><span class="co">1</span> <div class="muted">{{이 화면을 그린다}}</div></div></div>
+      <div class="notes"><h3>주석 — {{페이지 B}}</h3><ol><li>{{결정}} {{이유}}</li></ol><div class="uses">조회 — {{…}}<br>명령 — {{…}}</div></div>
+    </section>
+
+    <!-- ========== s5 자리표시 — 실제 화면으로 바꾼다 ========== -->
+    <section class="screen" id="s5">
+      <div class="framelabel">SC-EEE · {{공용 모달}} (공용 모달)</div>
+      <div class="frame desktop"><div class="sec" style="text-align:center;padding:52px 16px"><span class="eid abs">SC-EEE-010</span><span class="co">1</span> <div class="muted">{{이 화면을 그린다}}</div></div></div>
+      <div class="notes"><h3>주석 — {{공용 모달}}</h3><ol><li>{{결정}} {{이유}}</li></ol><div class="uses">조회 — {{…}}<br>명령 — {{…}}</div></div>
+    </section>
+
+    <!-- ========== s9 빈 상태 · 오류 ========== -->
+    <section class="screen" id="s9">
+      <div class="framelabel">SC-AAA-E · {{비었을 때}}</div>
+      <div class="frame desktop">
+        <div class="sec" style="text-align:center;padding:64px 16px"><span class="eid abs">SC-AAA-E-010</span>
+          <div style="font-size:13px;margin-bottom:5px">{{데이터가 없다는 문장}}</div>
+          <div class="muted" style="margin-bottom:14px">{{어떻게 하면 생기는지}}</div>
+          <span class="btn ghost">{{다음 행동}}</span>
+        </div>
+        <div class="sec" style="text-align:center;padding:36px 16px"><span class="eid abs">SC-AAA-E-020</span><span class="co">1</span>
+          <div class="muted">필터 결과가 없을 때</div>
+          <div style="font-size:13px;margin:5px 0 12px">조건에 맞는 항목이 없습니다.</div>
+          <span class="btn ghost sm">필터 초기화</span>
+        </div>
+      </div>
+      <div class="framelabel" style="margin-top:22px">SC-X · 오류</div>
+      <div class="frame desktop">
+        <div class="sec" style="text-align:center;padding:52px 16px"><span class="eid abs">SC-X-010</span>
+          <div style="font-size:13px;margin-bottom:5px">일시적인 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</div>
+          <div class="muted" style="margin-bottom:14px">{{진행 중이던 것이 어떻게 되는지}}</div>
+          <span class="btn ghost">다시 시도</span>
+        </div>
+        <div class="sec">
+          <div class="banner strong"><span class="eid abs">SC-X-020</span><span class="co">2</span>
+            <div><strong>{{사용자가 고칠 수 없는 오류}}</strong><div class="tiny">{{영향 범위}}</div></div>
+            <div class="spacer"></div><span class="btn sm ghost">오류 정보 복사</span>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3>주석 — 빈 상태 · 오류</h3>
+        <ol>
+          <li>데이터가 없는 것과 필터 결과가 없는 것은 다른 문구를 씁니다.</li>
+          <li>사용자가 고칠 수 없는 오류에는 「오류 정보 복사」가 유일한 행동입니다.</li>
+        </ol>
+        <div class="uses">조회 — 없음(부모 화면 데이터)<br>명령 — 없음. 이동뿐</div>
+      </div>
+    </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* T: 화면 id → [상단 제목, 상단 메타, 모바일 프레임 유무] */
+var T={
+ s0:['무엇을 바꿨나','요약',false],
+ s1:['{{페이지 A}}','SC-AAA · 데스크톱 / 모바일',true],
+ s2:['{{페이지 A의 상세}}','SC-BBB · 데스크톱',false],
+ s3:['{{모달}}','SC-CCC · 모달',false],
+ s4:['{{페이지 B}}','SC-DDD · 데스크톱',false],
+ s5:['{{공용 모달}}','SC-EEE · 공용 모달',false],
+ s9:['빈 상태 · 오류','SC-*-E · SC-X',false]
+};
+var cur='s0',view='D';
+var navs=document.querySelectorAll('.navitem');
+navs.forEach(function(b){b.addEventListener('click',function(){
+  navs.forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on')});
+  cur=b.dataset.s;document.getElementById(cur).classList.add('on');
+  document.getElementById('stitle').textContent=T[cur][0];
+  document.getElementById('smeta').textContent=T[cur][1];
+  window.scrollTo(0,0);apply();
+})});
+function apply(){
+  var hasM=T[cur][2];
+  document.getElementById('vM').disabled=!hasM;
+  if(!hasM)view='D';
+  document.getElementById('vD').classList.toggle('on',view==='D');
+  document.getElementById('vM').classList.toggle('on',view==='M');
+  var s=document.getElementById(cur);
+  s.querySelectorAll('.frame,.dim').forEach(function(f){
+    if(!hasM){f.style.display='block';return}
+    if(f.classList.contains('dim')){f.style.display=(view==='D')?'block':'none';return}
+    f.style.display=(view==='D')?(f.classList.contains('mobile')?'none':'block'):(f.classList.contains('mobile')?'block':'none');
+  });
+  s.querySelectorAll('.framelabel').forEach(function(l){
+    var n=l.nextElementSibling;l.style.display=(n&&n.style.display==='none')?'none':'block';
+  });
+}
+document.getElementById('vD').addEventListener('click',function(){view='D';apply()});
+document.getElementById('vM').addEventListener('click',function(){view='M';apply()});
+apply();
+</script>
+</body>
+</html>
