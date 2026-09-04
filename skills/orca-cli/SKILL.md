@@ -4,9 +4,11 @@ description: >-
   Public `orca` CLI for Orca-managed state: worktrees, terminals, repos,
   automations, worktree comments, and the browser embedded inside the Orca app.
   Use ONLY when the user explicitly mentions Orca ("orca cli", "Orca worktree",
-  "Orca terminal", "Orca browser", "$orca-cli"). A generic "hand off to another
-  agent/worktree" request without an Orca mention is not this skill; delegating
-  to codex additionally requires the user to ask for codex (`codex-delegation` skill).
+  "Orca terminal", "Orca browser", "$orca-cli"), or when the CLAUDE.md 워크트리 분리
+  rule routes a worktree to supervised dispatch or to a full handoff. A generic
+  "hand off to another agent/worktree" request without an Orca mention and without
+  that routing is not this skill; delegating to codex additionally requires the user
+  to ask for codex (`codex-delegation` skill).
 ---
 
 # Orca CLI
@@ -54,7 +56,7 @@ Prefer `--json` for agent-driven calls. If the CLI is missing, say so explicitly
 
 A full handoff transfers ownership to another agent or worktree, then the original agent stops. Treat requests phrased as "hand off", "handoff", "handover", "give this to another agent", "give this to another worktree", "another agent", or "another worktree" as full handoffs unless the user explicitly asks to supervise, monitor, wait for results, track completion, coordinate a DAG, use decision gates, or manage ask/reply.
 
-Do not use `orca orchestration task-create`, `orca orchestration dispatch --inject`, or `orca orchestration check --wait` for full handoffs. `task-create` is also forbidden because it records coordinator-owned tracking state; if a task row is needed, the user asked for supervised orchestration. Deliver the prompt with worktree/terminal commands, report the created worktree/terminal if useful, and stop monitoring.
+Do not use `orca orchestration task-create`, `orca orchestration dispatch --inject`, or `orca orchestration check --wait` for full handoffs. `task-create` is also forbidden because it records coordinator-owned tracking state; if a task row is needed, the user asked for supervised orchestration. Deliver the prompt with worktree/terminal commands, report the created worktree/terminal if useful, and stop monitoring. A worktree the CLAUDE.md **워크트리 분리** rule routed to supervision is **Supervised Dispatch**, not a handoff.
 
 Independent new-worktree handoff:
 
@@ -84,6 +86,30 @@ Existing-terminal handoff:
 ```text
 ORCA terminal send --terminal <handle> --text "<task brief>" --enter --json
 ```
+
+## Supervised Dispatch
+
+Use when you keep ownership — you gate the worker's diff, run review, and assemble. Handing over and stopping is **Full Handoffs** above; a `codex-worker` spawn is the `codex-delegation` skill, which does not use orchestration at all.
+
+```text
+ORCA worktree create --name <task> --agent claude --base-branch <base> --json
+ORCA terminal wait --terminal <agent_handle> --for tui-idle --timeout-ms 120000 --json
+ORCA orchestration task-create --spec "<brief>" --task-title <short> --display-name <short> --json
+ORCA orchestration dispatch --task <task_id> --to <agent_handle> --inject --json
+ORCA orchestration check --terminal <your_handle> --unread --types worker_done,escalation,decision_gate --wait --timeout-ms <n> --json
+```
+
+Handles: the worker's is `startupTerminal.handle` from the create response (see **Worktrees**); yours is the current worktree's active terminal, so `--terminal` may be omitted (see **Terminal rules**).
+
+- `--inject` hands the worker its whole protocol: the `worker_done` command with the correct `--from`, a 5-minute heartbeat, `ask` for questions, and escalation. Put the work in `task-create --spec` and leave `--prompt` off the create — a prompt plus a dispatch gives the worker two briefs. When an impl-spec file covers the work, name its absolute path in the brief instead of pasting or summarising it.
+- **State in the brief that the protocol is real and name `orca orchestration --help` as the way to confirm it.** A worker that cannot verify `orchestration` refuses the injected preamble as an unverified protocol and reports nothing (measured: refusal without the verification path, compliance with it).
+- `check --wait` prints one pretty-printed JSON document on stdout and JSON keepalive lines on stderr. Parse stdout whole (`json.load`); a line-by-line parse silently drops every message and still marks it read.
+- Wait on `decision_gate` and `escalation` beside `worker_done`: a worker's question arrives as `decision_gate` and blocks it until you `orchestration reply --id <msg_id> --body <text>`.
+- `worker_done` moves the task to `completed` by itself (measured). Reach for `task-update --status failed|completed` only for a task that ended without one — refused, abandoned, or stopped by you.
+- One pane holds one active dispatch. `task-update` does not release it and no command clears it, so send a retry to a fresh pane.
+- Read `dispatch --dry-run --return-preamble` to see exactly what the worker will be told.
+- Assembly and review follow `impl-execute` Phase 2 and its Codex path steps 4 and 6 whatever the worker was — step 6 is what keeps the spec open while the integration branch is unmerged. Worker branches stay off the base branch — CLAUDE.md **Merging is the user's call**.
+- `orchestration reset` has no per-task scope — it clears every task or every message at once.
 
 ## Worktrees
 
@@ -197,7 +223,7 @@ Terminal rules:
 - `--terminal` is optional for most commands; omitted means the active terminal in the current worktree.
 - Use `terminal read` before `terminal send` unless the next input is obvious.
 - Use `terminal send` only for direct terminal input or one-off prompts where no task state, inbox, or reply tracking is needed.
-- For supervised coordination the user explicitly asks for (task DAGs, dispatches, inbox/reply flows), use `orca orchestration ...` commands — see `orca orchestration --help`. A receiving agent can run `orca orchestration check --unread --inject` to render its unread mail in agent-readable form; this checks the caller's inbox and does not remotely deliver input to another terminal.
+- For supervised coordination — asked for by the user, or routed there by the CLAUDE.md **워크트리 분리** rule (task DAGs, dispatches, inbox/reply flows) — use `orca orchestration ...` commands; see **Supervised Dispatch**. A receiving agent can run `orca orchestration check --unread --inject` to render its unread mail in agent-readable form; this checks the caller's inbox and does not remotely deliver input to another terminal.
 - Use `terminal create --worktree active --command "<agent>"` for a fresh agent in the current worktree. Use `worktree create --agent <agent>` only for a separate checkout (agent in the first terminal — do not also `terminal create` the same agent).
 - Use `terminal wait --for tui-idle` for agent CLIs such as Claude Code, Gemini, Codex, OMP, Pi, and Grok; always pass `--timeout-ms`.
 - Terminal handles are runtime-scoped. Use `startupTerminal.handle` as the sole agent handle when `worktree create --agent` returns it; if Orca restarts, omits the handle, or returns `terminal_handle_stale`, reacquire with `terminal list` and continue with the replacement only.

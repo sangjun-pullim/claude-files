@@ -81,7 +81,7 @@ report facts, and stop — the Claude orchestrator owns markers, review, and clo
 
 ## Codex path
 
-Load the `codex-delegation` skill first — it owns the mode question and the dispatch contract.
+Load the `codex-delegation` skill first — it owns the codex dispatch contract; the mode question itself is the CLAUDE.md 워크트리 분리 rule. Steps 4 and 6 hold whatever the worker was; skip this load when the worker is not codex.
 
 1. **Split** the unchecked steps into workers with disjoint file sets. A step that changes an
    exported signature, schema, barrel, or shared type runs alone; a signature change and its
@@ -110,9 +110,9 @@ Load the `codex-delegation` skill first — it owns the mode question and the di
    the same worktree/checkout with the session id and the correction verbatim), then re-gate and
    re-assemble. A one-line mechanical fix may be done by you — say so, and in orca mode commit it
    on the integration branch.
-6. **Phase 3 in orca mode**: do not close the spec — the code sits on an unmerged integration
+6. **Phase 3 in orca worktree mode**, whatever the worker was: do not close the spec — the code sits on an unmerged integration
    branch. Return the repo-root checkout to `<base>`, then report: worker → steps → Codex
-   session id, the integration and worker branches, that nothing was merged into `<base>`, and
+   worker id (codex: session id), the integration and worker branches, that nothing was merged into `<base>`, and
    the cleanup the user runs after merging: `orca worktree rm --worktree path:<worktree>` per
    worker, then `git branch -D` on each worker branch and `<task>-integration`. Never remove a
    worktree holding uncommitted changes. Close the spec after the user merges.
