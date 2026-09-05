@@ -11,6 +11,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 ## Scope
 
+- 가장 단순한 해결책을 먼저 시도한다. 200줄로 쓴 것이 50줄이 되면 다시 쓴다. 버그는 단순한 확인부터 — 그게 실패하면 `diagnosing-bugs` 스킬.
 - 요청이 요구하는 곳만 건드린다. 눈에 띈 기존 버그·성능 문제는 고치지 말고 후속 항목으로 보고한다.
 - 요청 자체가 재작성·재구조화이거나 새 파일을 만드는 경우가 아니면, 파일 전체를 다시 쓰지 말고 국소 편집을 쓴다.
 
@@ -18,7 +19,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 - Files: kebab-case (`user-auth.service.ts`). Exception: standard project docs — see the `second-brain` skill.
 - Prisma: PascalCase model name, snake_case columns via `@map`.
-- One function = one responsibility; split over 50 lines. A module has one responsibility.
+- One function = one responsibility; split over 50 lines. A module has one responsibility. 단, 쪼갠 조각을 인터페이스에 새로 노출하지는 않는다(내부 헬퍼 분할은 항상 허용) — 깊은 모듈 설계는 `codebase-design` 스킬.
 - Custom error classes, never bare `throw new Error()`. Separate user-facing errors from internal ones.
 - New feature = tests. Bug fix = reproduction test first. Test names: "should + behavior". Mock external dependencies. 새 테스트는 같은 모듈의 기존 테스트 파일과 같은 형식·규모로 쓰고, 새 러너나 하네스를 들이지 않는다. 위 두 문장과 Hard Rules가 요구하는 테스트는 이 제한의 예외 — 레포에 테스트가 하나도 없어도 쓴다.
 - Never interpolate user input into raw SQL. No hardcoded keys, tokens, or passwords.
