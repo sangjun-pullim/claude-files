@@ -87,3 +87,5 @@
 **2026-08 — 규제 프롬프트 정리.** Fable 5 / Opus 5 기준으로 모델이 기본으로 하는 행동을 규제하던 항목을 제거했다: `CLAUDE.md` Discipline·Self-Improvement 섹션, `rules/risk-triage.md`(티어 표) · `rules/agents.md` · `rules/standards.md`(CLAUDE.md에 흡수), `docs/review-loop.md`(스킬에 인라인), 꺼져 있던 스킬 4개(api-design, db-migrations, orchestration, security-checklist), agent teams 플래그. 항상 로드되는 컨텍스트 약 250줄 → 약 70줄. 복구는 git 이력에서.
 
 **2026-09 — Fable 5.1 가이드 반영과 규칙 추가.** 5.1에서 자주 보고된 행동에 맞춰 `CLAUDE.md`에 `## Scope`(요청 범위 밖 수정 억제, 국소 편집 우선), mannered prose 금지, 테스트 분량 기준을 넣고, `settings.json`의 `claude-fable-5-1` effort를 `xhigh` → `high`로 낮추고 `showThinkingSummaries`를 켰다. 같은 시기에 **워크트리 분리** Hard Rule이 신설되어 다른 에이전트에게 작업을 넘길 때의 worktree/in-place 질문이 `codex-delegation`에서 `CLAUDE.md`로 옮겨졌고, `orca-cli`가 「Full Handoffs」/「Supervised Dispatch」로 나뉘었다. `ux-wireframe` 스킬 추가.
+
+이어서 8월에 지웠던 **Simplicity 원칙을 되살렸다** — `## Scope`에 "가장 단순한 해결책을 먼저"가 돌아왔고, 함수 50줄 분할 규칙에는 깊은 모듈 설계와 충돌하지 않도록 "쪼갠 조각을 인터페이스에 새로 노출하지 않는다" 단서가 붙었다. `autoMode`의 자동 승인 범위도 좁혔다: 라이브 DB에 쓰는 `pnpm smoke:*`를 allow에서 빼고, `aws s3 ls` 패턴에 버킷을 명시했다(기존 패턴은 다른 버킷과 `--endpoint-url` 임의 호스트까지 자동 승인했다).
