@@ -5,10 +5,8 @@
       "Glob",
       "Grep",
       "Bash(npm *)",
-      "Bash(npx *)",
       "Bash(pnpm *)",
       "Bash(yarn *)",
-      "Bash(node *)",
       "Bash(git status)",
       "Bash(git diff *)",
       "Bash(git log *)",
@@ -43,6 +41,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -217,10 +216,52 @@
     },
     "claude-fable-5": {
       "effortLevel": "high"
+    },
+    "claude-fable-5-1": {
+      "effortLevel": "high"
     }
   },
   "tui": "fullscreen",
+  "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(pnpm dryrun\\:*) in luxury-collector — routine adapter live-verification gate documented in CLAUDE.md",
+      "Bash(pnpm smoke\\:*) in luxury-collector — routine adapter worker smoke test",
+      "Bash(aws s3 ls*) scoped to luxury-collector-raw-993249606761 — frequent read-only bucket inspection (130x aws usage seen)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "aws s3 rm / aws s3 sync --delete against luxury-collector-raw-993249606761 — mass delete on the corroborated bucket",
+      "terraform apply / destroy under infra/terraform/** — protected IaC scope touching VPC/ALB/SG/IAM-adjacent resources"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: AWS (EC2/ECS-style deploy via Terraform, S3/MinIO storage, RDS Postgres per docs/rds-pitr-cutover.md)",
+      "**Repository visibility**: PRIVATE — pullim-dev/luxury-collector (github.com)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: Terraform-provisioned Secrets Manager / GitHub Actions secrets (CI secret names referenced: ALB_LISTENER_ARN, ALB_SG_ID, API_KEYS, AWS_ACCOUNT_ID, AWS_DEPLOY_ROLE_ARN, BOARD_PASSWORD, BUNJANG_SELLER_SALT, DB_PASSWORD, FCK_NAT_SUBNET_ID, GEMINI_API_KEY, GH_ACTIONS_READ_TOKEN, IDENTIFY_IMAGE_URL_HOSTS, LUX365_TASK_SG_ID, PROXY_POOL, SLACK_WEBHOOK_URL, TF_STATE_BUCKET, THUMB_MIRROR_CDN_HOSTS, VPC_ID) — never place values in the repo; .env is gitignored",
+      "**Default / protected branches**: main (default). No rulesets or classic branch protection listed via gh — treat as unprotected for now",
+      "**CI/CD deploy targets**: .github/workflows/deploy.yml — AWS via Terraform (infra/terraform/**), targets referenced: ALB, ECS task defs, VPC/subnets (this repo only)",
+      "**Network posture**: None configured",
+      "**Source control**: pullim-dev/luxury-collector (github.com) and its origin remote only",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: luxury-collector-raw-993249606761 (usage-corroborated — seen 29x in this project's transcripts); luxury-raw (config-derived — not a confirmed upload destination; uploads of local data still require confirmation)",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: .env, .env.development, infra/terraform/terraform.tfvars, infra/terraform/bootstrap/terraform.tfvars, infra/terraform/bootstrap/terraform.tfstate(.backup) — credentials/secrets/state; BUNJANG_SELLER_SALT (irreversible pseudonymization key, per 048); share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace/host/container with `prod` or `production` as a whole segment (none named explicitly in recon)",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: infra/terraform/** (VPC_ID, ALB_SG_ID, LUX365_TASK_SG_ID, AWS_DEPLOY_ROLE_ARN, AWS_ACCOUNT_ID) plus IAM, RBAC, networking, quota, and node-pool resources; anything whose name/tag carries `prod` or `production`",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (backend/fullstack, NestJS/Prisma, luxury-collector data pipeline)",
+      "**Trusted repo**: /Users/pullim/Documents/workspace/luxury-collector (origin: github.com/pullim-dev/luxury-collector, private) — confidential material OK to commit here, but secrets/credentials are never cleared by visibility",
+      "**Org-specific CLIs**: None configured (project CLIs are pnpm scripts: build, typecheck, start:api/scheduler/worker, infra:up/down/logs, db:generate/migrate/seed/studio, seed:canonical, rematch:*, repair:buyback-projection, decompose:fused-aliases, aggregate:kream/multi; adapter dryrun/smoke scripts under scripts/dryrun, scripts/smoke)"
+    ]
+  }
 }
