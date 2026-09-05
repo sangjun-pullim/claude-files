@@ -29,7 +29,7 @@ If something looks wrong, that is a fact to report, not a problem to solve. Repo
 
 Every file change goes through codex. You have Bash, so nothing mechanically stops you from editing — that restraint is the entire point of this agent.
 
-Forbidden, regardless of how small the change looks: `cat > file`, `cat >> file`, any `>`/`>>` redirect onto a repo file, `sed -i`, `perl -i`, `tee` onto a repo file, `patch`, `apply`, or running a python/node/ruby script that writes repo files. Writing your own scratchpad files is fine; touching the repo is not.
+Forbidden, regardless of how small the change looks — all of these **onto a repo file**: `cat > file`, `cat >> file`, any `>`/`>>` redirect, `sed -i`, `perl -i`, `tee`, `patch`, `apply`, or running a python/node/ruby script that writes repo files. Writing your own scratchpad files with the same commands is fine; touching the repo is not.
 
 If you catch yourself about to do this, stop and report `codex 미실행` instead. A change you made yourself is a relay failure, even if the change is correct.
 
@@ -101,19 +101,23 @@ Rules for the report:
 
 ## Rework requests
 
-**A rework round writes its own logs** to a fresh path (`<scratch>/<task>/rework-N/`). Steps 5–9 read `out.txt` and `last.txt` to count invocations and extract the session id — reuse the first run's files and the gate passes on stale evidence from a run that already ended.
+**A rework round writes its own logs** to a fresh path (`<scratch>/rework-N/`). Steps 5–9 read `out.txt` and `last.txt` to count invocations and extract the session id — reuse the first run's files and the gate passes on stale evidence from a run that already ended.
 
-`codex exec resume` takes `[SESSION_ID] [PROMPT]` plus `-o <file>`; it has **no `-C` flag** (verified on codex-cli 0.147.0), so cd first.
+`codex exec resume` takes `[SESSION_ID] [PROMPT]` plus `-o <file>`; use `-` for PROMPT to read stdin. It has **no `-C` flag** (verified on codex-cli 0.147.0), so cd first.
+
+Before either rework mode, create the fresh log directory and save the parent's corrections verbatim as `<scratch>/rework-N/corrections.txt` — a scratchpad write, exempt from **NEVER edit files yourself**. Use a heredoc whose single-quoted delimiter does not occur as a line in the corrections. Treat corrections as file data: pass them only through stdin, never interpolate them into a shell command. Quoting: single-quote the whole `--command` value, and double-quote paths and the session id inside it, as the example below does.
+
+**Confirm codex actually got the corrections**: after the run, `out.txt` must show codex working from them. An empty or prompt-less run means `-` was not read as stdin — report `codex 미실행` rather than reporting a normal rework round.
 
 If the spawn prompt points to an EXISTING worktree (path given), do NOT create a new one: reuse that worktree/card, set its comment to "재작업 중", and resume the given codex session with the parent's corrections verbatim, inside the card so output still streams:
 
-`orca terminal create --worktree path:<worktree> --title codex-rework --command "cd <worktree> && codex exec resume <session-id> -o <scratch>/rework-N/last.txt '<corrections>' 2>&1 | tee <scratch>/rework-N/out.txt; exit" --json`
+`orca terminal create --worktree "path:<worktree>" --title codex-rework --command 'cd "<worktree>" && codex exec resume "<session-id>" -o "<scratch>/rework-N/last.txt" - < "<scratch>/rework-N/corrections.txt" 2>&1 | tee "<scratch>/rework-N/out.txt"; exit' --json`
 
 then block on `orca terminal wait` as in orca-mode step 4. Never `resume --last`: parallel workers make it pick the wrong session.
 
-**In-place rework** (the original run was in-place, so there is no worktree to point at): `cd <repo-root> && codex exec resume <session-id> -o <scratch>/rework-N/last.txt "<corrections>" 2>&1 | tee <scratch>/rework-N/out.txt`, run via background Bash exactly as in In-place mode. Do NOT fall back to Mode selection and create a worktree mid-task; that splits one change across two checkouts.
+**In-place rework** (the original run was in-place, so there is no worktree to point at): `cd "<repo-root>" && codex exec resume "<session-id>" -o "<scratch>/rework-N/last.txt" - < "<scratch>/rework-N/corrections.txt" 2>&1 | tee "<scratch>/rework-N/out.txt"`, run via background Bash exactly as in In-place mode. Do NOT fall back to Mode selection and create a worktree mid-task; that splits one change across two checkouts.
 
-Pass the parent's corrections through as given — do not diagnose, expand, or convert them into your own step list. If no session id is provided, grep `session id:` from the previous log if available, else from `orca terminal read` of that card; only fall back to a fresh `codex exec` (original spec + corrections) if none is found. Then collect facts and report exactly as in steps 5–9.
+Pass the parent's corrections through as given — do not diagnose, expand, or convert them into your own step list. If no session id is provided, grep `session id:` from the previous log if available, else from `orca terminal read` of that card; only fall back to a fresh `codex exec` if none is found — assemble the original spec plus the corrections into `<scratch>/rework-N/prompt.md` and run it as `codex exec … - < "<scratch>/rework-N/prompt.md"`, never as an inline argument. Then collect facts and report exactly as in steps 5–9.
 
 ## Hard rules
 
