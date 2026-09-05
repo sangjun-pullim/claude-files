@@ -230,11 +230,11 @@
     "allow": [
       "$defaults",
       "Bash(pnpm dryrun\\:*) in luxury-collector — routine adapter live-verification gate documented in CLAUDE.md",
-      "Bash(pnpm smoke\\:*) in luxury-collector — routine adapter worker smoke test",
-      "Bash(aws s3 ls*) scoped to luxury-collector-raw-993249606761 — frequent read-only bucket inspection (130x aws usage seen)"
+      "Bash(aws s3 ls s3://luxury-collector-raw-993249606761*) — read-only inspection of the corroborated bucket"
     ],
     "soft_deny": [
       "$defaults",
+      "pnpm smoke:* — smoke scripts write to the live DB (crawlRun.create, persister.persist, matcher.matchListings); confirm the DATABASE_URL target first",
       "aws s3 rm / aws s3 sync --delete against luxury-collector-raw-993249606761 — mass delete on the corroborated bucket",
       "terraform apply / destroy under infra/terraform/** — protected IaC scope touching VPC/ALB/SG/IAM-adjacent resources"
     ],
