@@ -12,7 +12,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 ## Scope
 
 - 가장 단순한 해결책을 먼저 시도한다. 200줄로 쓴 것이 50줄이 되면 다시 쓴다. 버그는 단순한 확인부터 — 그게 실패하면 `diagnosing-bugs` 스킬.
-- 요청이 요구하는 곳만 건드린다. 눈에 띈 기존 버그·성능 문제는 고치지 말고 후속 항목으로 보고한다.
+- 요청이 요구하는 곳만 건드린다. 눈에 띈 기존 버그·성능 문제는 고치지 말고 후속 항목으로 보고한다. 요청이 모호하면 문구와 주변 코드가 가장 직접 뒷받침하는 해석 하나로 구현하고 그 가정을 완료 보고에(사전 승인이 필요하면 계획에도) 적는다 — 다른 해석까지 같이 만들지 않는다. 단, 해석이 사용자 정책 판단(비가역 동작·외부 계약)을 가르면 비교·추천 후 사용자 선택을 받고 진행하고, Hard Rules가 사전 승인·질문을 요구하면 그쪽이 우선한다.
 - 요청 자체가 재작성·재구조화이거나 새 파일을 만드는 경우가 아니면, 파일 전체를 다시 쓰지 말고 국소 편집을 쓴다.
 
 ## Standards
@@ -21,7 +21,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 - Prisma: PascalCase model name, snake_case columns via `@map`.
 - One function = one responsibility; split over 50 lines. A module has one responsibility. 단, 쪼갠 조각을 인터페이스에 새로 노출하지는 않는다(내부 헬퍼 분할은 항상 허용) — 깊은 모듈 설계는 `codebase-design` 스킬.
 - Custom error classes, never bare `throw new Error()`. Separate user-facing errors from internal ones.
-- New feature = tests. Bug fix = reproduction test first. Test names: "should + behavior". Mock external dependencies. 새 테스트는 같은 모듈의 기존 테스트 파일과 같은 형식·규모로 쓰고, 새 러너나 하네스를 들이지 않는다. 위 두 문장과 Hard Rules가 요구하는 테스트는 이 제한의 예외 — 레포에 테스트가 하나도 없어도 쓴다.
+- New feature = tests. Bug fix = reproduction test first. Test names: "should + behavior". Mock external dependencies. 새 테스트는 같은 모듈의 기존 테스트 파일과 같은 형식·규모로, 명시된 동작당 하나 정도로 쓰고, 새 러너나 하네스를 들이지 않는다. 일회성 확인 스크립트는 남기지 않고 그대로 테스트 파일로 만들지 않는다(최소화한 재현을 회귀 테스트로 옮기는 것은 제외). 앞의 New feature / Bug fix 요구와 Hard Rules가 요구하는 테스트는 위 두 제한(형식·규모·개수·러너 / 일회성 스크립트 승격)의 예외 — 레포에 테스트가 하나도 없어도 쓴다.
 - Never interpolate user input into raw SQL. No hardcoded keys, tokens, or passwords.
 - Commit: `<type>(<scope>): <한국어 설명>` — type/scope 영어. Types: feat, fix, refactor, test, docs, chore. One commit = one logical change.
 

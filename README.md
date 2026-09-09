@@ -89,3 +89,5 @@
 **2026-09 — Fable 5.1 가이드 반영과 규칙 추가.** 5.1에서 자주 보고된 행동에 맞춰 `CLAUDE.md`에 `## Scope`(요청 범위 밖 수정 억제, 국소 편집 우선), mannered prose 금지, 테스트 분량 기준을 넣고, `settings.json`의 `claude-fable-5-1` effort를 `xhigh` → `high`로 낮추고 `showThinkingSummaries`를 켰다. 같은 시기에 **워크트리 분리** Hard Rule이 신설되어 다른 에이전트에게 작업을 넘길 때의 worktree/in-place 질문이 `codex-delegation`에서 `CLAUDE.md`로 옮겨졌고, `orca-cli`가 「Full Handoffs」/「Supervised Dispatch」로 나뉘었다. `ux-wireframe` 스킬 추가.
 
 이어서 8월에 지웠던 **Simplicity 원칙을 되살렸다** — `## Scope`에 "가장 단순한 해결책을 먼저"가 돌아왔고, 함수 50줄 분할 규칙에는 깊은 모듈 설계와 충돌하지 않도록 "쪼갠 조각을 인터페이스에 새로 노출하지 않는다" 단서가 붙었다. `autoMode`의 자동 승인 범위도 좁혔다: 라이브 DB에 쓰는 `pnpm smoke:*`를 allow에서 빼고, `aws s3 ls` 패턴에 버킷을 명시했다(기존 패턴은 다른 버킷과 `--endpoint-url` 임의 호스트까지 자동 승인했다).
+
+5.1 가이드 재점검(9월 초): 가이드 스니펫 대부분(진행 보고, 자율 완주, 병렬 툴 호출, 국소 편집)은 Claude Code 하네스가 이미 넣고 있어 중복 추가하지 않았다. 남은 공백인 「변경·테스트를 요청 범위로 제한」만 `CLAUDE.md`에 반영 — 모호한 요청은 한 해석으로 구현하고 가정을 적기, 테스트는 명시된 동작당 하나 정도, 검증용 스크래치를 영구 테스트로 승격하지 않기.
