@@ -23,8 +23,11 @@ Codex) carries the blind spot this loop exists to defeat.
   Clear them first (re-run `/impl-plan`, or dispose them by hand with evidence).
 - Record the base branch as `<base>` (`git rev-parse --abbrev-ref HEAD`).
 
-**Who implements**: you, unless the user asked for Codex ("codex로 구현", "GPT로 진행") — then
-follow the Codex path below instead of Phase 1. Never switch to Codex on your own.
+**Who implements**: you, or an `implementer` worker per CLAUDE.md `## Delegation` — unless the
+user asked for Codex ("codex로 구현", "GPT로 진행"), then follow the Codex path below instead of
+Phase 1. Never switch to Codex on your own. When you hand a step to `implementer`, quote that
+step's `## Tests` entries verbatim in the spawn prompt; you still flip the marker after reading
+its report and its `Verification` exit codes, and Phase 2 stays yours.
 
 **If you are Codex** reading this: implement the steps you were given, never write the spec file,
 report facts, and stop — the Claude orchestrator owns markers, review, and closing.
@@ -56,7 +59,9 @@ report facts, and stop — the Claude orchestrator owns markers, review, and clo
    it sees current file contents but never what changed or was deleted.
 2. Spawn a **new** `reviewer` agent each round with: the spec path, the change summary and
    dependency map, the patch path, the absolute checkout path, and (round 2+) the previous
-   disposition table. It runs in Implementation verification mode (`agents/reviewer.md`).
+   disposition table. It runs in Implementation verification mode (`agents/reviewer.md`). If the
+   spec's Affected Files touch a risk surface (auth / payment / permission / DB schema / public
+   API), spawn it with `model: fable`; that round also satisfies the Hard Rule's review.
 3. **Disposition** — `ACCEPTED` (fix the code) or `REJECTED` with concrete evidence:
 
    | Finding | Severity | Disposition | Rationale |

@@ -27,11 +27,11 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 ## Hard Rules
 
-- **Risk surface** — auth / payment / permission / DB schema (`schema.prisma`, migrations) / public API contract: tests required, and a `reviewer` agent reviews before you report done. Judge by what the change does, not the file name.
+- **Risk surface** — auth / payment / permission / DB schema (`schema.prisma`, migrations) / public API contract: tests required, and a `reviewer` agent spawned with `model: fable` reviews before you report done. Judge by what the change does, not the file name.
 - **5+ production files** in one logical change: share the plan first and get approval (`impl-plan`).
 - **워크트리 분리** — 사용자가 감독 없이 넘기라고 하면(판정 목록은 `orca-cli` 「Full Handoffs」) 구현자와 무관하게 「Full Handoffs」로 가고 이 규칙은 발화하지 않는다. 그 외에 사용자 작업을 **다른 에이전트에게** 별도 체크아웃으로 넘길 때(codex·claude 무관), 계획이 확정된 뒤 첫 디스패치 전에 `orca worktree`(워커별 격리 브랜치+Orca 카드) / in-place(현재 체크아웃·카드 없음·워커 1개 직렬)를 AskUserQuestion으로 묻는다. `orca status`가 실패하면 묻지 않고 in-place. 답은 그 task 전체에 적용 — 현재 task의 계획이 덮지 않는 새 요청 = 새 task → 재질문. worktree일 때 구현자별로 갈라진다: codex는 `codex-worker` 스폰(`codex-delegation`), 그 외 워커는 `orca-cli` 스킬 「Supervised Dispatch」. 내가 격리 브랜치에서 직접 작업하는 것은 그냥 worktree 사용이고, `Agent` 도구의 `isolation: "worktree"`도 이 규칙 밖이다.
 - **Merging is the user's call** — never merge a PR or write to the default branch (`gh pr merge` including `--auto`/`--admin`, `gh api …/merge`, direct push to `main`) unless the user explicitly says to merge; `--admin` only when the user names it. Approving *what* to deploy is not approval to merge it. Report the PR URL and stop. Merging a worker branch into an integration branch is not this rule.
-- **Control-plane** — `~/.claude/**`, any repo's `.claude/**`, `CLAUDE.md` / `AGENTS.md`: the text is live in every new session, so a `reviewer` agent reviews before you report done, and show the diff. Exempt: harness-written artifacts (`projects/**/memory/`, session state, `skills/benchmark-workspace/**`, edits to vendored `plugins/**`). Installing or updating a plugin is not exempt — it ships hooks, agents, and commands live into every session.
+- **Control-plane** — `~/.claude/**`, any repo's `.claude/**`, `CLAUDE.md` / `AGENTS.md`: the text is live in every new session, so a `reviewer` agent spawned with `model: fable` reviews before you report done, and show the diff. Exempt: harness-written artifacts (`projects/**/memory/`, session state, `skills/benchmark-workspace/**`, edits to vendored `plugins/**`). Installing or updating a plugin is not exempt — it ships hooks, agents, and commands live into every session.
 - Report which review ran. If the reviewer spawn failed, mark the work `UNREVIEWED` and quote the spawn error — no attempt on record is not a failed spawn.
 - After changes to architecture, DB schema, API, or business logic, *suggest* a `docs/` update with a specific file and section — never auto-update.
 - Files: plans → `docs/`, config → `~/.claude/`. If unspecified, ask.
@@ -40,9 +40,23 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 | Agent | Purpose | When |
 |---|---|---|
-| planner | Scope analysis — affected files, reverse dependencies, blast radius. Does not write the plan | Before planning a complex feature or refactor |
-| reviewer | Code / plan / implementation review — modes in `agents/reviewer.md` | After writing code, before commits, and wherever Hard Rules require it |
+| planner (Sonnet) | Scope analysis — affected files, reverse dependencies, blast radius. Does not write the plan | Before planning a complex feature or refactor |
+| implementer (Sonnet) | Implements a self-contained spec in the current checkout; returns diff summary, verification output, assumptions | General implementation and code investigation — see Delegation |
+| editor (Sonnet low) | Applies exact before/after rules across files; reports every touched location | Mechanical edits and repeated transformations — see Delegation |
+| reviewer (Opus; Fable for Hard Rules reviews) | Code / plan / implementation review — modes in `agents/reviewer.md` | After writing code, before commits, and wherever Hard Rules require it |
 | codex-worker | Implementation via OpenAI Codex CLI; relays facts, never judges | **Only when the user asks for codex/GPT** — load the `codex-delegation` skill first |
+
+## Delegation
+
+구독 사용량을 줄이기 위해, 키워드 없이 리드(현재 세션)가 난이도를 판단해 워커에 자동 배정한다. 총 토큰이 늘어도 구독 소모가 줄 것으로 보이면 위임한다 — 단, 아래 "리드가 직접" 항목이 이 원칙에 앞선다.
+
+- 리드가 직접: 난이도 판단·계획·복잡한 설계·원인이 불명확한 진단·워커 결과 검토, 그리고 인계·검토 비용이 더 큰 작은 수정(파일 1개, 50줄 이내).
+- `implementer`: 일반 구현과 코드 조사. 파일·동작·완료 기준·검증 명령·작성할 테스트(위 New feature / Bug fix 규칙은 스펙을 쓰는 리드가 반영)를 담은 자족적 스펙을 넘긴다.
+- `editor`: 기계적 편집·반복 변환. 정확한 before/after 규칙과 범위를 넘긴다. editor는 검증을 돌리지 않으므로 반환 후 리드가 build/type-check를 돌린 뒤 확인한다.
+- 조사 — `planner`는 변경 제안의 범위 분석, 빌트인 `Explore` 에이전트는 자유 검색, `implementer`(Investigate)는 `path:line` 근거가 필요한 질문. 여러 파일을 훑어야 하는 검색은 리드가 직접 읽지 않고 워커에 맡긴다. 단, `rules/second-brain.md`가 요구하는 `docs/` 선행 읽기는 리드가 직접 한다.
+- 관련 작업은 한 워커에 묶고, 후속 보정은 SendMessage로 같은 워커에 보낸다. 같은 체크아웃을 수정하는 워커는 순차 실행하고, 파일 집합이 겹치지 않을 때만 병렬로 띄운다.
+- `impl-execute` 안에서 위임할 때는 그 스킬의 Phase 1 규칙(스텝별 `## Tests` 항목을 스폰 프롬프트에 그대로 인용, 마커 플립과 Phase 2는 리드)이 우선한다.
+- 워커 결과는 리드가 diff와 검증 출력으로 확인한다. Hard Rules(risk surface 리뷰, 5+ 파일 승인, control-plane 리뷰)는 위임과 무관하게 그대로 적용된다. `implementer`·`editor`·`planner`·`Explore`는 현재 체크아웃에서 도는 in-process 에이전트라 워크트리 분리 규칙 밖이다. `codex-worker`는 해당 없음 — 그쪽은 규칙대로 모드를 묻는다.
 
 ## Docs
 

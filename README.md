@@ -69,8 +69,10 @@
 
 | 이름 | 역할 |
 |------|------|
-| `planner` | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사 |
-| `reviewer` | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
+| `planner` (Sonnet) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사 |
+| `implementer` (Sonnet) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
+| `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
+| `reviewer` (Opus, Hard Rules 리뷰는 Fable) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
 | `codex-worker` | codex CLI 실행·전달만 하는 워커 (판단은 부모가) |
 
 ### Hooks
@@ -91,3 +93,5 @@
 이어서 8월에 지웠던 **Simplicity 원칙을 되살렸다** — `## Scope`에 "가장 단순한 해결책을 먼저"가 돌아왔고, 함수 50줄 분할 규칙에는 깊은 모듈 설계와 충돌하지 않도록 "쪼갠 조각을 인터페이스에 새로 노출하지 않는다" 단서가 붙었다. `autoMode`의 자동 승인 범위도 좁혔다: 라이브 DB에 쓰는 `pnpm smoke:*`를 allow에서 빼고, `aws s3 ls` 패턴에 버킷을 명시했다(기존 패턴은 다른 버킷과 `--endpoint-url` 임의 호스트까지 자동 승인했다).
 
 5.1 가이드 재점검(9월 초): 가이드 스니펫 대부분(진행 보고, 자율 완주, 병렬 툴 호출, 국소 편집)은 Claude Code 하네스가 이미 넣고 있어 중복 추가하지 않았다. 남은 공백인 「변경·테스트를 요청 범위로 제한」만 `CLAUDE.md`에 반영 — 모호한 요청은 한 해석으로 구현하고 가정을 적기, 테스트는 명시된 동작당 하나 정도, 검증용 스크래치를 영구 테스트로 승격하지 않기.
+
+**2026-09 (중순) — 구독 사용량 최소화 위임.** 리드(현재 세션)가 키워드 없이 난이도를 판단해 저렴한 워커에 자동 배정하는 `## Delegation` 섹션을 `CLAUDE.md`에 추가. 워커 `implementer`(Sonnet high, 일반 구현·조사)와 `editor`(Sonnet low, 기계적 편집) 신설, `planner`를 Opus → Sonnet high로 변경, `settings.json`에 `CLAUDE_CODE_SUBAGENT_MODEL=sonnet`을 넣어 모델 미지정 서브에이전트(Explore 등)의 기본값을 Sonnet으로 내렸다. `reviewer`는 Opus 기본, 위험 영역·control-plane 리뷰만 `model: fable`로 스폰. Haiku는 쓰지 않는다(최소 Sonnet). Codex 쪽의 Astra/Sol/Terra/Luna 배분과 같은 취지.
