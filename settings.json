@@ -41,7 +41,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5-1[1m]",
+  "model": "opus[1m]",
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
   },
