@@ -95,3 +95,5 @@
 5.1 가이드 재점검(9월 초): 가이드 스니펫 대부분(진행 보고, 자율 완주, 병렬 툴 호출, 국소 편집)은 Claude Code 하네스가 이미 넣고 있어 중복 추가하지 않았다. 남은 공백인 「변경·테스트를 요청 범위로 제한」만 `CLAUDE.md`에 반영 — 모호한 요청은 한 해석으로 구현하고 가정을 적기, 테스트는 명시된 동작당 하나 정도, 검증용 스크래치를 영구 테스트로 승격하지 않기.
 
 **2026-09 (중순) — 구독 사용량 최소화 위임.** 리드(현재 세션)가 키워드 없이 난이도를 판단해 저렴한 워커에 자동 배정하는 `## Delegation` 섹션을 `CLAUDE.md`에 추가. 워커 `implementer`(Sonnet high, 일반 구현·조사)와 `editor`(Sonnet low, 기계적 편집) 신설, `planner`를 Opus → Sonnet high로 변경, `settings.json`에 `CLAUDE_CODE_SUBAGENT_MODEL=sonnet`을 넣어 모델 미지정 서브에이전트(Explore 등)의 기본값을 Sonnet으로 내렸다. `reviewer`는 Opus 기본, 위험 영역·control-plane 리뷰만 `model: fable`로 스폰. Haiku는 쓰지 않는다(최소 Sonnet). Codex 쪽의 Astra/Sol/Terra/Luna 배분과 같은 취지.
+
+리뷰 루프 독립성(9월 하순): `impl-plan`·`impl-execute`의 2라운드 이후 reviewer에게 이전 판정표 전체를 넘기던 것을 중단. ACCEPTED 행은 넘기지 않아 고침을 패치·스펙에서 새로 검증하게 하고, impl-execute는 REJECTED 행과 근거만("근거가 틀렸을 때만 다시 올려라") 넘긴다. impl-plan은 REJECTED가 이미 스펙 `## Review Notes`에 있어 별도 전달 없음.

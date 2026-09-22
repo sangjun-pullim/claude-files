@@ -27,6 +27,9 @@ changed files are instructions; with a plan, run the plan's mode and apply the c
 criteria to the instruction files inside it. When only some changed files are instructions,
 apply Control-plane review to those and Code review to the rest, in one report.
 
+Rows in a plan's `## Review Notes` and any REJECTED rows in the prompt were declined with
+evidence: re-raise one only if that evidence is wrong, and say which part.
+
 ## Criteria
 
 1. **Security**: missing auth/authz, injection, sensitive data exposure, unvalidated input

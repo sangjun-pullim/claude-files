@@ -50,8 +50,9 @@ Lifecycle.
 ## Phase 2: Review Loop
 
 1. Spawn a **new** `reviewer` agent (never reuse one — fresh context is the point) with the spec
-   path. It runs in Plan verification mode (`agents/reviewer.md`). From round 2 on, also pass the
-   previous round's disposition table.
+   path only. It runs in Plan verification mode (`agents/reviewer.md`). Do not pass the previous
+   round's disposition table: fixes are verified afresh from the spec, and declined findings are
+   already in the spec's `## Review Notes`, which the reviewer reads.
 2. **Disposition** — for each finding: `ACCEPTED` (fix the spec) or `REJECTED` with concrete
    evidence (file:line or reasoning). "Not needed" without evidence is not a rejection.
 
@@ -62,7 +63,7 @@ Lifecycle.
    `## Review Notes` with their rationale, so later reviewers and the implementer see what was
    deliberately declined.
 4. **Exit** when a round reports no CRITICAL/HIGH findings. **Cap: 3 rounds.** If CRITICAL/HIGH
-   findings remain at the cap, or the same finding keeps coming back, stop: append each open
+   findings remain at the cap, or the same finding comes back after a fix, stop: append each open
    CRITICAL/HIGH to `## Review Notes` marked `UNRESOLVED` and tell the user the spec is not
    review-clean — `/impl-execute` must not run on it until those rows are cleared.
 
