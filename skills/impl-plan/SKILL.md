@@ -36,9 +36,9 @@ a `risk-surface` field if its frontmatter predates it (an old `tier` field can s
 Phase 2. For editing a step already marked `[x]`, see the `second-brain` skill's impl-spec
 Lifecycle.
 
-1. **Scope analysis** — spawn a `planner` agent with the requirements above. Resolve any
+1. **Scope analysis** — spawn a `scope-analyst` agent with the requirements above. Resolve any
    `## Open Questions` it returns with the user before drafting; nothing downstream reopens them.
-2. **Draft the spec** in the Output Format below. The planner's reverse dependencies and existing
+2. **Draft the spec** in the Output Format below. The scope-analyst's reverse dependencies and existing
    patterns go into `## Affected Dependents` and the steps — the implementer never sees the scope
    analysis, so the spec is how they reach it.
 3. **Save** to `docs/impl-spec/<NNN>-<short-description>.md`. `NNN` = highest existing number

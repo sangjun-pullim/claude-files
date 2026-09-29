@@ -69,10 +69,10 @@
 
 | 이름 | 역할 |
 |------|------|
-| `planner` (Sonnet) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사 |
-| `implementer` (Sonnet) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
+| `scope-analyst` (Opus high) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사 |
+| `implementer` (Sonnet medium) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
 | `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
-| `reviewer` (Opus) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
+| `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
 | `codex-worker` | codex CLI 실행·전달만 하는 워커 (판단은 부모가) |
 
 ### Hooks
@@ -99,3 +99,7 @@
 리뷰 루프 독립성(9월 하순): `impl-plan`·`impl-execute`의 2라운드 이후 reviewer에게 이전 판정표 전체를 넘기던 것을 중단. ACCEPTED 행은 넘기지 않아 고침을 패치·스펙에서 새로 검증하게 하고, impl-execute는 REJECTED 행과 근거만("근거가 틀렸을 때만 다시 올려라") 넘긴다. impl-plan은 REJECTED가 이미 스펙 `## Review Notes`에 있어 별도 전달 없음.
 
 **2026-09 (말) — Hard Rules 리뷰도 Opus로.** Opus 5.5가 코딩 벤치마크에서 Fable 5.1과 같거나 앞서고 비용은 60% 낮아, 위험 영역·control-plane 리뷰의 `model: fable` 스폰 예외를 없앴다. 모든 리뷰가 `reviewer` 기본값(`opus` 별칭)으로 돈다. 작성자와 다른 모델의 시각이 필요한 고위험 변경은 요청 시 Fable로 지정한다. 더 강한 모델이 나오면 다시 검토.
+
+**2026-09 (말) — 에이전트 effort 고정.** "Spending your effort"(Anthropic 블로그) 기준에 맞춰 워커·리뷰어 effort를 정의 파일에 고정했다. 세션 effort를 낮춰도 리뷰가 따라 내려가지 않도록 `reviewer`는 `xhigh`, 숨은 역의존성을 찾는 `planner`는 `xhigh`(같은 날 `scope-analyst`로 개명하며 Opus `high`로 변경), 상세 스펙을 받아 구현하는 `implementer`는 `medium`(낮은 effort로 구현, 높은 effort로 검증; `path:line` 조사도 medium으로 돈다), 기계적 편집 `editor`는 `low` 유지. `codex-worker`는 고정하지 않아 세션 effort를 따르고, 리드 세션 effort는 `/effort`로 그때그때 조정한다.
+
+**2026-09 (말) — `planner` → `scope-analyst` 개명, Opus로 복귀.** 8월에 역할이 "계획 작성"에서 "범위 조사"로 줄었는데 이름만 남아 있던 것을 실제 역할에 맞췄다. 호출 빈도가 낮고(복잡한 변경의 계획 전에만), NestJS 의존성 주입·이벤트로 얽힌 간접 의존성 추적과 위험 영역 판정은 모델 성능 차이가 나는 작업이며, Opus 5.5와 Sonnet 5의 단가 차이가 2배로 줄어 Opus `high`로 올렸다.

@@ -3,7 +3,7 @@ name: implementer
 description: Sonnet worker for general implementation and code investigation in the current checkout. The lead hands it a self-contained spec (files, behavior, done criteria, verification commands); it implements exactly that and returns changed files, verification output, and stated assumptions. Not for design, diagnosis of unclear bugs, review, or edits the lead can make faster itself.
 tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
-effort: high
+effort: medium
 color: blue
 ---
 

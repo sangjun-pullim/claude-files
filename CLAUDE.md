@@ -41,10 +41,10 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 | Agent | Purpose | When |
 |---|---|---|
-| planner (Sonnet) | Scope analysis — affected files, reverse dependencies, blast radius. Does not write the plan | Before planning a complex feature or refactor |
-| implementer (Sonnet) | Implements a self-contained spec in the current checkout; returns diff summary, verification output, assumptions | General implementation and code investigation — see Delegation |
+| scope-analyst (Opus high) | Scope analysis — affected files, reverse dependencies, blast radius. Does not write the plan | Before planning a complex feature or refactor |
+| implementer (Sonnet medium) | Implements a self-contained spec in the current checkout; returns diff summary, verification output, assumptions | General implementation and code investigation — see Delegation |
 | editor (Sonnet low) | Applies exact before/after rules across files; reports every touched location | Mechanical edits and repeated transformations — see Delegation |
-| reviewer (Opus) | Code / plan / implementation review — modes in `agents/reviewer.md` | After writing code, before commits, and wherever Hard Rules require it |
+| reviewer (Opus xhigh) | Code / plan / implementation review — modes in `agents/reviewer.md` | After writing code, before commits, and wherever Hard Rules require it |
 | codex-worker | Implementation via OpenAI Codex CLI; relays facts, never judges | **Only when the user asks for codex/GPT** — load the `codex-delegation` skill first |
 
 ## Delegation
@@ -54,10 +54,10 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 - 리드가 직접: 난이도 판단·계획·복잡한 설계·원인이 불명확한 진단·워커 결과 검토, 그리고 인계·검토 비용이 더 큰 작은 수정(파일 1개, 50줄 이내).
 - `implementer`: 일반 구현과 코드 조사. 파일·동작·완료 기준·검증 명령·작성할 테스트(위 New feature / Bug fix 규칙은 스펙을 쓰는 리드가 반영)를 담은 자족적 스펙을 넘긴다.
 - `editor`: 기계적 편집·반복 변환. 정확한 before/after 규칙과 범위를 넘긴다. editor는 검증을 돌리지 않으므로 반환 후 리드가 build/type-check를 돌린 뒤 확인한다.
-- 조사 — `planner`는 변경 제안의 범위 분석, 빌트인 `Explore` 에이전트는 자유 검색, `implementer`(Investigate)는 `path:line` 근거가 필요한 질문. 여러 파일을 훑어야 하는 검색은 리드가 직접 읽지 않고 워커에 맡긴다. 단, `rules/second-brain.md`가 요구하는 `docs/` 선행 읽기는 리드가 직접 한다.
+- 조사 — `scope-analyst`는 변경 제안의 범위 분석, 빌트인 `Explore` 에이전트는 자유 검색, `implementer`(Investigate)는 `path:line` 근거가 필요한 질문. 여러 파일을 훑어야 하는 검색은 리드가 직접 읽지 않고 워커에 맡긴다. 단, `rules/second-brain.md`가 요구하는 `docs/` 선행 읽기는 리드가 직접 한다.
 - 관련 작업은 한 워커에 묶고, 후속 보정은 SendMessage로 같은 워커에 보낸다. 같은 체크아웃을 수정하는 워커는 순차 실행하고, 파일 집합이 겹치지 않을 때만 병렬로 띄운다.
 - `impl-execute` 안에서 위임할 때는 그 스킬의 Phase 1 규칙(스텝별 `## Tests` 항목을 스폰 프롬프트에 그대로 인용, 마커 플립과 Phase 2는 리드)이 우선한다.
-- 워커 결과는 리드가 diff와 검증 출력으로 확인한다. Hard Rules(risk surface 리뷰, 5+ 파일 승인, control-plane 리뷰)는 위임과 무관하게 그대로 적용된다. `implementer`·`editor`·`planner`·`Explore`는 현재 체크아웃에서 도는 in-process 에이전트라 워크트리 분리 규칙 밖이다. `codex-worker`는 해당 없음 — 그쪽은 규칙대로 모드를 묻는다.
+- 워커 결과는 리드가 diff와 검증 출력으로 확인한다. Hard Rules(risk surface 리뷰, 5+ 파일 승인, control-plane 리뷰)는 위임과 무관하게 그대로 적용된다. `implementer`·`editor`·`scope-analyst`·`Explore`는 현재 체크아웃에서 도는 in-process 에이전트라 워크트리 분리 규칙 밖이다. `codex-worker`는 해당 없음 — 그쪽은 규칙대로 모드를 묻는다.
 
 ## Docs
 

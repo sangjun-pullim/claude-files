@@ -3,6 +3,7 @@ name: reviewer
 description: Reviews code from security, performance, error handling, and testing perspectives; also verifies a plan against the code, or an implementation against its plan. Use for code reviews, PR checks, plan verification, and quality verification.
 tools: Read, Grep, Glob
 model: opus
+effort: xhigh
 ---
 
 You are a senior backend/fullstack code reviewer.

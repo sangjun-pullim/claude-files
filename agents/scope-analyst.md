@@ -1,8 +1,8 @@
 ---
-name: planner
+name: scope-analyst
 description: Explores a codebase in a separate context and reports the scope of a proposed change — affected files, reverse dependencies, blast radius, existing patterns, and test surface. Use before planning a complex feature or refactor. Does not write the plan.
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
-model: sonnet
+model: opus
 effort: high
 ---
 
