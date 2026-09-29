@@ -72,7 +72,7 @@
 | `planner` (Sonnet) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사 |
 | `implementer` (Sonnet) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
 | `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
-| `reviewer` (Opus, Hard Rules 리뷰는 Fable) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
+| `reviewer` (Opus) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
 | `codex-worker` | codex CLI 실행·전달만 하는 워커 (판단은 부모가) |
 
 ### Hooks
@@ -97,3 +97,5 @@
 **2026-09 (중순) — 구독 사용량 최소화 위임.** 리드(현재 세션)가 키워드 없이 난이도를 판단해 저렴한 워커에 자동 배정하는 `## Delegation` 섹션을 `CLAUDE.md`에 추가. 워커 `implementer`(Sonnet high, 일반 구현·조사)와 `editor`(Sonnet low, 기계적 편집) 신설, `planner`를 Opus → Sonnet high로 변경, `settings.json`에 `CLAUDE_CODE_SUBAGENT_MODEL=sonnet`을 넣어 모델 미지정 서브에이전트(Explore 등)의 기본값을 Sonnet으로 내렸다. `reviewer`는 Opus 기본, 위험 영역·control-plane 리뷰만 `model: fable`로 스폰. Haiku는 쓰지 않는다(최소 Sonnet). Codex 쪽의 Astra/Sol/Terra/Luna 배분과 같은 취지.
 
 리뷰 루프 독립성(9월 하순): `impl-plan`·`impl-execute`의 2라운드 이후 reviewer에게 이전 판정표 전체를 넘기던 것을 중단. ACCEPTED 행은 넘기지 않아 고침을 패치·스펙에서 새로 검증하게 하고, impl-execute는 REJECTED 행과 근거만("근거가 틀렸을 때만 다시 올려라") 넘긴다. impl-plan은 REJECTED가 이미 스펙 `## Review Notes`에 있어 별도 전달 없음.
+
+**2026-09 (말) — Hard Rules 리뷰도 Opus로.** Opus 5.5가 코딩 벤치마크에서 Fable 5.1과 같거나 앞서고 비용은 60% 낮아, 위험 영역·control-plane 리뷰의 `model: fable` 스폰 예외를 없앴다. 모든 리뷰가 `reviewer` 기본값(`opus` 별칭)으로 돈다. 작성자와 다른 모델의 시각이 필요한 고위험 변경은 요청 시 Fable로 지정한다. 더 강한 모델이 나오면 다시 검토.

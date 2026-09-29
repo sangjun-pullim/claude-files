@@ -62,9 +62,8 @@ report facts, and stop — the Claude orchestrator owns markers, review, and clo
    REJECTED rows from every earlier round with their rationale, framed as "declined with this evidence;
    re-raise only if the evidence is wrong" — never the ACCEPTED rows, so fixes are verified from
    the patch, not from the lead's claim. It runs in Implementation verification mode
-   (`agents/reviewer.md`). If the
-   spec's Affected Files touch a risk surface (auth / payment / permission / DB schema / public
-   API), spawn it with `model: fable`; that round also satisfies the Hard Rule's review.
+   (`agents/reviewer.md`). If the spec's Affected Files touch a risk surface (auth / payment /
+   permission / DB schema / public API), that round also satisfies the Hard Rule's review.
 3. **Disposition** — `ACCEPTED` (fix the code) or `REJECTED` with concrete evidence:
 
    | Finding | Severity | Disposition | Rationale |
