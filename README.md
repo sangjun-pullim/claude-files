@@ -103,3 +103,5 @@
 **2026-09 (말) — 에이전트 effort 고정.** "Spending your effort"(Anthropic 블로그) 기준에 맞춰 워커·리뷰어 effort를 정의 파일에 고정했다. 세션 effort를 낮춰도 리뷰가 따라 내려가지 않도록 `reviewer`는 `xhigh`, 숨은 역의존성을 찾는 `planner`는 `xhigh`(같은 날 `scope-analyst`로 개명하며 Opus `high`로 변경), 상세 스펙을 받아 구현하는 `implementer`는 `medium`(낮은 effort로 구현, 높은 effort로 검증; `path:line` 조사도 medium으로 돈다), 기계적 편집 `editor`는 `low` 유지. `codex-worker`는 고정하지 않아 세션 effort를 따르고, 리드 세션 effort는 `/effort`로 그때그때 조정한다.
 
 **2026-09 (말) — `planner` → `scope-analyst` 개명, Opus로 복귀.** 8월에 역할이 "계획 작성"에서 "범위 조사"로 줄었는데 이름만 남아 있던 것을 실제 역할에 맞췄다. 호출 빈도가 낮고(복잡한 변경의 계획 전에만), NestJS 의존성 주입·이벤트로 얽힌 간접 의존성 추적과 위험 영역 판정은 모델 성능 차이가 나는 작업이며, Opus 5.5와 Sonnet 5의 단가 차이가 2배로 줄어 Opus `high`로 올렸다.
+
+**2026-09 (말) — 리드 직접 처리 기준에 컨텍스트 재사용 추가.** 서브에이전트는 리드의 컨텍스트·캐시를 공유하지 않으므로, 필요한 파일·결정이 이미 리드 컨텍스트에 있고 위임 시 리드 출력(스폰 프롬프트+결과 검토)이 직접 구현 출력의 절반 이상이면 리드가 직접 한다(Opus 리드·Sonnet 워커 기준). 컨텍스트에 있다는 것만으로는 해당하지 않는다. `impl-execute`는 implementer에 스펙 본문 대신 경로와 스텝 번호만 넘긴다.

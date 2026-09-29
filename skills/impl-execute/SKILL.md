@@ -25,8 +25,10 @@ Codex) carries the blind spot this loop exists to defeat.
 
 **Who implements**: you, or an `implementer` worker per CLAUDE.md `## Delegation` — unless the
 user asked for Codex ("codex로 구현", "GPT로 진행"), then follow the Codex path below instead of
-Phase 1. Never switch to Codex on your own. When you hand a step to `implementer`, quote that
-step's `## Tests` entries verbatim in the spawn prompt; you still flip the marker after reading
+Phase 1. Never switch to Codex on your own. When you hand a step to `implementer`, pass the
+spec's absolute path and the step numbers instead of restating the step body (the spec is already
+written, so for the Delegation output comparison the handoff costs only that prompt), and quote
+that step's `## Tests` entries verbatim in the spawn prompt; you still flip the marker after reading
 its report and its `Verification` exit codes, and Phase 2 stays yours.
 
 **If you are Codex** reading this: implement the steps you were given, never write the spec file,
