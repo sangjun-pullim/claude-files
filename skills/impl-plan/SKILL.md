@@ -32,9 +32,9 @@ and skipped patterns.
 
 **Verifying an existing plan** (the user points at a plan document — an active
 `docs/impl-spec/` file or any other): skip drafting and numbering — edit that file in place, add
-a `risk-surface` field if its frontmatter predates it (an old `tier` field can stay), and go to
-Phase 2. For editing a step already marked `[x]`, see the `second-brain` skill's impl-spec
-Lifecycle.
+a `risk-surface` field if its frontmatter predates it (an old `tier` field can stay), and if it
+has both list sections, add or redraw `## Change Map` to match them; then go to Phase 2. For
+editing a step already marked `[x]`, see the `second-brain` skill's impl-spec Lifecycle.
 
 1. **Scope analysis** — spawn a `scope-analyst` agent with the requirements above. Resolve any
    `## Open Questions` it returns with the user before drafting; nothing downstream reopens them.
@@ -59,7 +59,8 @@ Lifecycle.
    | Finding | Severity | Disposition | Rationale |
    |---------|----------|-------------|-----------|
 
-3. Apply ACCEPTED findings to the spec body. Append REJECTED and out-of-scope findings to
+3. Apply ACCEPTED findings to the spec body; when that changes Affected Files or Affected
+   Dependents, redraw `## Change Map` to match. Append REJECTED and out-of-scope findings to
    `## Review Notes` with their rationale, so later reviewers and the implementer see what was
    deliberately declined.
 4. **Exit** when a round reports no CRITICAL/HIGH findings. **Cap: 3 rounds.** If CRITICAL/HIGH
@@ -94,6 +95,11 @@ risk-surface: <none | auth | payment | permission | db-schema | public-api>
 ## Affected Dependents
 [Code that must keep working but is not being changed: callers of every signature this touches,
 consumers of every export it renames, routes behind a middleware it alters. One line each with a path.]
+
+## Change Map
+[One Mermaid flowchart with one node per entry of Affected Files and Affected Dependents and no
+others; edges point from each node to what it depends on (calls, imports, or is registered
+behind); changed files styled apart from dependents.]
 
 ## Implementation Steps
 
