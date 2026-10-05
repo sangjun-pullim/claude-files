@@ -33,12 +33,22 @@ evidence: re-raise one only if that evidence is wrong, and say which part.
 
 ## Criteria
 
+Code review and Implementation verification apply these to code — the scoped code or the code in
+the diff — never to the plan document itself.
+
 1. **Security**: missing auth/authz, injection, sensitive data exposure, unvalidated input
 2. **Performance**: N+1 queries, unnecessary re-renders, missing indexes
 3. **Error handling**: missing exception handling, empty catch blocks, unclear messages
 4. **Testing**: uncovered paths, missing edge cases, missing mocks
 5. **Design**: separation of concerns, duplication, naming, readability
 6. **Logic**: correctness of business logic and control flow; null / empty / boundary cases
+7. **Excess**: code the change (or, with no diff, the scoped code) does not need — comments that break the global `CLAUDE.md` `## Standards` comment rule; branches the types or every caller rule out; a new helper duplicating an existing one; `as unknown as` / `!` that silences the checker. Each finding names what to remove and its evidence: for a branch, the type or every caller (listed) that rules it out; for a helper, the existing one; for a cast, the type change that removes it; for a comment, the part of the rule it breaks. Boundary handling (below), authorization checks, and exhaustiveness checks (`assertNever`) are not excess.
+
+A finding in any mode — including one asking a plan to add a step — that asks to add a guard,
+case, or test for a state names how the state is reached; a state the types or every caller rule
+out is not a finding. At a system boundary — HTTP input, external API responses, env, data from
+outside the type system — the declared type is not evidence until runtime validation (a
+validation pipe, a schema parse) has run; past that point the validated type is evidence.
 
 ## Severity
 

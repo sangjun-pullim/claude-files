@@ -27,6 +27,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 - Prisma: PascalCase model name, snake_case columns via `@map`.
 - One function = one responsibility; split over 50 lines. A module has one responsibility. 단, 쪼갠 조각을 인터페이스에 새로 노출하지는 않는다(내부 헬퍼 분할은 항상 허용) — 깊은 모듈 설계는 `codebase-design` 스킬.
 - Custom error classes, never bare `throw new Error()`. Separate user-facing errors from internal ones.
+- 코드 주석은 이전 코드를 본 적 없는 독자에게도 참인 이유만 쓴다 — 불변식, 외부 제약, 선택 이유, 재발 조건. 계획·스펙·리뷰 번호(`115 —`, `Step 6`, `외부 검토 #2`), `파일:줄` 참조, 이전 코드와 비교하는 문장("now uses …", "이제 ~한다")은 커밋 메시지에 쓴다. ADR·이슈 참조(이슈 번호가 붙은 TODO 포함)는 이유 한 구절과 함께 쓸 수 있고, 공개 심볼의 JSDoc에는 계약(입력·출력·단위)을 쓴다.
 - New feature = tests. Bug fix = reproduction test first. Test names: "should + behavior". Mock external dependencies. 새 테스트는 같은 모듈의 기존 테스트 파일과 같은 형식·규모로, 명시된 동작당 하나 정도로 쓰고, 새 러너나 하네스를 들이지 않는다. 일회성 확인 스크립트는 남기지 않고 그대로 테스트 파일로 만들지 않는다(최소화한 재현을 회귀 테스트로 옮기는 것은 제외). 앞의 New feature / Bug fix 요구와 Hard Rules가 요구하는 테스트는 위 두 제한(형식·규모·개수·러너 / 일회성 스크립트 승격)의 예외 — 레포에 테스트가 하나도 없어도 쓴다.
 - Never interpolate user input into raw SQL. No hardcoded keys, tokens, or passwords.
 - Commit: `<type>(<scope>): <한국어 설명>` — type/scope 영어. Types: feat, fix, refactor, test, docs, chore. One commit = one logical change.
