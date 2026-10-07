@@ -13,8 +13,9 @@ what every task needs up front.
 - For any task type, skim `docs/ADR.md` at least once — to avoid proposing changes that conflict with past decisions.
 - Uppercase doc filenames are the standard; treat a legacy lowercase file (`decisions.md` for `ADR.md`, etc.) as the same doc until migrated.
 - If `docs/GLOSSARY.md` exists, use its canonical identifiers when naming or discussing domain concepts, and never introduce a banned alias.
+- Records — ADR entries, `BUG-FIXES.md`, archived impl-specs, and any doc with a `YYYY-MM` date in its path — are history. Active impl-specs follow the `second-brain` skill's impl-spec Lifecycle. Write every other doc as current state: when you edit one for a changed fact, rewrite the sentence that states it and delete what it replaces, never append a dated section or a correction note beside the old claim; git keeps the history.
 - The source of truth for **current code state** is the code itself and `ARCHITECTURE.md` — never `docs/impl-spec/`, which records what was planned, not what was built. Read a spec for intent, background, and rationale ("why did we do it this way?"), never as evidence of current state. The lifecycle and editing rules live in the `second-brain` skill.
-- If relevant docs are missing or appear stale, say so to the user and proceed.
+- If relevant docs are missing or contradict the code, say so and proceed. Before relying on a line a doc marks unconfirmed (미확인, 확인 필요, TBD), check the same topic in `ADR.md`; when current-state docs or `ADR.md` disagree on a point the task relies on and the code cannot settle, quote both with `path:line` and ask the user which is current instead of choosing one.
 
 ### Order by Task Type
 
