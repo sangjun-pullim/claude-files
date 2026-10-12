@@ -94,12 +94,14 @@ risk-surface: <none | auth | payment | permission | db-schema | public-api>
 
 ## Affected Dependents
 [Code that must keep working but is not being changed: callers of every signature this touches,
-consumers of every export it renames, routes behind a middleware it alters. One line each with a path.]
+consumers of every export it renames, routes behind a middleware it alters, every doc sentence that
+restates a rule this changes (the scope-analyst's doc copies — one line per rule with every copy's
+path and the owner). One line each with a path.]
 
 ## Change Map
 [One Mermaid flowchart with one node per entry of Affected Files and Affected Dependents and no
-others; edges point from each node to what it depends on (calls, imports, or is registered
-behind); changed files styled apart from dependents.]
+others; edges point from each node to what it depends on (calls, imports, is registered
+behind, or restates); changed files styled apart from dependents.]
 
 ## Implementation Steps
 

@@ -15,7 +15,11 @@ request is ambiguous enough that scope depends on the answer, report it as an op
 
 1. **Locate** — every file the change would touch, and why.
 2. **Reverse-trace** — grep callers and consumers of every module, export, and route involved.
-   Existing code paths that would be affected are the highest-value thing you find.
+   Existing code paths that would be affected are the highest-value thing you find. For each rule
+   or contract statement the change alters, find every current-state doc sentence that restates it
+   (records per `rules/second-brain.md` are history: name them under Risks & Unknowns, don't
+   count them as copies); report per rule the count, each copy's `path:line`, and who owns the
+   rule (this repo or another team/system, as the docs state; `unstated` when they do not).
 3. **Compare** — analogous features already in the codebase; their patterns constrain the change.
 4. **Size** — count production files touched and note any risk surface (auth / payment /
    permission / DB schema / public API).
@@ -34,6 +38,10 @@ request is ambiguous enough that scope depends on the answer, report it as an op
 ## Reverse Dependencies
 [Per module/export/route: who calls it, from where, what breaks if its shape changes. Say
 explicitly when nothing depends on something.]
+
+### Doc copies per rule
+| Rule (one line) | Copies | `path:line` of each | Owner |
+|-----------------|--------|---------------------|-------|
 
 ## Existing Patterns
 [Analogous features with file paths and the convention each follows.]
