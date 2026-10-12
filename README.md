@@ -6,7 +6,7 @@
 
 - `CLAUDE.md` — Global instructions (communication, scope, standards, hard rules, agents). 위험 영역·5+ 파일·워크트리 분리·머지·control-plane 게이트가 여기 있다
 - `settings.json` — Global settings (permissions, hooks, 모델별 effort, `showThinkingSummaries`)
-- `rules/` — Always-loaded rules (`second-brain.md`: docs research order)
+- `rules/` — Always-loaded rules (`second-brain.md`: docs research order, 현재 상태 문서 고쳐 쓰기, 문서 간 충돌 시 사용자 확인)
 - `commands/` — Slash commands
 - `agents/` — Agent definitions
 - `hooks/` — Hook scripts
@@ -25,7 +25,7 @@
 |------|------|--------------|------|
 | `grilling` 🅼 | 아이디어·요구사항이 아직 모호할 때 ("갈궈줘") | 답할 수 있는 질문 전부를 라운드로 묶어 캐물어서 설계를 명확하게 만든다. 확정된 용어·결정은 세션 끝에 GLOSSARY/ADR 갱신으로 제안 | "정산 재처리 기능 만들려는데 갈궈줘" |
 | `codebase-design` 🅼 | 새 모듈의 인터페이스를 잡거나, 테스트 걸 곳(seam)이 애매하거나, mock이 덕지덕지 붙을 때 | deep module 설계 어휘와 원칙 제공. 필요시 서브에이전트 3안 병렬 설계 비교(design-it-twice) | "수집 재시도 모듈 인터페이스 어떻게 잡는 게 좋을까?" |
-| `impl-plan` | 프로덕션 파일 5개 이상을 건드리는 변경을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/` 스펙 작성 → 코드와 대조하는 리뷰 루프(최대 3회). PRD가 있으면 대조 | "/impl-plan 주문 출고 재처리 기능" |
+| `impl-plan` | 프로덕션 파일 5개 이상을 건드리는 변경을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/` 스펙 작성(바뀌는 파일·의존 코드·규칙 사본을 그린 Mermaid `## Change Map` 포함) → 코드와 대조하는 리뷰 루프(최대 3회). PRD가 있으면 대조 | "/impl-plan 주문 출고 재처리 기능" |
 | `impl-execute` | 승인된 impl-spec을 실제로 구현할 때 | 스펙의 첫 미완료 단계부터 구현 → 전체 diff 독립 리뷰(최대 3회) → 조건 충족 시 스펙 종료·보관 | "/impl-execute 042 스펙 구현해줘" |
 | `tdd` 🅼 | 테스트 먼저 개발하고 싶을 때 ("red-green") | seam 합의 → 실패 테스트 → 최소 구현 반복. 좋은 테스트/안티패턴 기준 포함 | "이 기능 테스트 먼저 쓰면서 만들자" |
 | `diagnosing-bugs` 🅼 | 원인이 바로 안 보이는 어려운 버그·성능 저하 | 가설보다 먼저 "빨간불 뜨는 재현 루프"를 만들게 강제하는 6단계 진단 규율. 명백한 버그는 그냥 고치면 됨 | "수집 워커가 간헐적으로 멈춰. diagnose 해줘" |
@@ -69,10 +69,10 @@
 
 | 이름 | 역할 |
 |------|------|
-| `scope-analyst` (Opus high) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사 |
+| `scope-analyst` (Opus high) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사. 바뀌는 규칙마다 그 규칙을 다시 적은 현재 상태 문서 문장(사본)의 수·위치·소유도 보고 |
 | `implementer` (Sonnet medium) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
 | `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
-| `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수 |
+| `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수. 불필요한 코드(규칙 위반 주석·도달 불가 분기·중복 헬퍼·검사 회피 캐스트)도 Excess로 지적 |
 | `codex-worker` | codex CLI 실행·전달만 하는 워커 (판단은 부모가) |
 
 ### Hooks
@@ -105,3 +105,11 @@
 **2026-09 (말) — `planner` → `scope-analyst` 개명, Opus로 복귀.** 8월에 역할이 "계획 작성"에서 "범위 조사"로 줄었는데 이름만 남아 있던 것을 실제 역할에 맞췄다. 호출 빈도가 낮고(복잡한 변경의 계획 전에만), NestJS 의존성 주입·이벤트로 얽힌 간접 의존성 추적과 위험 영역 판정은 모델 성능 차이가 나는 작업이며, Opus 5.5와 Sonnet 5의 단가 차이가 2배로 줄어 Opus `high`로 올렸다.
 
 **2026-09 (말) — 리드 직접 처리 기준에 컨텍스트 재사용 추가.** 서브에이전트는 리드의 컨텍스트·캐시를 공유하지 않으므로, 필요한 파일·결정이 이미 리드 컨텍스트에 있고 위임 시 리드 출력(스폰 프롬프트+결과 검토)이 직접 구현 출력의 절반 이상이면 리드가 직접 한다(Opus 리드·Sonnet 워커 기준). 컨텍스트에 있다는 것만으로는 해당하지 않는다. `impl-execute`는 implementer에 스펙 본문 대신 경로와 스텝 번호만 넘긴다.
+
+**2026-10 — 응답·주석·문서 규칙과 리뷰 루프 정지.**
+
+- 응답 문장: 최근 1주 대화형 세션 10개(129턴)를 감사해 사용자가 되묻거나 정정한 턴과 연결된 규칙만 `CLAUDE.md` Communication에 넣었다 — 한 대상 한 이름, 답은 최종 메시지 첫 문장에, 추천 하나와 그 추천이 바뀌는 조건, 사실은 이름·수치·위치로, 처음 쓰는 용어 풀어 쓰기, 절차는 번호 목록·경고는 단계 앞에, 진행 메시지도 한국어.
+- 코드 주석과 리뷰 Excess: 한 프로젝트 세션 5개의 AI 코드 편집 168건 중 가장 많은 결함이 계획·리뷰 번호와 변경 이력을 담은 주석(37건)이었고, 이를 지적한 리뷰는 0건이었다. `CLAUDE.md` Standards에 「주석은 이전 코드를 모르는 독자에게도 참인 이유만」 규칙을, `reviewer`에 7번 기준 Excess와 「상태 가드를 추가하라는 지적은 그 상태의 도달 경로를 댄다」 조건을 넣었다.
+- 현재 상태 문서: 날짜별로 덧붙여진 문서에 남은 옛 「미확인」 문장을 근거로 에이전트가 사용자가 확인한 사실을 뒤집은 사고에서 나왔다. `rules/second-brain.md`에서 기록(ADR·BUG-FIXES·보관된 impl-spec·경로에 날짜가 있는 문서)만 이력으로 두고, 나머지 문서는 바뀐 사실의 문장을 고쳐 쓰고 옛 문장을 지우게 했다. 미확인 문장은 ADR과 대조하고, 코드로 판정할 수 없는 문서 간 충돌은 고르지 않고 양쪽을 인용해 사용자에게 묻는다.
+- Change Map: `impl-plan` 스펙 템플릿에 Affected Files·Affected Dependents 항목을 노드로 하는 Mermaid 흐름도를 넣고, 리뷰로 목록이 바뀌면 다시 그리게 했다. 승인할 때 호출·의존 관계를 사람이 목록에서 재구성하지 않아도 된다.
+- 리뷰 루프 정지: 계획 리뷰가 5회차까지 「같은 규칙의 사본을 또 놓침」 HIGH를 반복한 사례에서 나왔다. `CLAUDE.md` Scope에 차단 지적이 두 회차 연속 이번 변경이 바꾸는 같은 규칙·결정을 가리키면 패치를 멈추고 원인과 설계 방향을 먼저 보고하는 규칙을 넣었다. `scope-analyst`는 바뀌는 규칙의 문서 사본 수·위치·소유를 보고하고, `impl-plan`은 그 사본을 Affected Dependents와 Change Map에 넣는다(사전 발견 1/8 → 5~6/8).
