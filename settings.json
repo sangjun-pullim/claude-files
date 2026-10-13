@@ -75,6 +75,15 @@
         ]
       },
       {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/block-fable-subagent.sh"
+          }
+        ]
+      },
+      {
         "matcher": "*",
         "hooks": [
           {
