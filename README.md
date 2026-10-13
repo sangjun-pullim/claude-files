@@ -70,7 +70,7 @@
 | 이름 | 역할 |
 |------|------|
 | `scope-analyst` (Opus high) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사. 바뀌는 규칙마다 그 규칙을 다시 적은 현재 상태 문서 문장(사본)의 수·위치·소유도 보고 |
-| `implementer` (Sonnet medium) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
+| `implementer` (Opus medium) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
 | `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
 | `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수. 불필요한 코드(규칙 위반 주석·도달 불가 분기·중복 헬퍼·검사 회피 캐스트)도 Excess로 지적 |
 | `codex-worker` | codex CLI 실행·전달만 하는 워커 (판단은 부모가) |
@@ -82,6 +82,7 @@
 | `block-env-read.sh` | .env 등 시크릿 파일 읽기 |
 | `block-env-commit.sh` | .env 파일 git 추가/커밋 |
 | `block-dangerous-git.sh` | reset --hard, clean -f, branch -D, checkout/restore로 트리 폐기 |
+| `block-fable-subagent.sh` | 서브에이전트를 Fable 모델로 띄우기(`Agent` 도구의 `model` 인자) |
 | `auto-format.sh` | (차단 아님) Write/Edit 후 자동 포맷 |
 
 ## 변경 이력
@@ -106,7 +107,7 @@
 
 **2026-09 (말) — 리드 직접 처리 기준에 컨텍스트 재사용 추가.** 서브에이전트는 리드의 컨텍스트·캐시를 공유하지 않으므로, 필요한 파일·결정이 이미 리드 컨텍스트에 있고 위임 시 리드 출력(스폰 프롬프트+결과 검토)이 직접 구현 출력의 절반 이상이면 리드가 직접 한다(Opus 리드·Sonnet 워커 기준). 컨텍스트에 있다는 것만으로는 해당하지 않는다. `impl-execute`는 implementer에 스펙 본문 대신 경로와 스텝 번호만 넘긴다.
 
-**2026-10 — Change Map, 응답·주석·문서 규칙, 리뷰 루프 정지, 런타임 지침 중복 금지.**
+**2026-10 — Change Map, 응답·주석·문서 규칙, 리뷰 루프 정지, 런타임 지침 중복 금지, Fable 서브에이전트 차단, implementer Opus 전환.**
 
 - Change Map: `impl-plan` 스펙 템플릿에 Affected Files·Affected Dependents 항목을 노드로 하는 Mermaid 흐름도를 넣고, 리뷰로 목록이 바뀌면 다시 그리게 했다. 승인할 때 호출·의존 관계를 사람이 목록에서 재구성하지 않아도 된다.
 - 응답 문장: 최근 1주 대화형 세션 10개(129턴)를 감사해 사용자가 되묻거나 정정한 턴과 연결된 규칙만 `CLAUDE.md` Communication에 넣었다 — 한 대상 한 이름, 답은 최종 메시지 첫 문장에, 추천 하나와 그 추천이 바뀌는 조건, 사실은 이름·수치·위치로, 처음 쓰는 용어 풀어 쓰기, 절차는 번호 목록·경고는 단계 앞에, 진행 메시지도 한국어.
@@ -114,3 +115,5 @@
 - 현재 상태 문서: 날짜별로 덧붙여진 문서에 남은 옛 「미확인」 문장을 근거로 에이전트가 사용자가 확인한 사실을 뒤집은 사고에서 나왔다. `rules/second-brain.md`에서 기록(ADR·BUG-FIXES·보관된 impl-spec·경로에 날짜가 있는 문서)만 이력으로 두고, 나머지 문서는 바뀐 사실의 문장을 고쳐 쓰고 옛 문장을 지우게 했다. 미확인 문장은 ADR과 대조하고, 코드로 판정할 수 없는 문서 간 충돌은 고르지 않고 양쪽을 인용해 사용자에게 묻는다.
 - 리뷰 루프 정지: 계획 리뷰가 5회차까지 「같은 규칙의 사본을 또 놓침」 HIGH를 반복한 사례에서 나왔다(`impl-plan` 스킬이 컨텍스트 요약으로 빠져 3회 상한이 적용되지 않았고, 리드는 검색어를 넓혀 패치를 이어 갔다). `CLAUDE.md` Scope에 차단 지적이 두 회차 연속 이번 변경이 바꾸는 같은 규칙·결정을 가리키면 패치를 멈추고 원인과 설계 방향을 먼저 보고하는 규칙을 넣었다. 재현 시험에서 규칙이 없으면 0/3, 있으면 5/5가 멈췄고, 독립 지적 대조 2/2는 멈추지 않았다. `scope-analyst`는 바뀌는 규칙의 문서 사본 수·위치·소유를 보고하고(그 사례에서 리뷰 1~4회차가 놓친 사본 8곳 중 미리 찾은 수 1 → 5~6), `impl-plan`은 그 사본을 Affected Dependents와 Change Map에 넣는다.
 - 런타임 지침 중복 금지: 리드가 auto 모드에서 여러 줄 치환을 Python 스크립트로 했다. Claude Code 시스템 지침은 여러 줄·정확 치환에 `Edit`을 쓰라고 하는데 지키지 않은 것이다. 리드가 「파일 수정은 항상 `Edit`」 규칙을 `CLAUDE.md`에 넣자고 했으나, 사용자는 공식 지침을 그대로 따르기로 했다. `writing-for-agents` Pruning에 런타임(Claude Code·Codex CLI) 기본 시스템 지침도 정본이라, 그 지침이 모든 모드에서 정한 동작은 다시 쓰지 않는다는 항목을 넣었다 — 모델이 가끔 어겨도 지침의 빈틈이 아니라 미준수로 보고 규칙 없음을 권하며, 사용자가 그래도 원하거나 서로 다른 세션 2개 이상에서 사용자가 고치거나 되돌려야 한 결과가 났을 때만 제안한다. 서브에이전트는 메인 시스템 지침을 받지 않으므로, 서브에이전트가 그 상황을 만날 수 있는 `CLAUDE.md`·`rules/` 줄은 사본으로 보지 않는다. 이 항목을 적용해 `CLAUDE.md` Communication의 `<pasted_content>` 처리 문장(시스템 지침 `# Harness` 절과 글자 그대로 같음)을 지웠다.
+- Fable 서브에이전트 차단: 9월 말에 Hard Rules 리뷰의 `model: fable` 예외를 지웠는데도, 9/22에 시작해 컨텍스트 요약을 여러 번 거친 luxury-collector 세션 하나가 10/13까지 reviewer를 Fable로 띄웠다. 요약 때 다시 주입된 옛 `impl-execute` 본문에 「위험 영역이면 `model: fable`로 스폰」이 남아 있었다. 규칙 문서를 고쳐도 오래 이어진 세션에는 닿지 않으므로, `Agent` 도구의 `model` 인자가 Fable이면 막는 PreToolUse 훅 `block-fable-subagent.sh`를 넣었다. 9월 말 항목의 「요청 시 Fable로 지정」 경로도 이 훅이 막는다(다시 쓰려면 `settings.json`에서 이 훅 항목을 뺀다). 훅은 세션 시작 때 읽히므로, 이미 실행 중인 세션에는 다시 시작해야 적용된다.
+- `implementer`를 Opus로: 구현 품질은 Opus가 Sonnet보다 높아, 일반 구현·`path:line` 조사를 맡는 `implementer`를 Sonnet `medium` → Opus `medium`으로 바꿨다. 단순·기계적 편집은 Sonnet `editor`가 계속 맡는다. 같은 Opus여도 리드(`xhigh`)보다 effort가 낮아 위임하면 생각 토큰이 줄므로, `CLAUDE.md` Delegation의 「위임 시 리드 출력이 직접 구현 출력의 절반 이상이면 리드가 직접」 비교는 그대로 두고, 그 전제 표기만 「Opus 리드·Sonnet 워커」에서 「워커가 리드보다 낮은 effort나 싼 모델로 도는」으로 바꿨다.
