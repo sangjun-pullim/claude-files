@@ -48,7 +48,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 | Agent | Purpose | When |
 |---|---|---|
 | scope-analyst (Opus high) | Scope analysis — affected files, reverse dependencies, blast radius. Does not write the plan | Before planning a complex feature or refactor |
-| implementer (Sonnet medium) | Implements a self-contained spec in the current checkout; returns diff summary, verification output, assumptions | General implementation and code investigation — see Delegation |
+| implementer (Opus medium) | Implements a self-contained spec in the current checkout; returns diff summary, verification output, assumptions | General implementation and code investigation — see Delegation |
 | editor (Sonnet low) | Applies exact before/after rules across files; reports every touched location | Mechanical edits and repeated transformations — see Delegation |
 | reviewer (Opus xhigh) | Code / plan / implementation review — modes in `agents/reviewer.md` | After writing code, before commits, and wherever Hard Rules require it |
 | codex-worker | Implementation via OpenAI Codex CLI; relays facts, never judges | **Only when the user asks for codex/GPT** — load the `codex-delegation` skill first |
@@ -57,7 +57,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 구독 사용량을 줄이기 위해, 키워드 없이 리드(현재 세션)가 난이도를 판단해 워커에 자동 배정한다. 총 토큰이 늘어도 구독 소모가 줄 것으로 보이면 위임한다 — 단, 아래 "리드가 직접" 항목이 이 원칙에 앞선다.
 
-- 리드가 직접: 난이도 판단·계획·복잡한 설계·원인이 불명확한 진단·워커 결과 검토, 그리고 인계·검토 비용이 더 큰 작은 수정(파일 1개, 50줄 이내), 또는 필요한 파일·결정이 이미 리드 컨텍스트에 있고, 위임할 때 리드가 쓸 출력(스폰 프롬프트와 결과 검토)이 직접 구현할 때 리드가 쓸 출력(코드·구현 중 추론·검증 실패 수정)의 절반 이상일 때(Opus 리드·Sonnet 워커 기준). 컨텍스트에 있다는 것만으로는 해당하지 않는다.
+- 리드가 직접: 난이도 판단·계획·복잡한 설계·원인이 불명확한 진단·워커 결과 검토, 그리고 인계·검토 비용이 더 큰 작은 수정(파일 1개, 50줄 이내), 또는 필요한 파일·결정이 이미 리드 컨텍스트에 있고, 위임할 때 리드가 쓸 출력(스폰 프롬프트와 결과 검토)이 직접 구현할 때 리드가 쓸 출력(코드·구현 중 추론·검증 실패 수정)의 절반 이상일 때(워커가 리드보다 낮은 effort나 싼 모델로 도는 기준). 컨텍스트에 있다는 것만으로는 해당하지 않는다.
 - `implementer`: 일반 구현과 코드 조사. 파일·동작·완료 기준·검증 명령·작성할 테스트(위 New feature / Bug fix 규칙은 스펙을 쓰는 리드가 반영)를 담은 자족적 스펙을 넘긴다.
 - `editor`: 기계적 편집·반복 변환. 정확한 before/after 규칙과 범위를 넘긴다. editor는 검증을 돌리지 않으므로 반환 후 리드가 build/type-check를 돌린 뒤 확인한다.
 - 조사 — `scope-analyst`는 변경 제안의 범위 분석, 빌트인 `Explore` 에이전트는 자유 검색(`model: "sonnet"`을 지정해 띄운다 — 지정하지 않으면 리드 모델을 상속한다), `implementer`(Investigate)는 `path:line` 근거가 필요한 질문. 여러 파일을 훑어야 하는 검색은 리드가 직접 읽지 않고 워커에 맡긴다. 단, `rules/second-brain.md`가 요구하는 `docs/` 선행 읽기는 리드가 직접 한다.

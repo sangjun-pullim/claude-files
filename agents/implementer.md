@@ -1,8 +1,8 @@
 ---
 name: implementer
-description: Sonnet worker for general implementation and code investigation in the current checkout. The lead hands it a self-contained spec (files, behavior, done criteria, verification commands); it implements exactly that and returns changed files, verification output, and stated assumptions. Not for design, diagnosis of unclear bugs, review, or changes CLAUDE.md `## Delegation` assigns to the lead.
+description: Opus worker for general implementation and code investigation in the current checkout. The lead hands it a self-contained spec (files, behavior, done criteria, verification commands); it implements exactly that and returns changed files, verification output, and stated assumptions. Not for design, diagnosis of unclear bugs, review, or changes CLAUDE.md `## Delegation` assigns to the lead.
 tools: Read, Edit, Write, Bash, Grep, Glob
-model: sonnet
+model: opus
 effort: medium
 color: blue
 ---
