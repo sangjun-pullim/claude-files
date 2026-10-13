@@ -22,6 +22,8 @@ teams/
 sessions/
 jobs/
 chrome/
+state/
+skills/synced/
 .last-cleanup
 .last-update-result.json
 
