@@ -1,6 +1,6 @@
 ---
 name: impl-plan
-description: Analyze impact scope and create an implementation plan, then validate it through a fresh-context code-review loop until no issues remain. Use this skill when the user asks to plan implementation, create an impl spec, or says "impl-plan", "/impl-plan". Also trigger when the user has a detailed spec/plan document and wants it verified against actual code.
+description: Analyze impact scope and create an implementation plan, then validate it through a fresh-context code-review loop until no blocking issues remain. Use this skill when the user asks to plan implementation, create an impl spec, or says "impl-plan", "/impl-plan". Also trigger when the user has a detailed spec/plan document and wants it verified against actual code.
 ---
 
 # Implementation Plan with Code-Verified Review Loop
@@ -53,25 +53,26 @@ editing a step already marked `[x]`, see the `second-brain` skill's impl-spec Li
    path only. It runs in Plan verification mode (`agents/reviewer.md`). Do not pass the previous
    round's disposition table: fixes are verified afresh from the spec, and declined findings are
    already in the spec's `## Review Notes`, which the reviewer reads.
-2. **Disposition** — for each finding: `ACCEPTED` (fix the spec) or `REJECTED` with concrete
+2. **Disposition** — for each CRITICAL/HIGH finding (CLAUDE.md **리뷰 루프**): `ACCEPTED` (fix the
+   spec) or `REJECTED` with concrete
    evidence (file:line or reasoning). "Not needed" without evidence is not a rejection.
 
    | Finding | Severity | Disposition | Rationale |
    |---------|----------|-------------|-----------|
 
-3. Apply ACCEPTED findings to the spec body; when that changes Affected Files or Affected
-   Dependents, redraw `## Change Map` to match. Append REJECTED and out-of-scope findings to
-   `## Review Notes` with their rationale, so later reviewers and the implementer see what was
-   deliberately declined.
-4. **Exit** when a round reports no CRITICAL/HIGH findings. **Cap: 3 rounds.** If CRITICAL/HIGH
-   findings remain at the cap, or the same finding comes back after a fix, stop: append each open
-   CRITICAL/HIGH to `## Review Notes` marked `UNRESOLVED` and tell the user the spec is not
-   review-clean — `/impl-execute` must not run on it until those rows are cleared.
+3. Check the CLAUDE.md **리뷰 루프** stop triggers before applying anything. Append REJECTED and
+   out-of-scope findings to `## Review Notes` with their rationale, so later reviewers and the
+   implementer see what was deliberately declined. Unless the round stopped, apply ACCEPTED
+   findings to the spec body; when that changes Affected Files or Affected Dependents, redraw
+   `## Change Map` to match.
+4. **Exit and stop** follow CLAUDE.md **리뷰 루프**. After a stop, tell the user the spec is not
+   review-clean — `/impl-execute` must not run on it until its `UNRESOLVED` rows are cleared.
 
 ## Phase 3: Present
 
 Present the spec path, the risk surface recorded in its frontmatter, what the review rounds
-found and fixed, and any remaining MEDIUM/LOW notes. Implementation runs through
+found and fixed, any remaining MEDIUM/LOW notes, and the REJECTED findings with their
+rationale. Implementation runs through
 `/impl-execute` on this spec — do not start implementing here.
 
 ## Output Format

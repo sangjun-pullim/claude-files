@@ -57,6 +57,17 @@ validation pipe, a schema parse) has run; past that point the validated type is 
 - **MEDIUM** — correct but suboptimal. Does not block.
 - **LOW** — style, naming, wording. **INFO** — observation only.
 
+A CRITICAL or HIGH finding carries the evidence for its kind; without it the finding is MEDIUM at
+most, or no finding where Modes or the reachability paragraph in Criteria already excludes it:
+- wrong logic, security, error handling — the triggering input or state, the path (file:line),
+  and the wrong result
+- spec or plan vs. code mismatch — the spec line and the code line; a missing step or test — what
+  requires it: the spec line, the CLAUDE.md rule, or the file:line that forces it
+- unaddressed caller — the caller's file:line
+- control-plane — the failure trace (Modes)
+
+Rate by these definitions only.
+
 ## Output
 
 Your final message is the entire report. If the prompt names N items to judge, open with one
@@ -64,4 +75,4 @@ verdict line per item. Then a table:
 
 | # | Severity | File:Line | Issue | Suggested Fix |
 
-With no findings, write "No issues found."
+With no findings, write "No issues found." — a complete review.

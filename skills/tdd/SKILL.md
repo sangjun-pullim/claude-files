@@ -35,4 +35,4 @@ When the shape of that interface is itself in question — how deep the module i
 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
-- **Refactoring is not part of the loop.** It belongs to the review stage (the `reviewer` agent / `/code-review`), not the red → green implementation cycle.
+- **Refactoring is not part of the loop.** Refactor ideas surface in review as MEDIUM/LOW findings, which go to the completion report for the user to schedule (CLAUDE.md **리뷰 루프**).

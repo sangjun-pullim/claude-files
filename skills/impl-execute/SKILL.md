@@ -66,27 +66,30 @@ report facts, and stop — the Claude orchestrator owns markers, review, and clo
    the patch, not from the lead's claim. It runs in Implementation verification mode
    (`agents/reviewer.md`). If the spec's Affected Files touch a risk surface (auth / payment /
    permission / DB schema / public API), that round also satisfies the Hard Rule's review.
-3. **Disposition** — `ACCEPTED` (fix the code) or `REJECTED` with concrete evidence:
+3. **Disposition** — each CRITICAL/HIGH finding: `ACCEPTED` (fix the code) or `REJECTED` with
+   concrete evidence; which findings, and the reproduction test for behavior findings, follow
+   CLAUDE.md **리뷰 루프**:
 
    | Finding | Severity | Disposition | Rationale |
    |---------|----------|-------------|-----------|
 
-4. Fix ACCEPTED findings, re-run verification (a non-zero exit is itself an open finding), and
-   update the change summary and dependency map for every file the fixes touched.
-5. **Exit** when a round reports no CRITICAL/HIGH findings. **Cap: 3 rounds.** At the cap with
-   CRITICAL/HIGH still open, or the same finding coming back after a fix: stop, append each open
-   CRITICAL/HIGH to the spec's `## Review Notes` marked `UNRESOLVED`, present them to the user,
-   and go to Phase 3 without closing.
+4. Check the CLAUDE.md **리뷰 루프** stop triggers before fixing anything; on a stop, fix nothing
+   and go to Phase 3 without closing. Otherwise fix ACCEPTED findings, re-run verification (a
+   non-zero exit is itself an open finding), and update the change summary and dependency map
+   for every file the fixes touched.
+5. **Exit and stop** follow CLAUDE.md **리뷰 루프**.
 
 ## Phase 3: Close & Report
 
-1. **Close the spec** only when all three hold: every step is `[x]`, every `## Tests` entry
-   exists in the codebase (a section reading `none needed — <reason>` counts as written), and
-   Phase 2 exited clean. Then set `status: done` and `git mv` the file to
+1. **Close the spec** only when all four hold: every step is `[x]`, every `## Tests` entry
+   exists in the codebase (a section reading `none needed — <reason>` counts as written), the
+   spec's `## Verification` commands pass on the final state (run them now if no run followed the
+   last change), and Phase 2 ended by exit, not a stop (CLAUDE.md
+   **리뷰 루프**). Then set `status: done` and `git mv` the file to
    `docs/impl-spec/archive/` — this is part of the skill, not a docs suggestion. Otherwise leave
    `status: active` and report which steps, tests, or findings remain.
 2. **Report**: what was built, files changed, what the review rounds caught, remaining
-   MEDIUM/LOW notes, verification results.
+   MEDIUM/LOW notes, REJECTED findings with their rationale, verification results.
 
 ## Codex path
 
@@ -118,7 +121,10 @@ Load the `codex-delegation` skill first — it owns the codex dispatch contract;
 5. **Phase 2 fixes** go back to the owning Codex session as rework (re-spawn the worker against
    the same worktree/checkout with the session id and the correction verbatim), then re-gate and
    re-assemble. A one-line mechanical fix may be done by you — say so, and in orca mode commit it
-   on the integration branch.
+   on the integration branch. A behavior finding's fix is a Bug fix (CLAUDE.md **리뷰 루프**):
+   put that order in the rework correction — reproduction test first, its pre-fix run reported; a
+   test that does not fail stops that finding's fix only, and the finding becomes REJECTED. Your own one-line
+   fix follows the same order.
 6. **Phase 3 in orca worktree mode**, whatever the worker was: do not close the spec — the code sits on an unmerged integration
    branch. Return the repo-root checkout to `<base>`, then report: worker → steps → Codex
    worker id (codex: session id), the integration and worker branches, that nothing was merged into `<base>`, and
