@@ -72,7 +72,7 @@
 | `scope-analyst` (Opus high) | 변경 전 영향 범위(관련 파일·역의존성·blast radius) 읽기 전용 조사. 바뀌는 규칙마다 그 규칙을 다시 적은 현재 상태 문서 문장(사본)의 수·위치·소유도 보고 |
 | `implementer` (Opus medium) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
 | `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
-| `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수. 불필요한 코드(규칙 위반 주석·도달 불가 분기·중복 헬퍼·검사 회피 캐스트)도 Excess로 지적 |
+| `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수. 불필요한 코드(규칙 위반 주석·도달 불가 분기·중복 헬퍼·검사 회피 캐스트)도 Excess로 지적. CRITICAL/HIGH는 종류별 증거(입력·경로·잘못된 결과, 스펙 줄과 코드 줄 등)가 없으면 MEDIUM 이하 |
 | `codex-worker` | codex CLI 실행·전달만 하는 워커 (판단은 부모가) |
 
 ### Hooks
@@ -117,3 +117,12 @@
 - 런타임 지침 중복 금지: 리드가 auto 모드에서 여러 줄 치환을 Python 스크립트로 했다. Claude Code 시스템 지침은 여러 줄·정확 치환에 `Edit`을 쓰라고 하는데 지키지 않은 것이다. 리드가 「파일 수정은 항상 `Edit`」 규칙을 `CLAUDE.md`에 넣자고 했으나, 사용자는 공식 지침을 그대로 따르기로 했다. `writing-for-agents` Pruning에 런타임(Claude Code·Codex CLI) 기본 시스템 지침도 정본이라, 그 지침이 모든 모드에서 정한 동작은 다시 쓰지 않는다는 항목을 넣었다 — 모델이 가끔 어겨도 지침의 빈틈이 아니라 미준수로 보고 규칙 없음을 권하며, 사용자가 그래도 원하거나 서로 다른 세션 2개 이상에서 사용자가 고치거나 되돌려야 한 결과가 났을 때만 제안한다. 서브에이전트는 메인 시스템 지침을 받지 않으므로, 서브에이전트가 그 상황을 만날 수 있는 `CLAUDE.md`·`rules/` 줄은 사본으로 보지 않는다. 이 항목을 적용해 `CLAUDE.md` Communication의 `<pasted_content>` 처리 문장(시스템 지침 `# Harness` 절과 글자 그대로 같음)을 지웠다.
 - Fable 서브에이전트 차단: 9월 말에 Hard Rules 리뷰의 `model: fable` 예외를 지웠는데도, 9/22에 시작해 컨텍스트 요약을 여러 번 거친 luxury-collector 세션 하나가 10/13까지 reviewer를 Fable로 띄웠다. 요약 때 다시 주입된 옛 `impl-execute` 본문에 「위험 영역이면 `model: fable`로 스폰」이 남아 있었다. 규칙 문서를 고쳐도 오래 이어진 세션에는 닿지 않으므로, `Agent` 도구의 `model` 인자가 Fable이면 막는 PreToolUse 훅 `block-fable-subagent.sh`를 넣었다. 9월 말 항목의 「요청 시 Fable로 지정」 경로도 이 훅이 막는다(다시 쓰려면 `settings.json`에서 이 훅 항목을 뺀다). 훅은 세션 시작 때 읽히므로, 이미 실행 중인 세션에는 다시 시작해야 적용된다.
 - `implementer`를 Opus로: 구현 품질은 Opus가 Sonnet보다 높아, 일반 구현·`path:line` 조사를 맡는 `implementer`를 Sonnet `medium` → Opus `medium`으로 바꿨다. 단순·기계적 편집은 Sonnet `editor`가 계속 맡는다. 같은 Opus여도 리드(`xhigh`)보다 effort가 낮아 위임하면 생각 토큰이 줄므로, `CLAUDE.md` Delegation의 「위임 시 리드 출력이 직접 구현 출력의 절반 이상이면 리드가 직접」 비교는 그대로 두고, 그 전제 표기만 「Opus 리드·Sonnet 워커」에서 「워커가 리드보다 낮은 effort나 싼 모델로 도는」으로 바꿨다.
+
+**2026-10 (중순) — 리뷰 루프 수렴 규칙, 사용량 효율 기준.**
+
+- 배경: 「Claude Code에 같은 코드를 다시 리뷰시키면 왜 매번 새 버그가 나오나」를 묻는 X 포스트(답글 342개)를 분석했다. 다수 의견은 「둘 다」였다 — 첫 회차들은 실제로 놓친 버그를 찾고, 회차가 쌓일수록 트집·오탐이 늘어난다. 사용자도 같은 경험을 했다.
+- 리뷰 루프: `CLAUDE.md` Scope에 스킬 안팎의 모든 `reviewer` 루프가 따르는 **리뷰 루프** 규칙을 정본으로 두고, `impl-plan`·`impl-execute`의 종료·상한 문장은 이를 가리키게 했다. 회차마다 CRITICAL/HIGH만 처리하고 MEDIUM/LOW와 REJECTED는 완료 보고로 보낸다. 동작 지적(입력·상태와 잘못된 결과를 증거로 단 코드 지적)의 수정은 Bug fix로 다뤄, 재현 테스트가 실패하지 않으면 REJECTED로 바꾼다. 고친 것이 없는 회차에서 끝낸다 — 그 뒤 회차는 같은 대상을 다시 훑을 뿐이다. 정지는 고치기 전에 판정하고(3회차, 고친 지적 재발, 같은 규칙 두 회차 연속 — 기존 정지 규칙을 흡수), 「계속」 뒤에는 새 루프로 센다. `impl-execute`는 스펙을 닫을 때 마지막 상태에서 검증 통과를 요구한다.
+- reviewer 증거: CRITICAL/HIGH는 종류별 증거(입력·경로·잘못된 결과, 스펙 줄과 코드 줄, 호출부 위치, control-plane 실패 추적)를 달고, 없으면 MEDIUM 이하로 낮춘다. 「No issues found.」는 완결된 리뷰로 명시했다.
+- `tdd`: 리팩터는 루프 밖이고, 리뷰의 MEDIUM/LOW로 완료 보고에 남아 사용자가 적용 여부를 정한다.
+- 사용량 기준: `CLAUDE.md` Delegation의 목적을 「구독 사용량을 줄이기 위해」에서 「효율적으로 쓰기 위해」로 바꿨다. 줄일 대상은 결과에 보탬이 안 되는 소모이고, 복잡한 작업에 필요한 토큰은 아끼지 않는다.
+- 수렴 과정: 첫 설계는 정지 뒤 재시작 절차와 세션을 넘는 `UNRESOLVED` 행 수명까지 새로 정하다가, reviewer 루프 2개가 각각 2회차에 같은 규칙의 HIGH로 정지했다. 범위를 「루프 안 처리와 종료」로 고정하고, 회차 간 상태를 두지 않고, 기존 Bug fix 규칙을 재사용하고, 리뷰는 이번 diff가 만든 문제만 지적하게 하자 세 번째 루프가 2회차에 종료했다. 의도적으로 남긴 것: Excess 지적(주석 규칙 위반 등)은 MEDIUM 이하라 루프 안에서 고치지 않는다 — 쌓이면 Standards 위반을 HIGH가 될 수 있는 증거 종류로 추가한다.
