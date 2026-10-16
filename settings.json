@@ -256,12 +256,16 @@
     },
     "claude-opus-5-5": {
       "effortLevel": "xhigh"
+    },
+    "glm-5.3": {
+      "effortLevel": "xhigh"
     }
   },
   "tui": "fullscreen",
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
+  "autoCompactEnabled": false,
   "switchModelsOnFlag": false,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
