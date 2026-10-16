@@ -59,14 +59,16 @@ validation pipe, a schema parse) has run; past that point the validated type is 
 
 A CRITICAL or HIGH finding carries the evidence for its kind; without it the finding is MEDIUM at
 most, or no finding where Modes or the reachability paragraph in Criteria already excludes it:
-- wrong logic, security, error handling — the triggering input or state, the path (file:line),
-  and the wrong result
+- wrong logic, data loss, security, error handling — the triggering input or state, the path
+  (file:line), and the wrong result
+- broken outright — the failing command and its output, or the file:line that breaks
 - spec or plan vs. code mismatch — the spec line and the code line; a missing step or test — what
   requires it: the spec line, the CLAUDE.md rule, or the file:line that forces it
 - unaddressed caller — the caller's file:line
 - control-plane — the failure trace (Modes)
 
-Rate by these definitions only.
+Rate at or below these definitions; a spawn prompt may cap a severity lower (e.g., pre-existing
+gaps as INFO).
 
 ## Output
 

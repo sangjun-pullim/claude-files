@@ -121,10 +121,8 @@ Load the `codex-delegation` skill first — it owns the codex dispatch contract;
 5. **Phase 2 fixes** go back to the owning Codex session as rework (re-spawn the worker against
    the same worktree/checkout with the session id and the correction verbatim), then re-gate and
    re-assemble. A one-line mechanical fix may be done by you — say so, and in orca mode commit it
-   on the integration branch. A behavior finding's fix is a Bug fix (CLAUDE.md **리뷰 루프**):
-   put that order in the rework correction — reproduction test first, its pre-fix run reported; a
-   test that does not fail stops that finding's fix only, and the finding becomes REJECTED. Your own one-line
-   fix follows the same order.
+   on the integration branch. Put a behavior finding's Bug fix order
+   (CLAUDE.md **리뷰 루프**) in the rework correction; your own one-line fix follows the same order.
 6. **Phase 3 in orca worktree mode**, whatever the worker was: do not close the spec — the code sits on an unmerged integration
    branch. Return the repo-root checkout to `<base>`, then report: worker → steps → Codex
    worker id (codex: session id), the integration and worker branches, that nothing was merged into `<base>`, and
