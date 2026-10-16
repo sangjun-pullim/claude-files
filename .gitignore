@@ -24,6 +24,7 @@ jobs/
 chrome/
 state/
 skills/synced/
+feedback/
 .last-cleanup
 .last-update-result.json
 
