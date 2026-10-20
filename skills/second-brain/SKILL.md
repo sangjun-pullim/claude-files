@@ -113,7 +113,6 @@ sources: prisma/**, src/payment/**
 - Non-empty → potentially stale; the diff IS the sync-check scope.
 - `/docs-sync` uses stamps for incremental checking and bumps them after a confirmed sync.
 - When reading a stamped doc for derivable facts, trust it only if the stamp check passes; otherwise verify against code.
-- Harness protocol files under `~/.claude/docs/**` are hand-written-layer by definition — they describe procedure, not code — so they take no stamp either.
 - A derivable-layer doc without a stamp is a defect, not an option: include the stamp when creating one (`/init-docs` scaffolds it), and when substantially updating an unstamped one, verify its facts against code and add the stamp in the same change.
 
 ## Lazy Loading Principle

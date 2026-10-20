@@ -321,7 +321,7 @@ Common recoveries:
 
 ## Next Action
 
-Confirm `orca status --json` unless already checked this turn, then choose the narrowest command for the job: `worktree ps/current/create`, `terminal list/read/wait/send`, `automations list`, or built-in browser `snapshot`.
+Confirm `orca status --json` unless already checked this turn, then choose the narrowest command for the job: `worktree ps/current/create`, `terminal list/read/wait/send`, `automations list`, built-in browser `snapshot`, or `emulator list/attach/tap` for the iOS simulator.
 
 ## Mobile Emulator (iOS Simulator via serve-sim)
 
@@ -349,9 +349,3 @@ Rules (mirror browser):
 - --worktree all only for list.
 - Recoveries: 'emulator_no_active' → orca emulator attach or open pane; stale → list/kill/attach.
 - No raw serve-sim in agent prompts/skills — use the `orca emulator` wrappers.
-
-The live pane (when implemented) registers its stream with the bridge for default targeting (seamless, recommended option per design).
-
-## Next Action (continued)
-
-... or emulator list/attach/tap while the live view is visible.
