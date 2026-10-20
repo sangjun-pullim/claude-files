@@ -31,9 +31,6 @@ written, so for the Delegation output comparison the handoff costs only that pro
 that step's `## Tests` entries verbatim in the spawn prompt; you still flip the marker after reading
 its report and its `Verification` exit codes, and Phase 2 stays yours.
 
-**If you are Codex** reading this: implement the steps you were given, never write the spec file,
-report facts, and stop — the Claude orchestrator owns markers, review, and closing.
-
 ## Phase 1: Implementation
 
 1. **Resume point** — `grep -n '^### \[ \]' <spec>` gives the first unimplemented step.
