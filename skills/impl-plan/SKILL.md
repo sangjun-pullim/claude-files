@@ -90,6 +90,11 @@ risk-surface: <none | auth | payment | permission | db-schema | public-api>
 ## Context
 [Problem and motivation; reference the PRD section if one exists — never restate it]
 
+## Usage Sketch
+[When the change adds or changes a public interface — an endpoint, an exported function or type:
+the caller's code or a request/response example, as the caller will write it. The steps build
+toward this. Omit the section otherwise.]
+
 ## Affected Files
 1. `path/to/file.ts` — brief description of change
 
