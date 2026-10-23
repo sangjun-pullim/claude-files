@@ -1,0 +1,322 @@
+<!--
+status: active
+date: 2026-10-23
+risk-surface: db-schema
+NOTE: This is the plan, not a description of the code — never read it as evidence of current code state. While status is active, edit it in place as the plan changes; once archived it is frozen.
+-->
+<!doctype html>
+<!-- Adapted from anthropics/claude-plugins-community html-plan/skills/html-plan/examples/scheduled-send.html @ 06ec7b6, modified for impl-plan specs — see ../runtime/NOTICE.md. -->
+<html lang="ko">
+<meta charset="utf-8">
+<title>001 예약 발송</title>
+<link rel="stylesheet" href="../runtime/htmlplan.css">
+<script src="../runtime/htmlplan.js" defer></script>
+<style data-mock-shared>
+  .ui { font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1c1b19; background: #fff; border: 1px solid #ddd8cc; border-radius: 10px; overflow: hidden; }
+  .ui .hd { padding: 9px 14px; border-bottom: 1px solid #eee9dd; font-weight: 650; display: flex; gap: 8px; align-items: baseline; } .ui .hd small { color: #8a8578; font-weight: 400; }
+  .ui .ln { padding: 7px 14px; border-bottom: 1px solid #f3efe6; color: #5f5a4f; } .ui .ln b { color: #1c1b19; font-weight: 600; }
+  .ui .body { padding: 12px 14px; color: #5f5a4f; min-height: 46px; }
+  .ui .ft { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-top: 1px solid #eee9dd; background: #faf8f3; }
+  .ui .btn { font-weight: 600; font-size: 13px; padding: 7px 12px; border-radius: 7px; border: 1px solid #ddd8cc; background: #fff; } .ui .btn.pri { background: #1c1b19; color: #fff; border-color: #1c1b19; }
+  .ui .menu { margin: 0 14px 12px auto; width: 230px; border: 1px solid #ddd8cc; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.12); background: #fff; } .ui .menu div { padding: 7px 12px; } .ui .menu div + div { border-top: 1px solid #f3efe6; } .ui .menu .on { background: #f6ede9; }
+  .ui .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 9px 14px; border-bottom: 1px solid #f3efe6; } .ui .row small { color: #8a8578; } .ui .row .t { color: #b4541f; font-weight: 600; font-size: 13px; } .ui .row .acts { grid-column: 1 / -1; color: #8a8578; font-size: 12.5px; }
+  .ui .ok { color: #1f7a52; font-weight: 650; } .ui .bad { color: #b42318; font-weight: 650; } .ui .dim { color: #8a8578; }
+</style>
+<body>
+
+<header>
+  <h1>001 PostBox 작성 창의 예약 발송</h1>
+  <doc-changes new="7" changed="2"></doc-changes>
+</header>
+
+<main>
+<doc-plan>
+
+<!-- ═════ 1 ═════ -->
+<doc-claim steps="1 3">
+  <p>사용자는 작성 창에서 보낼 시각을 고를 수 있다.</p>
+  <doc-mock frame="none" w="440"><template>
+<div class="ui">
+  <div class="ln">받는 사람 <b>dana@example.com</b></div>
+  <div class="ln">제목 <b>오늘 회의 정리</b></div>
+  <div class="body">오늘 정한 내용입니다…</div>
+  <div class="menu" data-ref="menu"><div>내일 아침 <span class="dim">· 8:00</span></div><div class="on">월요일 아침 <span class="dim">· 8:00</span></div><div>날짜와 시각 고르기…</div></div>
+  <div class="ft"><span class="btn pri">보내기</span><span class="btn" data-ref="later">나중에 보내기 ▾</span></div>
+</div></template>
+    <doc-pin ref="later" title="새 버튼">보내기 버튼은 그대로다.</doc-pin>
+  </doc-mock>
+
+  <doc-claim steps="3">
+    <p>「나중에 보내기」는 시각과 함께 저장만 하고 보내지 않는다.</p>
+    <doc-calls title="예약 저장" caption="새 메뉴가 새 엔드포인트 하나만 부른다.">
+<script type="text/plain">
+  <Composer/>
++   <**SendLaterMenu**/>
++     POST /api/scheduled
+</script>
+    </doc-calls>
+  </doc-claim>
+
+  <doc-claim steps="2">
+    <p>한 사용자는 예약 메시지를 최대 50개까지 둘 수 있다.</p>
+    <doc-mock frame="terminal" title="POST /api/scheduled" w="440"><template><span class="dim">></span> 51번째 예약
+<span class="r">409</span> 예약은 <b>50개</b>까지입니다</template></doc-mock>
+    <doc-ask id="limit" data-decided="2026-10-23" neutral>
+      <p>사용자당 예약 메시지는 몇 개까지 둘까?</p>
+      <div class="opts-row">
+        <label><input type="radio" name="limit" value="50" checked> 50</label>
+        <label><input type="radio" name="limit" value="500"> 500</label>
+        <label><input type="radio" name="limit" value="none"> 제한 없음 <small>1.2 노드가 빠진다</small></label>
+      </div>
+    </doc-ask>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 2 ═════ -->
+<doc-claim steps="1 4 5">
+  <p>메시지는 정한 시각에만 나가고, 실패한 메시지는 남는다.</p>
+  <doc-machine name="msg" caption="초록 점선이 이 계획이 더하는 화살표다.">
+<script type="text/plain">
+machine msg initial scheduled
+state scheduled   # 저장됨. 시각을 기다린다.
+state sending     # 워커가 잡고 있다.
+state sent      final   # 보낸 편지함으로 간다.
+state failed      # 오류와 함께 남는다.
+state cancelled final   # 임시 보관함으로 돌아간다.
+
+| scheduled | sending | sent |
+| cancelled | failed  | .    |
+
+scheduled -due->    sending   : send_at
+sending   -ok->     sent      : 250
+sending   -fail->   failed    : 오류
+scheduled -cancel-> cancelled : 취소
+failed    -cancel-> cancelled : 취소
++ failed  -retry->  sending   : 재시도 ×3
+</script>
+    <div data-state="scheduled"><doc-mock frame="none" w="400"><template><div class="ui"><div class="row"><b>오늘 회의 정리</b><span class="t">월 8:00</span><small>dana@example.com</small><span></span><span class="acts">수정 · 지금 보내기 · 취소</span></div></div></template></doc-mock></div>
+    <div data-state="failed"><doc-mock frame="none" w="400"><template><div class="ui"><div class="row"><b>오늘 회의 정리</b><span class="bad">보내지 못함</span><small>메일 서버가 거부했다.</small><span></span><span class="acts">다시 시도 · 취소</span></div></div></template></doc-mock></div>
+  </doc-machine>
+
+  <doc-claim steps="4">
+    <p>워커가 1분마다 시각이 된 메시지를 한 번만 가져간다.</p>
+    <doc-flow caption="두 워커가 같은 행을 잡지 않는다.">
+<script type="text/plain">
+db   = scheduled_messages [db]
++ wk = 예약 워커 / worker.ts [green]
+mail = sendMessage() / send.ts
+| wk | db |
+| mail | . |
+wk -> db : 잡기
+wk -> mail : 보내기
+</script>
+    </doc-flow>
+  </doc-claim>
+
+  <doc-claim steps="5">
+    <p>실패한 발송은 다시 시도한 뒤 사용자에게 넘긴다.</p>
+    <doc-mock frame="none" w="400"><template>
+<div class="ui"><div class="row"><span><span class="bad">보내지 못함</span> · 오늘 회의 정리</span><span class="dim">8:16</span><small>3번 시도했다. 예약 목록에 있다.</small></div></div></template>
+    </doc-mock>
+    <doc-ask id="retry">
+      <p>실패한 발송을 저절로 다시 시도할까?</p>
+      <label><input type="radio" name="retry" value="3" checked> 예, 5분 간격으로 3번</label>
+      <label><input type="radio" name="retry" value="no"> 아니요 <small>사용자가 「다시 시도」를 누른다</small></label>
+    </doc-ask>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 3 ═════ -->
+<doc-claim steps="6">
+  <p>사용자는 예약 목록에서 메시지를 고치거나 취소한다.</p>
+  <doc-mock frame="none" w="440"><template>
+<div class="ui">
+  <div class="hd">예약됨 <small>2</small></div>
+  <div class="row"><b>오늘 회의 정리</b><span class="t">월 8:00</span><small>dana@example.com</small><span></span><span class="acts" data-ref="acts">수정 · 지금 보내기 · 취소</span></div>
+  <div class="row"><b>3월 청구서</b><span class="t">4월 1일 9:30</span><small>billing@example.com</small></div>
+</div></template>
+    <doc-pin ref="acts" anchor="r" offset="14,0" title="세 동작">워커가 잡기 전까지만 된다.</doc-pin>
+  </doc-mock>
+</doc-claim>
+
+<!-- ═════ shared · not changing ═════ -->
+<doc-claim aux="shared">
+  <p>공유: 새 테이블 하나.</p>
+  <doc-schema id="table" lang="sql" title="migrations/0042_scheduled_messages.sql" caption="시각은 UTC로 저장한다.">
+<script type="text/plain">
+CREATE TABLE scheduled_messages (
+  id          uuid PRIMARY KEY,
+  user_id     uuid NOT NULL REFERENCES users(id),
+  status      text NOT NULL CHECK (status IN
+                ('scheduled','sending','sent','failed','cancelled')),
+  send_at     timestamptz NOT NULL,
+  message     jsonb NOT NULL,          -- to, subject, html
+  attempts    int  NOT NULL DEFAULT 0,
+  last_error  text
+);
+CREATE INDEX scheduled_due ON scheduled_messages (status, send_at);
+</script>
+  </doc-schema>
+</doc-claim>
+
+<doc-claim aux="scope">
+  <p>바뀌지 않는 것: 일반 발송, 임시 보관함, 메일 업체.</p>
+  <ul>
+    <li><code>sendMessage()</code>는 그대로 부른다.</li>
+    <li>반복 발송은 없다. 메시지 하나에 시각 하나.</li>
+  </ul>
+</doc-claim>
+
+<!-- ═════ agent branches ═════ -->
+<doc-claim aux="background">
+  <p>배경: 밤에 쓴 답장이 밤에 도착하지 않게 해 달라는 요청.</p>
+  <p>사용자 요청(원문): 「작성 창에 나중에 보내기를 넣어 달라. 취소할 수 있어야 하고, 절대 일찍 나가면 안 된다.」 고객지원 기록에도 밤에 답장을 쓰고 아침에 도착하길 바라는 사례가 반복된다.</p>
+  <p>지금 PostBox는 보내기를 누르면 바로 <code>sendMessage()</code>를 부른다. 보낼 시각을 저장할 곳이 없고, 정해진 시각에 메시지를 꺼내 보낼 프로세스도 없다.</p>
+  <ul>
+    <li>일찍 나가면 안 된다 — 발송은 <code>send_at</code>이 지난 행만 잡는다.</li>
+    <li>워커가 둘 이상 떠도 같은 메시지를 두 번 보내면 안 된다.</li>
+    <li>취소는 워커가 잡기 전까지만 이긴다. 늦으면 사용자에게 알린다.</li>
+  </ul>
+</doc-claim>
+
+<doc-claim aux="files">
+  <p>Affected Files: 새 파일 7개, 바뀌는 파일 2개.</p>
+  <ol>
+    <li><code>migrations/0042_scheduled_messages.sql</code> — 새 테이블</li>
+    <li><code>server/src/scheduled/limits.ts</code> — 사용자당 개수 제한</li>
+    <li><code>server/src/scheduled/routes.ts</code> — 예약 생성·목록·수정·취소 라우트</li>
+    <li><code>server/src/scheduled/store.ts</code> — 테이블 접근(잡기·상태 변경)</li>
+    <li><code>server/src/scheduled/worker.ts</code> — 1분 주기 워커</li>
+    <li><code>web/src/composer/SendLaterMenu.tsx</code> — 「나중에 보내기」 메뉴</li>
+    <li><code>web/src/scheduled/ScheduledFolder.tsx</code> — 예약 목록</li>
+    <li><code>web/src/composer/Composer.tsx</code> — 메뉴를 붙인다</li>
+    <li><code>server/src/app.ts</code> — 라우트와 워커를 등록한다</li>
+  </ol>
+</doc-claim>
+
+<doc-claim aux="dependents">
+  <p>Affected Dependents: 바뀌지 않지만 계속 동작해야 하는 코드.</p>
+  <ul>
+    <li><code>server/src/mail/send.ts</code> <code>sendMessage()</code> — 워커가 그대로 부른다. 시그니처는 바뀌지 않는다.</li>
+    <li><code>server/src/drafts.ts</code> <code>saveDraft()</code> — 취소된 예약이 임시 보관함으로 돌아갈 때 부른다.</li>
+  </ul>
+</doc-claim>
+
+<doc-claim aux="steps">
+  <p>Implementation Steps: 6단계.</p>
+  <ul class="steps">
+    <li id="step-1">
+      <h4>Step 1: 마이그레이션</h4>
+      <p><b>File</b>: <code>migrations/0042_scheduled_messages.sql</code></p>
+      <ul>
+        <li><a href="#table">scheduled_messages 스키마</a> 그대로 테이블과 인덱스 <code>scheduled_due</code>를 만든다.</li>
+      </ul>
+    </li>
+    <li id="step-2">
+      <h4>Step 2: 사용자당 개수 제한</h4>
+      <p><b>File</b>: <code>server/src/scheduled/limits.ts</code> (새 파일)</p>
+      <ul>
+        <li>상한은 결정 <code>limit</code>의 값으로, 아래 상수 <code>SCHEDULED_LIMIT</code> 한 곳에만 쓴다. 다른 코드와 테스트는 이 상수를 가져다 쓴다. <code>none</code>이면 이 단계를 건너뛴다.</li>
+      </ul>
+<pre><code>// The decided per-user cap (decision `limit`).
+export const SCHEDULED_LIMIT = 50
+
+export async function assertUnderLimit(userId: string) {
+  if (await store.countScheduled(userId) &gt;= SCHEDULED_LIMIT) throw new LimitError(SCHEDULED_LIMIT)
+}</code></pre>
+    </li>
+    <li id="step-3">
+      <h4>Step 3: 예약 저장 라우트와 메뉴</h4>
+      <p><b>Files</b>: <code>server/src/scheduled/routes.ts</code>, <code>web/src/composer/SendLaterMenu.tsx</code>, <code>web/src/composer/Composer.tsx:41</code></p>
+      <ul>
+        <li><code>POST /api/scheduled</code>: 소유자와 상태는 세션에서 정한다. 요청 본문의 값은 쓰지 않는다.</li>
+        <li><code>Composer.tsx:41</code>의 보내기 버튼 옆에 메뉴를 붙인다.</li>
+      </ul>
+<pre><code>export async function createScheduled(req: Request) {
+  const session = requireSession(req)
+  await assertUnderLimit(session.userId)
+  const row = buildScheduled(await req.json(), session)
+  await store.insert(row)
+  return json({ id: row.id, sendAt: row.sendAt }, 201)
+}
+
+// Composer.tsx
+&lt;SendLaterMenu onPick={(at) =&gt; scheduleDraft(draft, at)} /&gt;</code></pre>
+    </li>
+    <li id="step-4">
+      <h4>Step 4: 워커와 잡기</h4>
+      <p><b>Files</b>: <code>server/src/scheduled/worker.ts</code>, <code>server/src/scheduled/store.ts</code>, <code>server/src/app.ts</code></p>
+      <ul>
+        <li><code>runScheduledSends()</code>를 1분마다 돌린다. 잡은 행마다 <code>sendMessage()</code>를 부르고 결과에 따라 <code>markSent</code>·<code>markFailed</code>.</li>
+        <li>잡기는 <code>FOR UPDATE SKIP LOCKED</code>로 — 두 워커가 같은 행을 잡지 않는다.</li>
+      </ul>
+<pre><code>UPDATE scheduled_messages SET status = 'sending'
+WHERE id IN (
+  SELECT id FROM scheduled_messages
+  WHERE status = 'scheduled' AND send_at &lt;= $1
+  ORDER BY send_at LIMIT $2
+  FOR UPDATE SKIP LOCKED
+)
+RETURNING *;</code></pre>
+    </li>
+    <li id="step-5">
+      <h4>Step 5: 재시도</h4>
+      <p><b>Files</b>: <code>server/src/scheduled/worker.ts</code>, <code>server/src/scheduled/store.ts</code></p>
+      <ul>
+        <li>결정 <code>retry</code>가 <code>3</code>이면: <code>attempts &lt; 3</code>이고 마지막 시도에서 5분이 지난 <code>failed</code> 행을 Step 4와 같은 방식으로 다시 잡는다. <code>no</code>면 이 단계를 건너뛴다.</li>
+      </ul>
+    </li>
+    <li id="step-6">
+      <h4>Step 6: 예약 목록·수정·취소</h4>
+      <p><b>Files</b>: <code>server/src/scheduled/routes.ts</code>, <code>web/src/scheduled/ScheduledFolder.tsx</code></p>
+      <ul>
+        <li><code>GET /api/scheduled</code>: 이 사용자의 행만, <code>send_at</code> 오름차순.</li>
+        <li>취소는 아래 조건부 갱신으로 — 돌아온 행이 없으면 이미 늦었다고 알린다.</li>
+      </ul>
+<pre><code>UPDATE scheduled_messages SET status = 'cancelled'
+WHERE id = $1 AND user_id = $2 AND status IN ('scheduled', 'failed')
+RETURNING id;</code></pre>
+    </li>
+  </ul>
+</doc-claim>
+
+<doc-claim aux="tests">
+  <p>Tests: 서버 동작마다 하나.</p>
+  <ul>
+    <li><code>should not claim a message before its send_at</code></li>
+    <li><code>should let only one of two workers claim the same row</code></li>
+    <li><code>should reject a scheduled message beyond SCHEDULED_LIMIT with 409</code> — <code>SCHEDULED_LIMIT</code>개를 채운 뒤 하나 더 저장한다(Step 2의 상수를 import).</li>
+    <li><code>should return no row when cancel lands after the claim</code></li>
+  </ul>
+</doc-claim>
+
+<doc-claim aux="risks">
+  <p>Risks: 시각대와 중복 발송.</p>
+  <ul>
+    <li>사용자 시각대를 잘못 바꾸면 일찍 나간다 — UTC로 저장하고 변환은 세션 시각대로 한 곳에서만 한다.</li>
+    <li>워커가 보낸 뒤 <code>markSent</code> 전에 죽으면 다시 보낼 수 있다 — <code>sending</code>에 오래 머문 행은 자동 재시도하지 않고 사용자에게 넘긴다.</li>
+  </ul>
+</doc-claim>
+
+<doc-claim aux="verify">
+  <p>Verification: 테스트와 마이그레이션.</p>
+  <ul>
+    <li><code>npm test -- scheduled</code> — 전부 통과.</li>
+    <li><code>npm run migrate &amp;&amp; npm run migrate:down &amp;&amp; npm run migrate</code> — 오류 없음.</li>
+  </ul>
+</doc-claim>
+
+<doc-claim aux="review">
+  <p>Review Notes: 범위 밖으로 둔 지적 1건.</p>
+  <table>
+    <thead><tr><th>Finding</th><th>Severity</th><th>Disposition</th><th>Rationale</th></tr></thead>
+    <tbody>
+      <tr><td>반복 발송이 없다</td><td>MEDIUM</td><td>REJECTED</td><td>scope 가지에서 범위 밖으로 정했다.</td></tr>
+    </tbody>
+  </table>
+</doc-claim>
+
+</doc-plan>
+</main>
+</body>
+</html>
