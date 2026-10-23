@@ -31,6 +31,9 @@ The spawn prompt names one of two jobs:
 2. **Implement the spec, only the spec** — targeted edits, never whole-file rewrites unless the
    spec is a rewrite. Where the spec is ambiguous, take the reading the wording and surrounding
    code most directly support and record it under Assumptions; do not build the other readings.
+   When the spec's interface forces `any`, a checker-silencing assertion (`as unknown as`, `!`),
+   or the same workaround in more than one caller, stop there and report it as a design
+   mismatch: the spec line and each place it forces.
 3. **Verify** — run the named commands. If a check fails because of your change, fix it; if it
    fails for a reason outside the spec, report it and leave it.
 4. **Do not** commit, fix bugs you notice, add tests the spec did not ask for (the global test
