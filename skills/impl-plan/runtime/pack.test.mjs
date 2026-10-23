@@ -1,6 +1,6 @@
 // Run: node --test ~/.claude/skills/impl-plan/runtime/pack.test.mjs
 // Each test starts from the bundled example, changes one thing, and runs pack.mjs as a child process.
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -19,7 +19,9 @@ const edit = (html, from, to) => {
   return html.replace(from, to);
 };
 const lineOf = (html, snippet) => html.slice(0, html.indexOf(snippet)).split('\n').length;
-const tmpDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'pack-'));
+const dirs = [];
+const tmpDir = () => { const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pack-')); dirs.push(dir); return dir; };
+after(() => { for (const dir of dirs) fs.rmSync(dir, { recursive: true, force: true }); });
 /** write html into a fresh temp dir and run pack.mjs on it; returns exit code, stdout, stderr and the dir */
 const run = (html, args = ['--lint-only']) => {
   const dir = tmpDir(); const file = path.join(dir, 'plan.html'); fs.writeFileSync(file, html);

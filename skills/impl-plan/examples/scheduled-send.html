@@ -61,6 +61,7 @@ NOTE: This is the plan, not a description of the code — never read it as evide
     <p>한 사용자는 예약 메시지를 최대 50개까지 둘 수 있다.</p>
     <doc-mock frame="terminal" title="POST /api/scheduled" w="440"><template><span class="dim">></span> 51번째 예약
 <span class="r">409</span> 예약은 <b>50개</b>까지입니다</template></doc-mock>
+    <!-- An answered decision: data-decided and neutral are added only after the user answers it in Phase 1.5. A new decision carries neither. -->
     <doc-ask id="limit" data-decided="2026-10-23" neutral>
       <p>사용자당 예약 메시지는 몇 개까지 둘까?</p>
       <div class="opts-row">

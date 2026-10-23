@@ -31,7 +31,7 @@ NOTE: This is the plan, not a description of the code — never read it as evide
   <doc-claim steps="1 2">
     <p>운영자가 실패한 출고를 한 번에 다시 보낼 수 있다.</p>
     <doc-mock …>…</doc-mock>
-    <doc-ask id="retry" data-decided="2026-10-24" neutral><p>…?</p><label><input type="radio" name="retry" value="3" checked> …</label>…</doc-ask>
+    <doc-ask id="retry"><p>…?</p><label><input type="radio" name="retry" value="3" checked> …</label>…</doc-ask>
   </doc-claim>
   …
   <doc-claim aux="scope"><p>바뀌지 않는 것: …</p><ul>…</ul></doc-claim>
@@ -117,8 +117,9 @@ it. Pack errors on a number with no `id="step-N"` and warns on a step that no no
 - `background`: the Context as written — paragraphs and lists.
 - `steps`: one `<ul class="steps">` holding the step elements of the Implementation Steps row of
   `## Spec Sections` (step id, done and blocked markings), each with `<h4>Step N: …</h4>` and its
-  body. The body alone is enough to implement the step: file paths, line numbers, and code
-  sketches in `<pre><code>` — workers do not see the tree's `src=` excerpts.
+  body. The body, with the tree elements it links by `<a href="#…">` (Usage Sketch, `doc-schema`),
+  is enough to implement the step: file paths, line numbers, and code sketches in `<pre><code>` —
+  workers do not see the tree's `src=` excerpts.
 - `review`: a table.
 - Code and diffs in an agent branch go in `<pre><code>`; `doc-*` blocks belong to the tree (pack
   errors on one inside an agent branch).

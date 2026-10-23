@@ -34,7 +34,9 @@ Phase 1. Never switch to Codex on your own. When you hand a step to `implementer
 spec's absolute path and the step numbers instead of restating the step body (the spec is already
 written, so for the Delegation output comparison the handoff costs only that prompt), and quote
 that step's Tests entries verbatim in the spawn prompt; you still flip the marker after reading
-its report and its `Verification` exit codes, and Phase 2 stays yours.
+its report and its `Verification` exit codes, and Phase 2 stays yours. Every handoff of an
+`.html` spec's steps — to an `implementer`, a `codex-worker`, or an orca worker's brief — says
+that the step bodies are HTML-escaped and are unescaped before writing code.
 
 ## Phase 1: Implementation
 
@@ -106,8 +108,7 @@ Load the `codex-delegation` skill first — it owns the codex dispatch contract;
    callers stay in one worker; no clean split → sequential. Each Tests entry goes to the
    worker owning the step it pins.
 2. **Dispatch** one `codex-worker` per group with the spec's absolute path, the step numbers it
-   owns, the Tests entries for those steps quoted verbatim, and `<base>` (an `.html` spec: also say
-   its step bodies are HTML-escaped and are unescaped before writing code). Workers never write
+   owns, the Tests entries for those steps quoted verbatim, and `<base>`. Workers never write
    the spec; you flip markers after gating. In-place mode: one worker at a time.
 3. **Gate each report mechanically** (no diff review here): `codex 호출 0회` or no session id →
    failed, re-dispatch; any `검증 → exit` non-zero → send the failing output back as a rework
