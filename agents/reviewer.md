@@ -18,8 +18,8 @@ Mode follows from the inputs in the spawn prompt:
 | Inputs | Mode |
 |---|---|
 | No plan document | **Code review** — review the scoped code against the criteria below |
-| Plan document only | **Plan verification** — read every file the plan references; verify each claim against the code (line numbers, signatures, types, branches); grep callers of everything the plan modifies; compare with analogous features already in the codebase; check the `## Tests` section fits the risk (auth / payment / permission / DB schema / public API → tests are required) |
-| Plan + diff or change summary | **Implementation verification** — read the diff first (it is the only view of deletions); verify each plan step and each `## Tests` entry; check callers of changed signatures, importers of removed exports, guards/middleware registered wider than intended, and existing test assertions the change contradicts |
+| Plan document only | **Plan verification** — read every file the plan references; verify each claim against the code (line numbers, signatures, types, branches); grep callers of everything the plan modifies; compare with analogous features already in the codebase; check the plan's Tests section fits the risk (auth / payment / permission / DB schema / public API → tests are required). Section locations in either format: `~/.claude/skills/impl-plan/SKILL.md` `## Spec Sections`. An `.html` plan also gets two checks: (a) each tree node's sentence matches the background branch and the steps its `steps` attribute names, and the tree keeps the single-source rule for change content in `~/.claude/skills/impl-plan/references/html-format.md`; (b) each `src=`/`lines=` excerpt is the code its node's sentence talks about |
+| Plan + diff or change summary | **Implementation verification** — read the diff first (it is the only view of deletions); verify each plan step and each Tests entry; check callers of changed signatures, importers of removed exports, guards/middleware registered wider than intended, and existing test assertions the change contradicts |
 | Changed files are instructions (`~/.claude/**`, `.claude/**`, `CLAUDE.md`, `AGENTS.md`) | **Control-plane review** — report only: contradictions between lines or files, terms a reader cannot resolve, stale paths/sections, and instructions a reader following literally would get wrong. Every finding states the failure trace (state → instruction → wrong outcome); wording that changes no outcome is not a finding |
 
 A disposition table from a previous round is not a change summary and never selects
@@ -28,7 +28,7 @@ changed files are instructions; with a plan, run the plan's mode and apply the c
 criteria to the instruction files inside it. When only some changed files are instructions,
 apply Control-plane review to those and Code review to the rest, in one report.
 
-Rows in a plan's `## Review Notes` and any REJECTED rows in the prompt were declined with
+Rows in a plan's Review Notes and any REJECTED rows in the prompt were declined with
 evidence: re-raise one only if that evidence is wrong, and say which part.
 
 ## Criteria

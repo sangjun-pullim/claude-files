@@ -25,7 +25,7 @@
 |------|------|--------------|------|
 | `grilling` 🅼 | 아이디어·요구사항이 아직 모호할 때 ("갈궈줘") | 답할 수 있는 질문 전부를 라운드로 묶어 캐물어서 설계를 명확하게 만든다. 확정된 용어·결정은 세션 끝에 GLOSSARY/ADR 갱신으로 제안 | "정산 재처리 기능 만들려는데 갈궈줘" |
 | `codebase-design` 🅼 | 새 모듈의 인터페이스를 잡거나, 테스트 걸 곳(seam)이 애매하거나, mock이 덕지덕지 붙을 때 | deep module 설계 어휘와 원칙 제공. 필요시 서브에이전트 3안 병렬 설계 비교(design-it-twice) | "수집 재시도 모듈 인터페이스 어떻게 잡는 게 좋을까?" |
-| `impl-plan` | 프로덕션 파일 5개 이상을 건드리는 변경을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/` 스펙 작성(바뀌는 파일·의존 코드·규칙 사본을 그린 Mermaid `## Change Map` 포함) → 코드와 대조하는 리뷰 루프(최대 3회). PRD가 있으면 대조 | "/impl-plan 주문 출고 재처리 기능" |
+| `impl-plan` | 프로덕션 파일 5개 이상을 건드리는 변경을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/`에 HTML 계획서 작성(동작 트리 + 결정 항목, 브라우저에서 결정 후 Respond) → 결정 반영 → 코드와 대조하는 리뷰 루프(최대 3회). PRD가 있으면 대조. 기존 .md 계획서는 .md 그대로 검증 | "/impl-plan 주문 출고 재처리 기능" |
 | `impl-execute` | 승인된 impl-spec을 실제로 구현할 때 | 스펙의 첫 미완료 단계부터 구현 → 전체 diff 독립 리뷰(최대 3회) → 조건 충족 시 스펙 종료·보관 | "/impl-execute 042 스펙 구현해줘" |
 | `tdd` 🅼 | 테스트 먼저 개발하고 싶을 때 ("red-green") | seam 합의 → 실패 테스트 → 최소 구현 반복. 좋은 테스트/안티패턴 기준 포함 | "이 기능 테스트 먼저 쓰면서 만들자" |
 | `diagnosing-bugs` 🅼 | 원인이 바로 안 보이는 어려운 버그·성능 저하 | 가설보다 먼저 "빨간불 뜨는 재현 루프"를 만들게 강제하는 6단계 진단 규율. 명백한 버그는 그냥 고치면 됨 | "수집 워커가 간헐적으로 멈춰. diagnose 해줘" |
@@ -64,6 +64,8 @@
 `benchmark-workspace/`는 평가 실행 기록용.
 
 > **출처**: 🅼 표시가 붙은 스킬은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.
+>
+> `impl-plan`의 HTML 계획서 런타임은 html-plan(Thariq Shihipar — plugin.json MIT, 저장소 Apache-2.0)에서 가져옴 — `skills/impl-plan/runtime/NOTICE.md`.
 
 ### Agents
 

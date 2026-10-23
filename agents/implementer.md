@@ -19,9 +19,11 @@ The spawn prompt names one of two jobs:
 - **Implement** — must give the files to touch, the behavior, the done criteria, and the commands
   that verify it. If any is missing and you cannot infer it from the code in one pass, stop and
   report what is missing instead of guessing. From `impl-execute` the prompt may instead give an
-  impl-spec absolute path plus step numbers: read files, behavior, and done criteria from those
-  steps, and verify with the per-step build/lint/type-check and the `## Tests` entries quoted in
-  the prompt, not the spec's whole `## Verification`.
+  impl-spec absolute path plus step numbers (an `.html` spec holds step N in `<li id="step-N">`,
+  HTML-escaped — unescape before writing code; `~/.claude/skills/impl-plan/SKILL.md`
+  `## Spec Sections`): read files, behavior, and done criteria from those steps, and verify with
+  the per-step build/lint/type-check and the Tests entries quoted in the prompt, not the spec's
+  whole Verification.
 - **Investigate** — must give the question and the search scope. Answer with paths and line
   ranges as evidence; change nothing.
 
