@@ -128,3 +128,12 @@
 - `tdd`: 리팩터는 루프 밖이고, 리뷰의 MEDIUM/LOW로 완료 보고에 남아 사용자가 적용 여부를 정한다.
 - 사용량 기준: `CLAUDE.md` Delegation의 목적을 「구독 사용량을 줄이기 위해」에서 「효율적으로 쓰기 위해」로 바꿨다. 줄일 대상은 결과에 보탬이 안 되는 소모이고, 복잡한 작업에 필요한 토큰은 아끼지 않는다.
 - 수렴 과정: 첫 설계는 정지 뒤 재시작 절차와 세션을 넘는 `UNRESOLVED` 행 수명까지 새로 정하다가, reviewer 루프 2개가 각각 2회차에 같은 규칙의 HIGH로 정지했다. 범위를 「루프 안 처리와 종료」로 고정하고, 회차 간 상태를 두지 않고, 기존 Bug fix 규칙을 재사용하고, 리뷰는 이번 diff가 만든 문제만 지적하게 하자 세 번째 루프가 2회차에 종료했다. 의도적으로 남긴 것: Excess 지적(주석 규칙 위반 등)은 MEDIUM 이하라 루프 안에서 고치지 않는다 — 쌓이면 Standards 위반을 HIGH가 될 수 있는 증거 종류로 추가한다.
+
+**2026-10 (하순) — `impl-plan` 계획서를 HTML로.**
+
+- 배경: 사용자가 계획서를 열면 무엇을 하는 계획인지 바로 잡히지 않았다(luxury-collector 계획 127: 386줄·62KB). Thariq Shihipar의 html-plan(동작 트리 + 추천 기본값이 있는 결정 항목 + 브라우저 Respond)으로 127을 시험 변환하자 닫힌 화면의 문장 5개로 계획이 잡혔다. 같은 시험에서 우려 4가지가 나왔다 — Context를 짧은 문장 트리로 다시 쓰다 운영 사실·설계 근거가 조용히 빠졌고, 트리의 diff와 Steps가 같은 변경을 두 번 적었고, YAML 머리말을 옮기면 머리말을 줄 단위로 읽는 스킬이 깨지고, 이스케이프하지 않은 제네릭(`Pick<Foo>`)이 화면에서 사라졌다.
+- 바꾼 것: `impl-plan`은 `docs/impl-spec/<NNN>-*.html`을 쓴다. 트리에는 동작 문장·그림·커밋에서 읽은 기존 코드 발췌·결정만 두고, 수정 내용은 steps 가지에만, Context는 background 가지에 원문 그대로 둔다. 에이전트 가지 8개(background·files·dependents·steps·tests·risks·verify·review)는 접혀 있고 마크다운 절과 1:1로 대응한다. 상태 블록은 `<!doctype html>` 앞 주석에 같은 YAML 줄로 둔다. 결정은 reviewer 검토 전에 받는다(Phase 1.5). 절별 내용과 `.md`/`.html` 대응의 정본은 `impl-plan` `## Spec Sections`이고, 다른 스킬·에이전트·`CLAUDE.md`는 이 표를 가리키며 형식에 묶이지 않는 절 이름(「Review Notes」·「Tests」)을 쓴다. `impl-execute`는 진행·미결 결정·`UNRESOLVED`를 `pack.mjs --status`(파서)로 읽는다. Change Map은 HTML에서 빠지고 트리의 호출 트리·흐름도가 그 역할을 맡는다. 활성 `.md` 계획서가 여러 프로젝트에 남아 있어 `.md`는 그대로 읽고 검증한다. 프로젝트 레포에는 계획 원본만 커밋하고, 묶은 파일(런타임 포함 약 220–320KB)은 볼 때만 레포 밖에 만든다.
+- 런타임: `skills/impl-plan/runtime/`에 htmlplan.js·css를 upstream(06ec7b6) 그대로 두고 `pack.mjs`만 고쳤다 — ASD-STE100 검사 제거, 구조·이스케이프 검사, `-o` 필수, `--status`. 테스트 24개(`node --test`). 출처·라이선스는 `NOTICE.md`·`LICENSE`.
+- 시험: 127을 새 형식으로 다시 써서 원본 절 8개(Context 포함)가 마크업을 빼고 글자 단위로 같았고, `--status`가 13/13 완료를 냈다.
+- 수렴 과정: 계획 리뷰 첫 루프는 3회차에 정지했다(절별 내용 규칙이 `.md` 전용 문서로만 옮겨져 HTML 경로에서 사라짐 → `## Spec Sections`의 「무엇을 쓰나」 열로 정본화). 이후 회차마다 줄 단위 grep 게이트의 경계 사례가 MEDIUM으로 반복되어, grep을 `--status` 파서로 바꾸고 태그 모양 규칙을 지워 수렴했다. 구현 리뷰는 2회차에 종료하고 확인 1회를 더 돌렸다.
+- 의도적으로 남긴 것: 런타임 UI 문구는 영어이고 Phase 3 화면은 결정이 끝나도 「N to answer」를 보인다. archive된 `.md` 계획서는 변환하지 않는다. `skills/benchmark-workspace/impl-skills/evals.json`의 기대 조건은 `.md` 전제로 남아 있다. 확인 검토의 MEDIUM 1건(orca 감독 디스패치 brief에 「`.html` 단계 본문은 HTML 이스케이프됨」 안내가 없음)과 LOW 4건은 사용자 판단으로 남겼다.
