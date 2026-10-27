@@ -32,12 +32,6 @@
 | `resolving-merge-conflicts` 🅼 | merge/rebase 충돌이 났을 때 | 양쪽 의도를 파악해 해소하고 검사 실행. 판단 불가 hunk는 사용자에게 넘김 | "rebase 하다 충돌났어, 해결해줘" |
 | `/improve-codebase-architecture` 🅼 (수동) | 코드베이스 구조 개선 지점을 찾고 싶을 때 | 핫스팟 스캔 → 개선 후보를 Before/After 다이어그램 리포트(Artifact)로 제시 → 고른 후보를 grilling으로 구체화 | "/improve-codebase-architecture collector 모듈 위주로" |
 
-### 화면 설계
-
-| 이름 | 언제 | 무엇을 해주나 | 예시 |
-|------|------|--------------|------|
-| `ux-wireframe` | 관리자 콘솔·백오피스 화면을 그릴 때 ("와이어프레임", "화면 그려줘", "UX 정리안", "관리자 화면 설계") | 계약 문서를 기술 명세로 두고 화면·문구만 사람의 말로 다시 짠 단일 HTML. 사이드바=위계도, 요소 ID + 번호 주석, 무채색 상태 표시, 빈 상태·오류 포함. 에셋은 `${CLAUDE_SKILL_DIR}/assets/`의 skeleton + base.css 인라인 | "정산 관리자 화면 UX 정리안 만들어줘" |
-
 ### 문서 (Second Brain)
 
 | 이름 | 언제 | 무엇을 해주나 | 예시 |
