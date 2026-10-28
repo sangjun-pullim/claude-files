@@ -5,7 +5,7 @@
 ## Contents
 
 - `CLAUDE.md` — Global instructions (communication, scope, standards, hard rules, agents, delegation, docs). 위험 영역·5+ 파일·워크트리 분리·머지·control-plane 게이트가 여기 있다
-- `settings.json` — Global settings (permissions, autoMode 규칙, hooks, statusLine, 플러그인, 기본 모델·effort, 모델별 effort·autoCompactWindow, 서브에이전트 기본 모델(`env`), `showThinkingSummaries` 등 UI 플래그)
+- `settings.json` — Global settings (permissions, autoMode 규칙, hooks, statusLine, 플러그인, 기본 모델·effort, 모델별 effort·autoCompactWindow, 서브에이전트 기본 모델(`env`), `showThinkingSummaries` 등 기타 플래그)
 - `rules/` — Always-loaded rules (`second-brain.md`: docs research order, 현재 상태 문서 고쳐 쓰기, 문서 간 충돌 시 사용자 확인)
 - `commands/` — Slash commands
 - `agents/` — Agent definitions
@@ -44,7 +44,7 @@
 
 | 이름 | 언제 | 무엇을 해주나 | 예시 |
 |------|------|--------------|------|
-| `/commit` | 변경사항을 커밋할 때 | 변경 분석 → diff를 `reviewer`로 검토(control-plane 파일이 없는 문서 변경은 생략) → Conventional Commits 형식(한국어 설명) 메시지 제안 → 승인 후 커밋 | "/commit" |
+| `/commit` | 변경사항을 커밋할 때 | diff 확인 → `reviewer`로 검토(control-plane 파일이 없는 문서 변경은 생략) → 변경 분석 후 Conventional Commits 형식(한국어 설명) 메시지 제안 → 승인 후 커밋 | "/commit" |
 | `/weekly-report` | 주간 보고 쓸 때 | git 이력 기반 주간업무보고서 생성 | "/weekly-report" |
 
 ### 위임·기타
@@ -57,7 +57,7 @@
 
 > **출처**: 🅼 표시가 붙은 스킬은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.
 >
-> `impl-plan`의 HTML 계획서 런타임·참조 문서·예시는 anthropics/claude-plugins-community의 html-plan(Thariq Shihipar — plugin.json MIT, 저장소 Apache-2.0)에서 가져옴 — `skills/impl-plan/runtime/NOTICE.md`.
+> `impl-plan`의 HTML 계획서 런타임·참조 문서·예시는 anthropics/claude-plugins-community의 html-plan(Thariq Shihipar — plugin.json MIT, 저장소 Apache-2.0)에서 가져와 각색함 — `skills/impl-plan/runtime/NOTICE.md`.
 
 ### Agents
 
@@ -67,7 +67,7 @@
 | `implementer` (Opus medium) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
 | `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
 | `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수. 불필요한 코드(규칙 위반 주석·도달 불가 분기·중복 헬퍼·검사 회피 캐스트)도 Excess로 지적. CRITICAL/HIGH는 종류별 증거(입력·경로·잘못된 결과, 스펙 줄과 코드 줄 등)가 없으면 MEDIUM 이하 |
-| `codex-worker` (Sonnet) | codex CLI 실행·전달만 하는 워커 (판단은 부모가). 기본은 orca 워크트리에서 실행하고, 스폰 프롬프트에 in-place mode가 있으면 현재 체크아웃에서 실행 |
+| `codex-worker` (Sonnet) | codex CLI 실행·전달만 하는 워커 (판단은 부모가). 기본은 orca 워크트리에서 실행하고, `orca status`가 실패하거나 스폰 프롬프트에 in-place mode가 있으면 현재 체크아웃에서 실행 |
 
 ### Hooks
 
