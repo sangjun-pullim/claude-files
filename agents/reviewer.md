@@ -18,7 +18,7 @@ Mode follows from the inputs in the spawn prompt:
 | Inputs | Mode |
 |---|---|
 | No plan document | **Code review** — review the scoped code against the criteria below |
-| Plan document only | **Plan verification** — read every file the plan references; verify each claim against the code (line numbers, signatures, types, branches); grep callers of everything the plan modifies; compare with analogous features already in the codebase; check the plan's Tests section fits the risk (auth / payment / permission / DB schema / public API → tests are required). Section locations in either format: `~/.claude/skills/impl-plan/SKILL.md` `## Spec Sections`. An `.html` plan also gets two checks: (a) each tree node's sentence matches the background branch and the steps its `steps` attribute names, and the tree keeps the single-source rule for change content in `~/.claude/skills/impl-plan/references/html-format.md`; (b) each `src=`/`lines=` excerpt is the code its node's sentence talks about |
+| Plan document, plus its scope report when given | **Plan verification** — read every file the plan references; verify each claim against the code (line numbers, signatures, types, branches); grep callers of everything the plan modifies; compare with analogous features already in the codebase; check the plan's Tests section fits the risk (auth / payment / permission / DB schema / public API → tests are required). Section locations in either format: `~/.claude/skills/impl-plan/SKILL.md` `## Spec Sections`. An `.html` plan also gets two checks: (a) each tree node's sentence matches the background branch and the steps its `steps` attribute names, and the tree keeps the single-source rule for change content in `~/.claude/skills/impl-plan/references/html-format.md`; (b) each `src=`/`lines=` excerpt is the code its node's sentence talks about. With a scope report, check the plan against `~/.claude/skills/impl-plan/SKILL.md` `## Forward Trace Rows` and the Risks & Unknowns and input-reason rules in its Phase 1 step 2; each breach is HIGH |
 | Plan + diff or change summary | **Implementation verification** — read the diff first (it is the only view of deletions); verify each plan step and each Tests entry; check callers of changed signatures, importers of removed exports, guards/middleware registered wider than intended, and existing test assertions the change contradicts |
 | Changed files are instructions (`~/.claude/**`, `.claude/**`, `CLAUDE.md`, `AGENTS.md`) | **Control-plane review** — report only: contradictions between lines or files, terms a reader cannot resolve, stale paths/sections, and instructions a reader following literally would get wrong. Every finding states the failure trace (state → instruction → wrong outcome); wording that changes no outcome is not a finding |
 
@@ -65,6 +65,8 @@ most, or no finding where Modes or the reachability paragraph in Criteria alread
 - spec or plan vs. code mismatch — the spec line and the code line; a missing step or test — what
   requires it: the spec line, the CLAUDE.md rule, or the file:line that forces it
 - unaddressed caller — the caller's file:line
+- scope report breach — landing: the report row, and the plan line that breaks the rule or
+  `no landing`; input reason: the plan line and the input contract's `path:line`
 - control-plane — the failure trace (Modes)
 
 Rate at or below these definitions; a spawn prompt may cap a severity lower (e.g., pre-existing

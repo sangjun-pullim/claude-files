@@ -44,13 +44,20 @@ add a `risk-surface` field if its status block predates it (an old `tier` field 
 Then go to Phase 2. For editing a step already marked done (`[x]` / `class="done"`), see the
 `second-brain` skill's impl-spec Lifecycle.
 
-1. **Scope analysis** — spawn a `scope-analyst` agent with the requirements above. Resolve any
-   `## Open Questions` it returns with the user before drafting; nothing downstream reopens them.
+1. **Scope analysis** — spawn a `scope-analyst` agent with the requirements above, and save its
+   final report verbatim to `<scratch>/<short-description>-scope.md` (`<scratch>` per
+   `html-format.md`); Phase 2 hands it to the reviewer. Resolve any `## Open Questions` it
+   returns with the user before drafting; nothing downstream reopens them. Every option you put
+   to the user, here or as a `<doc-ask>`, states both what it changes in existing behavior and
+   what it newly lets in. Then settle the Forward Trace rows per `## Forward Trace Rows`.
 2. **Draft the spec** — read `${CLAUDE_SKILL_DIR}/references/html-format.md` and
    `${CLAUDE_SKILL_DIR}/examples/scheduled-send.html`, then write every section in
    `## Spec Sections`. The scope-analyst's reverse dependencies and existing patterns go into
    Affected Dependents and the steps — the implementer never sees the scope analysis, so the spec is how
-   they reach it.
+   they reach it. Forward Trace rows land per `## Forward Trace Rows`; each Risks & Unknowns row
+   of the report lands as a Risks entry with its mitigation or with the evidence that rules it
+   out. A reason or mitigation about what an input can be cites the input contract as the code
+   has it or as a step of this plan changes it.
 3. **Save** to `docs/impl-spec/<NNN>-<short-description>.html`. `NNN` = highest existing number
    across the `.md` and `.html` files in `docs/impl-spec/` and `docs/impl-spec/archive/` + 1,
    zero-padded to 3 digits; `001` if none. Create the directory if missing. After saving,
@@ -68,13 +75,16 @@ Apply it per the Respond handling in `html-format.md`, then run `--lint-only`.
 
 ## Phase 2: Review Loop
 
-1. Spawn a **new** `reviewer` agent (never reuse one — fresh context is the point) with the spec
-   path only. It runs in Plan verification mode (`agents/reviewer.md`). Do not pass the previous
+1. Spawn a **new** `reviewer` agent (never reuse one — fresh context is the point) with only the
+   spec path and, when Phase 1 saved one, the scope report path. It runs in Plan verification
+   mode (`agents/reviewer.md`). Do not pass the previous
    round's disposition table: fixes are verified afresh from the spec, and declined findings are
    already in the spec's Review Notes (`## Spec Sections`), which the reviewer reads.
 2. **Disposition** — for each CRITICAL/HIGH finding (CLAUDE.md **리뷰 루프**): `ACCEPTED` (fix the
    spec) or `REJECTED` with concrete
-   evidence (file:line or reasoning). "Not needed" without evidence is not a rejection.
+   evidence (file:line or reasoning). "Not needed" without evidence is not a rejection. A
+   finding that a Forward Trace row has neither a step nor a recorded yes: `## Forward Trace
+   Rows`.
 
    | Finding | Severity | Disposition | Rationale |
    |---------|----------|-------------|-----------|
@@ -100,6 +110,16 @@ For an `.html` spec, also re-pack to a new `.final` path, give the packed path, 
 decisions are applied, and the page's "N to answer" counter is runtime display that ignores
 `data-decided`, so nothing needs answering again.
 
+## Forward Trace Rows
+
+A Forward Trace row in the scope report is a consumer the change newly reaches that still holds
+an old-scope assumption. The plan updates every row to the new scope: each gets a step that
+makes its "What happens" cell untrue. A row stays without such a step only on the user's yes.
+Whenever you would leave a row without one — decided before drafting, while drafting, or on a
+review finding — ask with the reason (deferred, or does not hold: code evidence `path:line`)
+and the row's "What happens" cell quoted. Record a yes in Context with the row's `#`, consumer
+`path:line`, reason, and quoted cell; on a no, add the step. A row with neither a step nor that record is not done.
+
 ## Spec Sections
 
 This section owns the status block fields, what each section holds, and how each section maps
@@ -110,7 +130,7 @@ block syntax: `${CLAUDE_SKILL_DIR}/references/blocks.md`; the existing `.md` ske
 | Section | What it holds (either format) | `.md` | `.html` |
 |---|---|---|---|
 | Status block | `status: active \| done \| superseded-by: <NNN>`, `date: <YYYY-MM-DD>`, `risk-surface: <none \| auth \| payment \| permission \| db-schema \| public-api>`, the NOTE sentence | YAML frontmatter at the top of the file, NOTE quote below it | the same YAML lines plus a NOTE line inside an HTML comment before `<!doctype html>` |
-| Context | Problem and motivation; when a PRD exists, point at its section and never restate it | `## Context` | `aux="background"` |
+| Context | Problem and motivation, the user's answers to Open Questions, and the Forward Trace rows the user let stay (`## Forward Trace Rows`); when a PRD exists, point at its section and never restate it | `## Context` | `aux="background"` |
 | Usage Sketch | Only when the change adds or changes a public interface (endpoint, exported function or type): the caller's code or a request/response example, as the caller will write it. The steps build toward this | `## Usage Sketch` | the figure of a level-1 tree node, `id="usage"` |
 | Affected Files | `path — one line on what changes` | `## Affected Files` | `aux="files"` |
 | Affected Dependents | Code that must keep working but is not changed: callers of every signature this touches, consumers of every export it renames, routes behind a middleware it alters, every doc sentence that restates a rule this changes (the scope-analyst's doc copies — one line per rule with every copy's path and the owner). One line each with a path | `## Affected Dependents` | `aux="dependents"` |

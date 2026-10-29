@@ -49,7 +49,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 | Agent | Purpose | When |
 |---|---|---|
-| scope-analyst (Opus high) | Scope analysis — affected files, reverse dependencies, blast radius. Does not write the plan | Before planning a complex feature or refactor |
+| scope-analyst (Opus high) | Scope analysis — affected files, reverse dependencies, forward trace, blast radius. Does not write the plan | Before planning a complex feature or refactor |
 | implementer (Opus medium) | Implements a self-contained spec in the current checkout; returns diff summary, verification output, assumptions | General implementation and code investigation — see Delegation |
 | editor (Sonnet low) | Applies exact before/after rules across files; reports every touched location | Mechanical edits and repeated transformations — see Delegation |
 | reviewer (Opus xhigh) | Code / plan / implementation review — modes in `agents/reviewer.md` | After writing code, before commits, and wherever Hard Rules require it |
