@@ -22,6 +22,8 @@ description: Rules for delegating implementation to OpenAI Codex CLI through a c
 - Worker branches are NOT merged by the worker, and never onto the base branch — that stays the user's call. Union assembly: `impl-execute` Codex path.
 - Worktrees and their cards are cleaned up only after that call. A card that no longer represents live or pending work is noise in the dashboard that exists to show what *is* running. Procedure: `impl-execute` Codex path.
 - Supervisor model is **always sonnet** (`model: sonnet` in the agent definition). Do not override it downward at spawn.
+- Before the first orca-worktree-mode spawn, run `git status` on the spec and docs the worker will read. A worktree branches from the base branch HEAD, so their uncommitted edits are invisible to codex; ask the user whether to commit them first.
+- Early-return check: a `codex-worker` can return while codex is still running — its report has no session id or shows `codex 호출 0회` — even when told to wait. Check `ps -Ao pid,etime,command | grep "[c]odex exec"` first; if codex is alive, SendMessage the same worker to wait for exit and re-run verification. A new spawn puts a second codex on the same checkout.
 
 ## Delegation practice — you judge, codex implements
 

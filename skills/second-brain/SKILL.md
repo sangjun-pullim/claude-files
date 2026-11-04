@@ -166,3 +166,4 @@ Durable why belongs in `ADR.md` (promote a genuine change of direction there whe
 - Standard files coexist with project-specific docs (e.g., `docs/deployment.md`, `docs/troubleshooting.md`)
 - Never delete or rename existing documentation files (exception: moving closed impl-specs into `docs/impl-spec/archive/` per the lifecycle above)
 - If an existing file covers the same topic as a standard file (e.g., `docs/architecture-proposal.md`), note it and let the user decide whether to merge
+- Decisions that meet the recording criteria in `## ADR.md — When to Record` are proposed for `ADR.md`, citing evidence outside the repo by file name and date in the entry's context. Review history, Q&A logs, and decision-record files (`docs/reviews/` and the like) are conversation history, not docs — create none, even when a plan step lists one

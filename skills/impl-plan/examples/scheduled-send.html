@@ -47,7 +47,7 @@ NOTE: This is the plan, not a description of the code — never read it as evide
   </doc-mock>
 
   <doc-claim steps="3">
-    <p>「나중에 보내기」는 시각과 함께 저장만 하고 보내지 않는다.</p>
+    <p>"나중에 보내기"는 시각과 함께 저장만 하고 보내지 않는다.</p>
     <doc-calls title="예약 저장" caption="새 메뉴가 새 엔드포인트 하나만 부른다.">
 <script type="text/plain">
   <Composer/>
@@ -122,7 +122,7 @@ wk -> mail : 보내기
     <doc-ask id="retry">
       <p>실패한 발송을 저절로 다시 시도할까?</p>
       <label><input type="radio" name="retry" value="3" checked> 예, 5분 간격으로 3번</label>
-      <label><input type="radio" name="retry" value="no"> 아니요 <small>사용자가 「다시 시도」를 누른다</small></label>
+      <label><input type="radio" name="retry" value="no"> 아니요 <small>사용자가 "다시 시도"를 누른다</small></label>
     </doc-ask>
   </doc-claim>
 </doc-claim>
@@ -171,7 +171,7 @@ CREATE INDEX scheduled_due ON scheduled_messages (status, send_at);
 <!-- ═════ agent branches ═════ -->
 <doc-claim aux="background">
   <p>배경: 밤에 쓴 답장이 밤에 도착하지 않게 해 달라는 요청.</p>
-  <p>사용자 요청(원문): 「작성 창에 나중에 보내기를 넣어 달라. 취소할 수 있어야 하고, 절대 일찍 나가면 안 된다.」 고객지원 기록에도 밤에 답장을 쓰고 아침에 도착하길 바라는 사례가 반복된다.</p>
+  <p>사용자 요청(원문): "작성 창에 나중에 보내기를 넣어 달라. 취소할 수 있어야 하고, 절대 일찍 나가면 안 된다." 고객지원 기록에도 밤에 답장을 쓰고 아침에 도착하길 바라는 사례가 반복된다.</p>
   <p>지금 PostBox는 보내기를 누르면 바로 <code>sendMessage()</code>를 부른다. 보낼 시각을 저장할 곳이 없고, 정해진 시각에 메시지를 꺼내 보낼 프로세스도 없다.</p>
   <ul>
     <li>일찍 나가면 안 된다 — 발송은 <code>send_at</code>이 지난 행만 잡는다.</li>
@@ -188,7 +188,7 @@ CREATE INDEX scheduled_due ON scheduled_messages (status, send_at);
     <li><code>server/src/scheduled/routes.ts</code> — 예약 생성·목록·수정·취소 라우트</li>
     <li><code>server/src/scheduled/store.ts</code> — 테이블 접근(잡기·상태 변경)</li>
     <li><code>server/src/scheduled/worker.ts</code> — 1분 주기 워커</li>
-    <li><code>web/src/composer/SendLaterMenu.tsx</code> — 「나중에 보내기」 메뉴</li>
+    <li><code>web/src/composer/SendLaterMenu.tsx</code> — "나중에 보내기" 메뉴</li>
     <li><code>web/src/scheduled/ScheduledFolder.tsx</code> — 예약 목록</li>
     <li><code>web/src/composer/Composer.tsx</code> — 메뉴를 붙인다</li>
     <li><code>server/src/app.ts</code> — 라우트와 워커를 등록한다</li>

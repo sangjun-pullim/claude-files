@@ -93,14 +93,18 @@ that the step bodies are HTML-escaped and are unescaped before writing code.
    `steps.done == steps.total`), every Tests entry exists in the codebase (a section reading
    `none needed — <reason>` counts as written), the spec's Verification commands pass on the final state (run them now if no run followed the
    last change), and Phase 2 ended by exit, not a stop (CLAUDE.md
-   **리뷰 루프**). Then set `status: done` in the status block and `git mv` the file to
+   **리뷰 루프**). Before this check, get the result step 2 will report — run the full test command
+   the repo's CI runs, or read the conclusion of the CI run on the final commit; if it failed,
+   the spec stays open even when all four hold. Then set `status: done` in the status block and `git mv` the file to
    `docs/impl-spec/archive/` — this is part of the skill, not a docs suggestion. Otherwise leave
    `status: active` and report which steps, tests, or findings remain.
 2. **Report**: what was built, files changed, what the review rounds caught, remaining
    MEDIUM/LOW notes, REJECTED findings with their rationale, and the 돌린 검증, 미검증 동작
    and 직접 고른 값 items (CLAUDE.md `## Communication`) for the whole change — a
    `codex-worker` report carries neither of the last two, so derive them from the diff for its
-   steps.
+   steps. Put the full test command the repo's CI runs in 돌린 검증 (or the CI run on the final
+   commit, with its URL and conclusion) — a target-suite run misses breaks in specs outside the
+   change; if neither ran, list it under 미검증 동작.
 
 ## Codex path
 
@@ -114,7 +118,8 @@ Load the `codex-delegation` skill first — it owns the codex dispatch contract;
    owns, the Tests entries for those steps quoted verbatim, and `<base>`. Workers never write
    the spec; you flip markers after gating. In-place mode: one worker at a time.
 3. **Gate each report mechanically** (no diff review here): `codex 호출 0회` or no session id →
-   failed, re-dispatch; any `검증 → exit` non-zero → send the failing output back as a rework
+   run the `codex-delegation` early-return check first (codex still running → SendMessage the
+   same worker); otherwise failed, re-dispatch; any `검증 → exit` non-zero → send the failing output back as a rework
    request to the same session; `스펙 외 변경 파일` non-empty → inspect those paths; orca mode →
    `git -C <worktree> log <base>..HEAD` must be non-empty (commit a dirty worktree there
    yourself — that is assembly, not implementation). The same group failing the same check twice

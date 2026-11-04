@@ -75,8 +75,8 @@ Each level answers one question; the question picks the exhibit.
 Sketches and diffs go where the single-source rule below puts them.
 
 1. **Split level 1 by behaviour** — never by file, layer or order of work. For a change with no
-   visible behaviour, such as a refactor, make level 1 the guarantees: 「호출하는 쪽이 보는 것은
-   바뀌지 않는다.」
+   visible behaviour, such as a refactor, make level 1 the guarantees: "호출하는 쪽이 보는 것은
+   바뀌지 않는다."
 2. **Every level-1 and level-2 node is one sentence that can be true or false**, about 12 words.
    A level-3 node is only a place: `file:line · symbol`.
 3. **One exhibit per node.** A second exhibit means a second node.

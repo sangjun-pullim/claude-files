@@ -52,7 +52,7 @@
 | 이름 | 언제 | 무엇을 해주나 | 예시 |
 |------|------|--------------|------|
 | `codex-delegation` | 사용자가 "codex로/GPT로 구현해"라고 명시했을 때만 | codex-worker 위임 계약: 디스패치, 게이팅, union 리뷰 (worktree/in-place 모드 질문은 `CLAUDE.md`의 **워크트리 분리** 규칙 소관) | "이 스펙 codex한테 구현시켜" |
-| `orca-cli` | Orca를 직접 언급했을 때, 또는 **워크트리 분리** 규칙이 감독 디스패치·full handoff로 라우팅할 때 | orca CLI로 워크트리·터미널·자동화 관리. 「Full Handoffs」(넘기고 손 뗌) 와 「Supervised Dispatch」(내가 게이팅·리뷰·통합 브랜치 조립, base 브랜치 병합은 사용자) 절차를 나눠 정의 | "orca 워크트리 목록 보여줘" / "이 작업 다른 에이전트한테 넘겨줘" |
+| `orca-cli` | Orca를 직접 언급했을 때, 또는 **워크트리 분리** 규칙이 감독 디스패치·full handoff로 라우팅할 때 | orca CLI로 워크트리·터미널·자동화 관리. "Full Handoffs"(넘기고 손 뗌)와 "Supervised Dispatch"(내가 게이팅·리뷰·통합 브랜치 조립, base 브랜치 병합은 사용자) 절차를 나눠 정의 | "orca 워크트리 목록 보여줘" / "이 작업 다른 에이전트한테 넘겨줘" |
 | `writing-for-agents` 🅼 | 스킬·CLAUDE.md 등 에이전트용 문서를 쓸 때 | context pointer, progressive disclosure, no-op 사냥, 런타임 시스템 지침과 겹치는 규칙 금지, control-plane 파일 편집 규칙 | "디버깅용 스킬 하나 새로 만들자" |
 
 > **출처**: 🅼 표시가 붙은 스킬은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.

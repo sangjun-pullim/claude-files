@@ -36,7 +36,7 @@ Apply codebase-design's **deletion test** to anything you suspect is shallow —
 
 ### 2. Present candidates as an Artifact report
 
-Publish the review as an Artifact. Load the `artifact-design` and `artifact-diagramming` skills before writing it — they govern styling, theming, and inline-SVG mechanics; Artifacts render Mermaid natively (```mermaid fences), so no external libraries are involved. If Artifact publishing is unavailable in the session, write the same report as a self-contained Markdown file in the OS temp directory instead and give the user the path.
+Publish the review as an Artifact — unless it holds internal information as the CLAUDE.md **사내 정보** rule defines; then use the Markdown-file fallback at the end of this paragraph. Load the `artifact-design` and `artifact-diagramming` skills before writing it — they govern styling, theming, and inline-SVG mechanics; Artifacts render Mermaid natively (```mermaid fences), so no external libraries are involved. If Artifact publishing is unavailable in the session, write the same report as a self-contained Markdown file in the OS temp directory instead and give the user the path.
 
 Render one card per candidate and a closing **Top recommendation** — [REPORT.md](REPORT.md) owns the card anatomy, report structure, diagram patterns, and vocabulary rules.
 

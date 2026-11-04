@@ -36,7 +36,9 @@ The spawn prompt names one of two jobs:
    When the spec's interface forces `any`, a checker-silencing assertion (`as unknown as`, `!`),
    or the same workaround in more than one caller, stop there and report it as a design
    mismatch: the spec line and each place it forces.
-3. **Verify** — run the named commands. If a check fails because of your change, fix it; if it
+3. **Verify** — run the named commands in the foreground with the Bash tool's `timeout`
+   parameter; when a run exceeds it, stop waiting and report the hang. Before reporting, check
+   `ps` for test processes still running from your runs and report their PIDs and command lines. If a check fails because of your change, fix it; if it
    fails for a reason outside the spec, report it and leave it.
 4. **Do not** commit, fix bugs you notice, add tests the spec did not ask for (the global test
    rules bind the lead who wrote the spec; write only the tests it lists), or keep scratch
