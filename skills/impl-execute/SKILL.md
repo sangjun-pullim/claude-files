@@ -97,7 +97,9 @@ that the step bodies are HTML-escaped and are unescaped before writing code.
    `docs/impl-spec/archive/` — this is part of the skill, not a docs suggestion. Otherwise leave
    `status: active` and report which steps, tests, or findings remain.
 2. **Report**: what was built, files changed, what the review rounds caught, remaining
-   MEDIUM/LOW notes, REJECTED findings with their rationale, verification results.
+   MEDIUM/LOW notes, REJECTED findings with their rationale, verification results, and the
+   미검증 동작 and 직접 고른 값 items (CLAUDE.md `## Communication`) for the whole change — a
+   `codex-worker` report carries neither, so derive them from the diff for its steps.
 
 ## Codex path
 

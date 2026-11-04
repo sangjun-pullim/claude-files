@@ -59,14 +59,17 @@ The spawn prompt names one of two jobs:
 [Per spec item: done / partial / not done, one line each]
 
 ## Verification
-[`<command> → exit <code>`, one per line; on non-zero exit add the failing lines]
+[`<command> → exit <code>`, one per line; on non-zero exit add the failing lines. Implement job:
+end with a `미검증 동작:` line, defined in the global `CLAUDE.md` `## Communication`]
 
 ## Size & Risk Surface
 [Production file count; matched risk surface items (auth / payment / permission / DB schema /
 public API) or `none`]
 
 ## Assumptions
-[Ambiguities and the reading you chose. Empty is a valid answer.]
+[Ambiguities and the reading you chose. Implement job: then a `직접 고른 값:` line — values neither your
+spawn prompt nor the spec states, of the kinds listed for it in the global `CLAUDE.md`
+`## Communication`. Empty is a valid answer for the ambiguities.]
 
 ## Follow-ups
 [Bugs or concerns noticed but not touched. Empty is a valid answer.]
