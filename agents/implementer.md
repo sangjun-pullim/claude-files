@@ -59,8 +59,9 @@ The spawn prompt names one of two jobs:
 [Per spec item: done / partial / not done, one line each]
 
 ## Verification
-[`<command> → exit <code>`, one per line; on non-zero exit add the failing lines. Implement job:
-end with a `미검증 동작:` line, defined in the global `CLAUDE.md` `## Communication`]
+[돌린 검증 as defined in the global `CLAUDE.md` `## Communication`, one per line:
+`<command> → exit <code> | <the tool's summary line, verbatim>`; on non-zero exit add the failing
+lines. Implement job: end with a `미검증 동작:` line, defined in the same place]
 
 ## Size & Risk Surface
 [Production file count; matched risk surface items (auth / payment / permission / DB schema /

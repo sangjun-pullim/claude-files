@@ -90,7 +90,7 @@ codex 최종 메시지: <last.txt 절대경로>
 워크트리: <path> | 브랜치: <branch>        (in-place면 "in-place, 브랜치 <branch>")
 변경(미커밋): <git diff --stat 출력 그대로>
 변경(커밋됨): <git diff <base-branch>...HEAD --stat 출력 그대로 — 없으면 "없음">
-검증: <명령> → exit <code>                (실패 시 실패 라인만, 한 줄씩)
+검증: <명령> → exit <code> | <도구 요약 줄 그대로>   (실패 시 실패 라인만, 한 줄씩)
 스펙 외 변경 파일: <목록 또는 "없음">
 ```
 
