@@ -44,7 +44,7 @@
 
 | 이름 | 언제 | 무엇을 해주나 | 예시 |
 |------|------|--------------|------|
-| `/commit` | 변경사항을 커밋할 때 | diff 확인 → `reviewer`로 검토(control-plane 파일이 없는 문서 변경은 생략) → 변경 분석 후 Conventional Commits 형식(한국어 설명) 메시지 제안 → 승인 후 커밋 | "/commit" |
+| `/commit` | 변경사항을 커밋할 때 | diff 확인 → 변경 분석 후 Conventional Commits 형식(한국어 설명) 메시지 제안 → 승인 후 커밋 | "/commit" |
 | `/weekly-report` | 주간 보고 쓸 때 | git 이력 기반 주간업무보고서 생성 | "/weekly-report" |
 
 ### 위임·기타
