@@ -4,7 +4,7 @@
 
 ## Contents
 
-- `CLAUDE.md` — Global instructions (communication, scope, standards, hard rules, agents, delegation, docs). 위험 영역·5+ 파일·워크트리 분리·머지·control-plane 게이트가 여기 있다
+- `CLAUDE.md` — Global instructions (communication, scope, standards, hard rules, delegation, memory). 위험 영역·5+ 파일·워크트리 분리·머지·control-plane 게이트가 여기 있다
 - `settings.json` — Global settings (permissions, autoMode 규칙, hooks, statusLine, 플러그인, 기본 모델·effort, 모델별 effort·autoCompactWindow, 서브에이전트 기본 모델(`env`), `showThinkingSummaries` 등 기타 플래그)
 - `rules/` — Always-loaded rules (`second-brain.md`: docs research order, 현재 상태 문서 고쳐 쓰기, 문서 간 충돌 시 사용자 확인)
 - `commands/` — Slash commands
@@ -25,7 +25,7 @@
 |------|------|--------------|------|
 | `grilling` 🅼 | 아이디어·요구사항이 아직 모호할 때 ("갈궈줘") | 답할 수 있는 질문 전부를 라운드로 묶어 캐물어서 설계를 명확하게 만든다. 확정된 용어·결정은 세션 끝에 GLOSSARY/ADR 갱신으로 제안 | "정산 재처리 기능 만들려는데 갈궈줘" |
 | `codebase-design` 🅼 | 새 모듈의 인터페이스를 잡거나, 테스트 걸 곳(seam)이 애매하거나, mock이 덕지덕지 붙을 때 | deep module 설계 어휘와 원칙 제공. 필요시 서브에이전트 3개 이상으로 병렬 설계 비교(design-it-twice) | "수집 재시도 모듈 인터페이스 어떻게 잡는 게 좋을까?" |
-| `impl-plan` | 프로덕션 파일 5개 이상을 건드리는 변경을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/`에 HTML 계획서 작성(동작 트리 + 결정 항목, 브라우저에서 결정 후 Respond) → 결정 반영 → 코드와 대조하는 리뷰 루프(최대 3회). 새로 들어오는 것이 닿는데 옛 범위를 전제한 곳(정방향 추적 행)은 모두 고치는 것이 기본이고, 빼려면 사용자 승인이 필요하며 리뷰가 이를 확인. PRD가 있으면 대조. 기존 .md 계획서는 .md 그대로 검증 | "/impl-plan 주문 출고 재처리 기능" |
+| `impl-plan` | 프로덕션 파일 5개 이상을 건드리는 변경을 구현하기 전 | 영향 범위 조사 → `docs/impl-spec/`에 HTML 계획서 작성(동작 트리 + 결정 항목, 브라우저에서 결정 후 Respond) → 결정 반영 → 코드와 대조하는 리뷰 루프(최대 3회). 새로 들어오는 것이 닿는데 옛 범위를 전제한 곳(정방향 추적 행)은 모두 고치는 것이 기본이고, 빼려면 사용자 승인이 필요하며 리뷰가 이를 확인. 기존 규칙에 경우 나누기(예외·대체 처리)를 더하려면 사용자 결정이 필요하고, 위험 항목은 코드로 그 경우를 없애거나 실패시키는 단계·배제 근거·사용자 수용 결정 중 하나로 끝나야 함. PRD가 있으면 대조. 기존 .md 계획서는 .md 그대로 검증 | "/impl-plan 주문 출고 재처리 기능" |
 | `impl-execute` | 승인된 impl-spec을 실제로 구현할 때 | 스펙의 첫 미완료 단계부터 구현 → 전체 diff 독립 리뷰(최대 3회) → 조건 충족 시 스펙 종료·보관 | "/impl-execute 042 스펙 구현해줘" |
 | `tdd` 🅼 | 테스트 먼저 개발하고 싶을 때 ("red-green") | seam 합의 → 실패 테스트 → 최소 구현 반복. 좋은 테스트/안티패턴 기준 포함 | "이 기능 테스트 먼저 쓰면서 만들자" |
 | `diagnosing-bugs` 🅼 | 원인이 바로 안 보이는 어려운 버그·성능 저하 | 가설보다 먼저 "빨간불 뜨는 재현 루프"를 만들게 강제하는 6단계 진단 규율. 명백한 버그는 그냥 고치면 됨 | "수집 워커가 간헐적으로 멈춰. diagnose 해줘" |
@@ -53,6 +53,7 @@
 |------|------|--------------|------|
 | `codex-delegation` | 사용자가 "codex로/GPT로 구현해"라고 명시했을 때만 | codex-worker 위임 계약: 디스패치, 게이팅, union 리뷰 (worktree/in-place 모드 질문은 `CLAUDE.md`의 **워크트리 분리** 규칙 소관) | "이 스펙 codex한테 구현시켜" |
 | `orca-cli` | Orca를 직접 언급했을 때, 또는 **워크트리 분리** 규칙이 감독 디스패치·full handoff로 라우팅할 때 | orca CLI로 워크트리·터미널·자동화 관리. "Full Handoffs"(넘기고 손 뗌)와 "Supervised Dispatch"(내가 게이팅·리뷰·통합 브랜치 조립, base 브랜치 병합은 사용자) 절차를 나눠 정의 | "orca 워크트리 목록 보여줘" / "이 작업 다른 에이전트한테 넘겨줘" |
+| `herdr-cli` | Herdr를 직접 언급했을 때, 또는 Herdr 앱 안에서 띄운 세션(`HC_TERMINAL_ID` 있음)에서 터미널·작업공간·워커 위임이 필요할 때 | `hc`·`herdr-app`으로 터미널·space·워크트리·워커 실행. 그런 세션에서는 다른 스킬의 Orca 절차와 **워크트리 분리** 규칙을 Herdr 절차로 대체하고, Orca를 직접 지목하면 `orca-cli`를 쓴다 | "herdr에서 이 작업 별도 워크트리로 띄워줘" |
 | `writing-for-agents` 🅼 | 스킬·CLAUDE.md 등 에이전트용 문서를 쓸 때 | context pointer, progressive disclosure, no-op 사냥, 런타임 시스템 지침과 겹치는 규칙 금지, control-plane 파일 편집 규칙 | "디버깅용 스킬 하나 새로 만들자" |
 
 > **출처**: 🅼 표시가 붙은 스킬은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.
@@ -79,3 +80,4 @@
 | `block-fable-subagent.sh` | 서브에이전트를 Fable 모델로 띄우기(`Agent` 도구의 `model` 인자) |
 | `auto-format.sh` | (차단 아님) Write/Edit 후, 프로젝트에 prettier 설정이 있을 때만 ts·tsx·js·jsx·json·css·scss 파일을 설치된 prettier로 포맷 |
 | `settings.json` 인라인 명령 (12개 이벤트) | (차단 아님) Orca 앱이 넣은 훅. 레포 밖의 `~/.orca/agent-hooks/claude-hook.sh`가 있으면 이벤트 입력을 넘기고, 없으면 `{}`만 출력 |
+| `settings.json` 인라인 명령 (SessionStart·SessionEnd) | (차단 아님) Herdr 앱의 revive 모드가 넣은 훅. 레포 밖의 `~/.config/herdr-app/mods/revive/revive.mjs hook`이 Herdr 터미널(`HC_TERMINAL_ID`) 안의 세션만 시작할 때 기록하고 사용자가 직접 끝내면 지워, 재시작으로 끊긴 세션을 다시 열 수 있게 함. 스크립트 파일이 없으면 node 오류가 남(차단 아님) |
