@@ -55,9 +55,20 @@ Then go to Phase 2. For editing a step already marked done (`[x]` / `class="done
    `## Spec Sections`. The scope-analyst's reverse dependencies and existing patterns go into
    Affected Dependents and the steps — the implementer never sees the scope analysis, so the spec is how
    they reach it. Forward Trace rows land per `## Forward Trace Rows`; each Risks & Unknowns row
-   of the report lands as a Risks entry with its mitigation or with the evidence that rules it
-   out. A reason or mitigation about what an input can be cites the input contract as the code
+   of the report lands as a Risks entry. Every Risks entry ends in one of three: a step of this
+   plan that changes code to remove the case or make it fail, evidence that rules the case out,
+   or the user's decision to accept it. A reason or mitigation about what an input can be cites the input contract as the code
    has it or as a step of this plan changes it.
+   - **Existing rules** — keep a rule the change touches as it is while it gives the new case the
+     right result; for a Forward Trace row, keeping it still follows `## Forward Trace Rows`.
+     When it gives a wrong result, restate it as one sentence that gives the old cases their
+     current results and the new case the right one, without a case split; write the current and new sentences side by side in Context,
+     and derive the steps from the new one. A case split is a condition — a fallback, a special
+     case, an exception list — that gives some cases a different source or result; one more
+     entry in a list or dispatch the rule already enumerates, and a check that only makes a case
+     fail, are not one. Adding a case split, to
+     a kept rule or a restated one, is a decision for the user, asked with the reason one
+     unsplit sentence fails.
 3. **Save** to `docs/impl-spec/<NNN>-<short-description>.html`. `NNN` = highest existing number
    across the `.md` and `.html` files in `docs/impl-spec/` and `docs/impl-spec/archive/` + 1,
    zero-padded to 3 digits; `001` if none. Create the directory if missing. After saving,
@@ -93,6 +104,8 @@ Apply it per the Respond handling in `html-format.md`, then run `--lint-only`.
    out-of-scope findings to Review Notes with their rationale, so later reviewers and the
    implementer see what was deliberately declined. Unless the round stopped, apply ACCEPTED
    findings to the spec body:
+   - A fix that adds a case split (Phase 1 step 2, Existing rules) is that decision for the
+     user: ask it before applying the fix.
    - `.md` spec: follow the Change Map rule in `${CLAUDE_SKILL_DIR}/references/markdown-format.md`.
    - `.html` spec: when a fix adds a `<doc-ask>` or changes its options, ask that decision per
      `html-format.md` before applying it; run `--lint-only` after every fix.
@@ -130,14 +143,14 @@ block syntax: `${CLAUDE_SKILL_DIR}/references/blocks.md`; the existing `.md` ske
 | Section | What it holds (either format) | `.md` | `.html` |
 |---|---|---|---|
 | Status block | `status: active \| done \| superseded-by: <NNN>`, `date: <YYYY-MM-DD>`, `risk-surface: <none \| auth \| payment \| permission \| db-schema \| public-api>`, the NOTE sentence | YAML frontmatter at the top of the file, NOTE quote below it | the same YAML lines plus a NOTE line inside an HTML comment before `<!doctype html>` |
-| Context | Problem and motivation, the user's answers to Open Questions, and the Forward Trace rows the user let stay (`## Forward Trace Rows`); when a PRD exists, point at its section and never restate it | `## Context` | `aux="background"` |
+| Context | Problem and motivation, the current and new sentences of each rule restated per Phase 1 step 2, the user's answers to Open Questions, each Phase 1 step 2 decision not asked as a `<doc-ask>` with its reason and answer, and the Forward Trace rows the user let stay (`## Forward Trace Rows`); when a PRD exists, point at its section and never restate it | `## Context` | `aux="background"` |
 | Usage Sketch | Only when the change adds or changes a public interface (endpoint, exported function or type): the caller's code or a request/response example, as the caller will write it. The steps build toward this | `## Usage Sketch` | the figure of a level-1 tree node, `id="usage"` |
 | Affected Files | `path — one line on what changes` | `## Affected Files` | `aux="files"` |
 | Affected Dependents | Code that must keep working but is not changed: callers of every signature this touches, consumers of every export it renames, routes behind a middleware it alters, every doc sentence that restates a rule this changes (the scope-analyst's doc copies — one line per rule with every copy's path and the owner). One line each with a path | `## Affected Dependents` | `aux="dependents"` |
 | Change Map | `.md` only — rule in `markdown-format.md` | `## Change Map` | none — the tree's call trees and flow diagrams |
 | Implementation Steps | Per step: the file, the change with line references, code sketches where needed. All start not done | `### [ ] Step N:` / done `[x]` / blocked: `> BLOCKED: <reason>` under the heading | `<li id="step-N">` in `aux="steps"` / done `class="done"` / blocked: `<p>BLOCKED: <reason></p>` right after the `<h4>`; the body is HTML-escaped — unescape `&lt;` `&gt;` `&amp;` when copying it into code |
 | Tests | Required. Each test to add or change and the behavior it pins. When `risk-surface` is not `none`, "none needed" is not an available answer; with `none` it needs a reason | `## Tests` | `aux="tests"` |
-| Risks | Each risk and its mitigation | `## Risks` | `aux="risks"` |
+| Risks | Each risk and how it ends (Phase 1 step 2) | `## Risks` | `aux="risks"` |
 | Verification | Commands that prove the change works | `## Verification` | `aux="verify"` — unescape `&amp;` `&lt;` `&gt;` before running |
 | Review Notes | REJECTED and out-of-scope findings with rationale; `UNRESOLVED` rows block `/impl-execute`. Columns `Finding \| Severity \| Disposition \| Rationale` | `## Review Notes` table | `aux="review"` table |
 | Decisions | Only forks that change what gets built, at most 5 (0 when there is no fork), the recommended option `checked` | none | `<doc-ask>`; once answered, `data-decided="YYYY-MM-DD"` and `neutral` |
