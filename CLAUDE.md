@@ -50,6 +50,7 @@ Backend + Fullstack developer (Node.js / TypeScript, NestJS, Prisma).
 
 ## Hard Rules
 
+- **Herdr 실행 환경** — `HC_TERMINAL_ID`가 있는 세션의 터미널·작업공간·외부 워커 위임에는 `herdr-cli` 스킬을 따른다. 이 조건에서는 아래 Orca 전용 워크트리 분리 절차와 다른 개인 스킬의 Orca 실행 절차를 Herdr 절차로 대체한다. 모델·검증·리뷰·승인 규칙은 그대로 적용한다.
 - **Risk surface** — auth / payment / permission / DB schema (`schema.prisma`, migrations) / public API contract: tests required, and a `reviewer` agent reviews before you report done. Judge by what the change does, not the file name.
 - **5+ production files** in one logical change: share the plan first and get approval (`impl-plan`).
 - **워크트리 분리** — 사용자가 감독 없이 넘기라고 하면(판정 목록은 `orca-cli`의 Full Handoffs 절) 구현자와 무관하게 Full Handoffs로 가고 이 규칙은 발화하지 않는다. 그 외에 사용자 작업을 **다른 에이전트에게** 별도 체크아웃으로 넘길 때(codex·claude 무관), 계획이 확정된 뒤 첫 디스패치 전에 `orca worktree`(워커별 격리 브랜치+Orca 카드) / in-place(현재 체크아웃·카드 없음·워커 1개 직렬)를 AskUserQuestion으로 묻는다. `orca status`가 실패하면 묻지 않고 in-place. 답은 그 task 전체에 적용 — 현재 task의 계획이 덮지 않는 새 요청 = 새 task → 재질문. worktree일 때 구현자별로 갈라진다: codex는 `codex-worker` 스폰(`codex-delegation`), 그 외 워커는 `orca-cli` 스킬의 Supervised Dispatch 절. 내가 격리 브랜치에서 직접 작업하는 것은 그냥 worktree 사용이고, `Agent` 도구의 `isolation: "worktree"`도 이 규칙 밖이다.
