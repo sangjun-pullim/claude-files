@@ -78,6 +78,7 @@
 | `block-env-commit.sh` | .env 파일 git 추가/커밋 |
 | `block-dangerous-git.sh` | reset --hard, clean -f, branch -D, checkout/restore로 트리 폐기 |
 | `block-fable-subagent.sh` | 서브에이전트를 Fable 모델로 띄우기(`Agent` 도구의 `model` 인자) |
+| `inject-fable-ownership.sh` | (차단 아님) 메인 세션 모델이 Fable 5.2일 때만 SessionStart·PostModelSwitch에서 코드베이스 소유 문장 한 줄을 컨텍스트에 추가. `/clear` 뒤에는 입력에 모델이 없어, 같은 Claude Code 프로세스에서 마지막으로 본 모델을 `$TMPDIR`의 상태 파일에서 읽음 |
 | `auto-format.sh` | (차단 아님) Write/Edit 후, 프로젝트에 prettier 설정이 있을 때만 ts·tsx·js·jsx·json·css·scss 파일을 설치된 prettier로 포맷 |
 | `settings.json` 인라인 명령 (12개 이벤트) | (차단 아님) Orca 앱이 넣은 훅. 레포 밖의 `~/.orca/agent-hooks/claude-hook.sh`가 있으면 이벤트 입력을 넘기고, 없으면 `{}`만 출력 |
 | `settings.json` 인라인 명령 (SessionStart·SessionEnd) | (차단 아님) Herdr 앱의 revive 모드가 넣은 훅. 레포 밖의 `~/.config/herdr-app/mods/revive/revive.mjs hook`이 Herdr 터미널(`HC_TERMINAL_ID`) 안의 세션만 시작할 때 기록하고 사용자가 직접 끝내면 지워, 재시작으로 끊긴 세션을 다시 열 수 있게 함. 스크립트 파일이 없으면 node 오류가 남(차단 아님) |
