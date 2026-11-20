@@ -95,7 +95,7 @@ that the step bodies are HTML-escaped and are unescaped before writing code.
    last change), and Phase 2 ended by exit, not a stop (CLAUDE.md
    **리뷰 루프**). Before this check, get the result step 2 will report — run the full test command
    the repo's CI runs, or read the conclusion of the CI run on the final commit; if it failed,
-   the spec stays open even when all four hold. Then set `status: done` in the status block and `git mv` the file to
+   the spec stays open even when all four hold. Run the running-app check (CLAUDE.md `## Standards`, the "After a change to runtime behavior" bullet) at the same point; its failure keeps the spec open the same way. Then set `status: done` in the status block and `git mv` the file to
    `docs/impl-spec/archive/` — this is part of the skill, not a docs suggestion. Otherwise leave
    `status: active` and report which steps, tests, or findings remain.
 2. **Report**: what was built, files changed, what the review rounds caught, remaining
@@ -140,7 +140,7 @@ Load the `codex-delegation` skill first — it owns the codex dispatch contract;
    on the integration branch. Put a behavior finding's Bug fix order
    (CLAUDE.md **리뷰 루프**) in the rework correction; your own one-line fix follows the same order.
 6. **Phase 3 in orca worktree mode**, whatever the worker was: do not close the spec — the code sits on an unmerged integration
-   branch. Return the repo-root checkout to `<base>`, then report: worker → steps → Codex
+   branch. Run the running-app check (Phase 3 step 1) on the integration branch, return the repo-root checkout to `<base>`, then report: worker → steps → Codex
    worker id (codex: session id), the integration and worker branches, that nothing was merged into `<base>`, and
    the cleanup the user runs after merging: `orca worktree rm --worktree path:<worktree>` per
    worker, then `git branch -D` on each worker branch and `<task>-integration`. Never remove a

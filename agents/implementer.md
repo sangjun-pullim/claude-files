@@ -35,7 +35,9 @@ The spawn prompt names one of two jobs:
    code most directly support and record it under Assumptions; do not build the other readings.
    When the spec's interface forces `any`, a checker-silencing assertion (`as unknown as`, `!`),
    or the same workaround in more than one caller, stop there and report it as a design
-   mismatch: the spec line and each place it forces.
+   mismatch: the spec line and each place it forces. When a bug-fix spec names a fix site other
+   than the one the global `CLAUDE.md` `## Standards` "A bug fix changes the code" bullet gives,
+   stop before changing either and report both places.
 3. **Verify** — run the named commands in the foreground with the Bash tool's `timeout`
    parameter; when a run exceeds it, stop waiting and report the hang. Before reporting, check
    `ps` for test processes still running from your runs and report their PIDs and command lines. If a check fails because of your change, fix it; if it
