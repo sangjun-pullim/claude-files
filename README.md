@@ -51,9 +51,7 @@
 
 | 이름 | 언제 | 무엇을 해주나 | 예시 |
 |------|------|--------------|------|
-| `codex-delegation` | 사용자가 "codex로/GPT로 구현해"라고 명시했을 때만 | codex-worker 위임 계약: 디스패치, 게이팅, union 리뷰 (worktree/in-place 모드 질문은 `CLAUDE.md`의 **워크트리 분리** 규칙 소관) | "이 스펙 codex한테 구현시켜" |
 | `orca-cli` | Orca를 직접 언급했을 때, 또는 **워크트리 분리** 규칙이 감독 디스패치·full handoff로 라우팅할 때 | orca CLI로 워크트리·터미널·자동화 관리. "Full Handoffs"(넘기고 손 뗌)와 "Supervised Dispatch"(내가 게이팅·리뷰·통합 브랜치 조립, base 브랜치 병합은 사용자) 절차를 나눠 정의 | "orca 워크트리 목록 보여줘" / "이 작업 다른 에이전트한테 넘겨줘" |
-| `herdr-cli` | Herdr를 직접 언급했을 때, 또는 Herdr 앱 안에서 띄운 세션(`HC_TERMINAL_ID` 있음)에서 터미널·작업공간·워커 위임이 필요할 때 | `hc`·`herdr-app`으로 터미널·space·워크트리·워커 실행. 그런 세션에서는 다른 스킬의 Orca 절차와 **워크트리 분리** 규칙을 Herdr 절차로 대체하고, Orca를 직접 지목하면 `orca-cli`를 쓴다 | "herdr에서 이 작업 별도 워크트리로 띄워줘" |
 | `writing-for-agents` 🅼 | 스킬·CLAUDE.md 등 에이전트용 문서를 쓸 때 | context pointer, progressive disclosure, no-op 사냥, 런타임 시스템 지침과 겹치는 규칙 금지, control-plane 파일 편집 규칙 | "디버깅용 스킬 하나 새로 만들자" |
 
 > **출처**: 🅼 표시가 붙은 스킬은 [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)에서 가져와 이 하네스(Second Brain 문서 체계)에 맞게 각색한 것. `second-brain`의 ADR 기록 3-게이트도 같은 저장소의 domain-modeling에서 가져옴.
@@ -68,7 +66,6 @@
 | `implementer` (Opus medium) | 리드가 넘긴 자족적 스펙을 현재 체크아웃에서 구현하고 diff·검증 결과·가정을 보고 |
 | `editor` (Sonnet low) | 정확한 before/after 규칙을 여러 파일에 기계적으로 적용하고 위치별로 보고 |
 | `reviewer` (Opus xhigh) | 코드/계획/구현/control-plane 리뷰. 위험 영역·control-plane 변경엔 필수. 불필요한 코드(규칙 위반 주석·도달 불가 분기·중복 헬퍼·검사 회피 캐스트)도 Excess로 지적. CRITICAL/HIGH는 종류별 증거(입력·경로·잘못된 결과, 스펙 줄과 코드 줄 등)가 없으면 MEDIUM 이하 |
-| `codex-worker` (Sonnet) | codex CLI 실행·전달만 하는 워커 (판단은 부모가). 기본은 orca 워크트리에서 실행하고, `orca status`가 실패하거나 스폰 프롬프트에 in-place mode가 있으면 현재 체크아웃에서 실행 |
 
 ### Hooks
 
@@ -81,4 +78,3 @@
 | `inject-fable-ownership.sh` | (차단 아님) 메인 세션 모델이 Fable 5.2일 때만 SessionStart·PostModelSwitch에서 코드베이스 소유 문장 한 줄을 컨텍스트에 추가. `/clear` 뒤에는 입력에 모델이 없어, 같은 Claude Code 프로세스에서 마지막으로 본 모델을 `$TMPDIR`의 상태 파일에서 읽음 |
 | `auto-format.sh` | (차단 아님) Write/Edit 후, 프로젝트에 prettier 설정이 있을 때만 ts·tsx·js·jsx·json·css·scss 파일을 설치된 prettier로 포맷 |
 | `settings.json` 인라인 명령 (12개 이벤트) | (차단 아님) Orca 앱이 넣은 훅. 레포 밖의 `~/.orca/agent-hooks/claude-hook.sh`가 있으면 이벤트 입력을 넘기고, 없으면 `{}`만 출력 |
-| `settings.json` 인라인 명령 (SessionStart·SessionEnd) | (차단 아님) Herdr 앱의 revive 모드가 넣은 훅. 레포 밖의 `~/.config/herdr-app/mods/revive/revive.mjs hook`이 Herdr 터미널(`HC_TERMINAL_ID`) 안의 세션만 시작할 때 기록하고 사용자가 직접 끝내면 지워, 재시작으로 끊긴 세션을 다시 열 수 있게 함. 스크립트 파일이 없으면 node 오류가 남(차단 아님) |

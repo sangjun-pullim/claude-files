@@ -7,8 +7,7 @@ description: >-
   "Orca terminal", "Orca browser", "$orca-cli"), or when the CLAUDE.md 워크트리 분리
   rule routes a worktree to supervised dispatch or to a full handoff. A generic
   "hand off to another agent/worktree" request without an Orca mention and without
-  that routing is not this skill; delegating to codex additionally requires the user
-  to ask for codex (`codex-delegation` skill).
+  that routing is not this skill.
 ---
 
 # Orca CLI
@@ -61,14 +60,14 @@ Do not use `orca orchestration task-create`, `orca orchestration dispatch --inje
 Independent new-worktree handoff:
 
 ```text
-ORCA worktree create --name <task-name> --no-parent --agent codex --prompt "<task brief>" --json
+ORCA worktree create --name <task-name> --no-parent --agent claude --prompt "<task brief>" --json
 ```
 
 Use `--no-parent` and omit `--base-branch` for independent top-level handoffs unless the user explicitly asks for stacked work, "branch from current", or a specific base. Put any current-branch context in the prompt.
 
-Custom Codex model/effort handoff:
+Custom agent command handoff:
 
-`worktree create --agent codex --prompt ...` launches the known Codex agent but does not accept Codex-specific `--model` or `-c model_reasoning_effort=...` arguments. For requests such as `gpt-5.5 xhigh`, create the independent worktree, launch the requested Codex command there, wait only for TUI readiness if needed to avoid losing input, send the prompt, and stop.
+`worktree create --agent <id> --prompt ...` launches the agent's built-in command and takes no extra arguments for it. When the request needs custom arguments (a model, an effort level), create the independent worktree, launch the requested agent command there, wait only for TUI readiness if needed to avoid losing input, send the prompt, and stop.
 
 **Extra first terminal:** when no repo default-terminal configuration supplies a primary terminal, bare `worktree create` (no `--agent`) opens a fallback shell before the later `terminal create --command ...` adds the agent. Configured default tabs are materialized instead and may run real commands. Prefer `--agent` whenever the built-in launcher is enough. When custom argv forces the two-step path, target the agent handle only; close a prior terminal only after `terminal list` or `terminal show` confirms it is an unused shell.
 
@@ -76,7 +75,7 @@ The create result's `worktree.id` already contains both pieces Orca needs: `<rep
 
 ```text
 ORCA worktree create --name <task-name> --no-parent --json
-ORCA terminal create --worktree id:<repoId>::<newWorktreePath> --title <task-name> --command 'codex --model gpt-5.5 -c model_reasoning_effort="xhigh"' --json
+ORCA terminal create --worktree id:<repoId>::<newWorktreePath> --title <task-name> --command '<agent command with its arguments>' --json
 ORCA terminal wait --terminal <handle> --for tui-idle --timeout-ms 60000 --json
 ORCA terminal send --terminal <handle> --text "<task brief>" --enter --json
 ```
@@ -89,7 +88,7 @@ ORCA terminal send --terminal <handle> --text "<task brief>" --enter --json
 
 ## Supervised Dispatch
 
-Use when you keep ownership — you gate the worker's diff, run review, and assemble. Handing over and stopping is **Full Handoffs** above; a `codex-worker` spawn is the `codex-delegation` skill, which does not use orchestration at all.
+Use when you keep ownership — you gate the worker's diff, run review, and assemble. Handing over and stopping is **Full Handoffs** above.
 
 ```text
 ORCA worktree create --name <task> --agent claude --base-branch <base> --json
@@ -108,7 +107,7 @@ Handles: the worker's is `startupTerminal.handle` from the create response (see 
 - `worker_done` moves the task to `completed` by itself (measured). Reach for `task-update --status failed|completed` only for a task that ended without one — refused, abandoned, or stopped by you.
 - One pane holds one active dispatch. `task-update` does not release it and no command clears it, so send a retry to a fresh pane.
 - Read `dispatch --dry-run --return-preamble` to see exactly what the worker will be told.
-- Assembly and review follow `impl-execute` Phase 2 and its Codex path steps 4 and 6 whatever the worker was — step 6 is what keeps the spec open while the integration branch is unmerged. Worker branches stay off the base branch — CLAUDE.md **Merging is the user's call**.
+- Assembly and review follow `impl-execute` Phase 2 and its Orca worktree path — step 3 there is what keeps the spec open while the integration branch is unmerged. Worker branches stay off the base branch — CLAUDE.md **Merging is the user's call**.
 - `orchestration reset` has no per-task scope — it clears every task or every message at once.
 
 ## Worktrees
@@ -132,7 +131,7 @@ ORCA worktree show --worktree <selector> --json
 ORCA worktree create --repo id:<repoId> --name related-task --json
 ORCA worktree create --repo id:<repoId> --name related-task --parent-worktree active --json
 ORCA worktree create --repo id:<repoId> --name folder-child --parent-worktree folder:<folderId> --json
-ORCA worktree create --name child-task --agent codex --prompt "hi" --json
+ORCA worktree create --name child-task --agent claude --prompt "hi" --json
 ORCA worktree create --name independent-task --no-parent --json
 ORCA worktree set --worktree id:<repoId>::<worktreePath> --display-name "My Task" --json
 ORCA worktree set --worktree active --comment "reproduced bug; testing fix" --json
@@ -142,7 +141,7 @@ ORCA worktree rm --worktree id:<repoId>::<worktreePath> --force --json
 ```
 
 `--force` removes a worktree with uncommitted changes. Use it only on a worktree you know is
-expendable — see `impl-execute` Phase 3 for the Codex cleanup path, which forbids it.
+expendable — see the `impl-execute` Orca worktree path, whose cleanup forbids it.
 
 Selectors:
 
@@ -163,7 +162,7 @@ Lineage rules:
 Agent/setup flags:
 
 ```text
-ORCA worktree create --name task --agent codex --prompt "hi" --json
+ORCA worktree create --name task --agent claude --prompt "hi" --json
 ORCA worktree create --name task --agent claude --setup run --json
 ORCA worktree create --name task --setup skip --json
 ORCA worktree create --name task --run-hooks --json
@@ -177,7 +176,7 @@ ORCA worktree create --name task --run-hooks --json
 - `--agent`, `--activate`, and `--run-hooks` reveal the new worktree. Plain create stays in the background.
 - Let Orca choose setup terminal placement from repo settings, including tab vs split behavior. Do not manually create extra setup terminals when `--agent` already owns the first tab.
 - If an older installed CLI rejects `--agent`, `--prompt`, or `--setup`, create the worktree normally, then run `orca terminal create --worktree <selector> --command "<requested-agent>"` and `orca terminal send` if a prompt is needed. This can leave a fallback shell when no default tabs are configured; close it only after confirming it is unused.
-- `worktree create` creates a new checkout. For a fresh agent in the **current** checkout (no new worktree), use `orca terminal create --worktree active --command "codex" --json` — that path does not create a second worktree shell.
+- `worktree create` creates a new checkout. For a fresh agent in the **current** checkout (no new worktree), use `orca terminal create --worktree active --command "claude" --json` — that path does not create a second worktree shell.
 
 ## Worktree Comments
 
@@ -210,7 +209,7 @@ ORCA terminal wait --terminal <handle> --for tui-idle --timeout-ms 300000 --json
 ORCA terminal stop --worktree id:<repoId>::<worktreePath> --json
 ORCA terminal create --json
 ORCA terminal create --title "Worker" --json
-ORCA terminal create --worktree active --command "codex" --json
+ORCA terminal create --worktree active --command "claude" --json
 ORCA terminal split --terminal <handle> --direction vertical --json
 ORCA terminal split --terminal <handle> --direction horizontal --command "npm test" --json
 ORCA terminal rename --terminal <handle> --title "New Name" --json

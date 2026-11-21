@@ -6,8 +6,8 @@ description: Execute an implementation plan and validate the result through a fr
 # Implementation Execution with Code-Verified Review Loop
 
 Implement a spec from `docs/impl-spec/`, then have a fresh-context `reviewer` verify the code
-against the spec. The implementer never reviews its own work — whoever wrote the code (you or
-Codex) carries the blind spot this loop exists to defeat.
+against the spec. The implementer never reviews its own work — whoever wrote the code (you or a
+worker) carries the blind spot this loop exists to defeat.
 
 ## Do NOT use when
 
@@ -28,14 +28,14 @@ Codex) carries the blind spot this loop exists to defeat.
   evidence).
 - Record the base branch as `<base>` (`git rev-parse --abbrev-ref HEAD`).
 
-**Who implements**: you, or an `implementer` worker per CLAUDE.md `## Delegation` — unless the
-user asked for Codex ("codex로 구현", "GPT로 진행"), then follow the Codex path below instead of
-Phase 1. Never switch to Codex on your own. When you hand a step to `implementer`, pass the
+**Who implements**: you, or an `implementer` worker per CLAUDE.md `## Delegation`; when the
+CLAUDE.md 워크트리 분리 rule sent the work to Orca worktree workers, follow the Orca
+worktree path below instead of Phase 1. When you hand a step to `implementer`, pass the
 spec's absolute path and the step numbers instead of restating the step body (the spec is already
 written, so for the Delegation output comparison the handoff costs only that prompt), and quote
 that step's Tests entries verbatim in the spawn prompt; you still flip the marker after reading
 its report and its `Verification` exit codes, and Phase 2 stays yours. Every handoff of an
-`.html` spec's steps — to an `implementer`, a `codex-worker`, or an orca worker's brief — says
+`.html` spec's steps — to an `implementer` or in an orca worker's brief — says
 that the step bodies are HTML-escaped and are unescaped before writing code.
 
 ## Phase 1: Implementation
@@ -100,50 +100,40 @@ that the step bodies are HTML-escaped and are unescaped before writing code.
    `status: active` and report which steps, tests, or findings remain.
 2. **Report**: what was built, files changed, what the review rounds caught, remaining
    MEDIUM/LOW notes, REJECTED findings with their rationale, and the 돌린 검증, 미검증 동작
-   and 직접 고른 값 items (CLAUDE.md `## Communication`) for the whole change — a
-   `codex-worker` report carries neither of the last two, so derive them from the diff for its
-   steps. Put the full test command the repo's CI runs in 돌린 검증 (or the CI run on the final
+   and 직접 고른 값 items (CLAUDE.md `## Communication`) for the whole change. Put the full test command the repo's CI runs in 돌린 검증 (or the CI run on the final
    commit, with its URL and conclusion) — a target-suite run misses breaks in specs outside the
    change; if neither ran, list it under 미검증 동작.
 
-## Codex path
+## Orca worktree path
 
-Load the `codex-delegation` skill first — it owns the codex dispatch contract; the mode question itself is the CLAUDE.md 워크트리 분리 rule. Steps 4 and 6 hold whatever the worker was; skip this load when the worker is not codex.
+For work the CLAUDE.md 워크트리 분리 rule sent to Orca worktree workers.
 
 1. **Split** the unchecked steps into workers with disjoint file sets. A step that changes an
    exported signature, schema, barrel, or shared type runs alone; a signature change and its
    callers stay in one worker; no clean split → sequential. Each Tests entry goes to the
-   worker owning the step it pins.
-2. **Dispatch** one `codex-worker` per group with the spec's absolute path, the step numbers it
-   owns, the Tests entries for those steps quoted verbatim, and `<base>`. Workers never write
-   the spec; you flip markers after gating. In-place mode: one worker at a time.
-3. **Gate each report mechanically** (no diff review here): `codex 호출 0회` or no session id →
-   run the `codex-delegation` early-return check first (codex still running → SendMessage the
-   same worker); otherwise failed, re-dispatch; any `검증 → exit` non-zero → send the failing output back as a rework
-   request to the same session; `스펙 외 변경 파일` non-empty → inspect those paths; orca mode →
-   `git -C <worktree> log <base>..HEAD` must be non-empty (commit a dirty worktree there
-   yourself — that is assembly, not implementation). The same group failing the same check twice
-   ends the run: report the raw worker report and log path and let the user decide.
-   All clear → mark that group's steps done in the base checkout.
-4. **Assemble the union** — Phase 2 reviews one combined change.
-   - In-place: the checkout already holds it; `git add -A -N && git diff` is the union.
-   - Orca worktree: `git switch -c <task>-integration <base>`, **commit the spec's done markings
-     there**, merge each worker branch. A merge conflict is a cross-worker collision — resolve
-     only if mechanical, otherwise send it back to the owning sessions. Run build/lint/test on
-     the integration branch before any review: stale imports and mismatched signatures fail only
-     here. The patch for Phase 2 is `git diff <base>...HEAD`; pass the integration branch name.
-   - Write the change summary and dependency map for the union yourself, attributing each step
-     to its worker.
-5. **Phase 2 fixes** go back to the owning Codex session as rework (re-spawn the worker against
-   the same worktree/checkout with the session id and the correction verbatim), then re-gate and
-   re-assemble. A one-line mechanical fix may be done by you — say so, and in orca mode commit it
-   on the integration branch. Put a behavior finding's Bug fix order
-   (CLAUDE.md **리뷰 루프**) in the rework correction; your own one-line fix follows the same order.
-6. **Phase 3 in orca worktree mode**, whatever the worker was: do not close the spec — the code sits on an unmerged integration
-   branch. Run the running-app check (Phase 3 step 1) on the integration branch, return the repo-root checkout to `<base>`, then report: worker → steps → Codex
-   worker id (codex: session id), the integration and worker branches, that nothing was merged into `<base>`, and
-   the cleanup the user runs after merging: `orca worktree rm --worktree path:<worktree>` per
-   worker, then `git branch -D` on each worker branch and `<task>-integration`. Never remove a
-   worktree holding uncommitted changes. Close the spec after the user merges.
+   worker owning the step it pins. Then dispatch one worker per group through the `orca-cli`
+   skill's Supervised Dispatch section. The brief names the spec's absolute path, the step
+   numbers the group owns, those steps' Tests entries verbatim, and `<base>`, and says that the
+   worker implements only those steps, commits on its branch, and leaves the spec file as it is
+   (no step markings, no `/impl-execute` run).
+2. **Assemble the union** — Phase 2 reviews one combined change. Gate each worker when its
+   `worker_done` arrives: `git -C <worktree> status --porcelain` prints nothing (commit a dirty
+   worktree there yourself — that is assembly, not implementation) and
+   `git -C <worktree> log <base>..HEAD` prints a commit; then mark that worker's steps done in
+   the base checkout. `git switch -c <task>-integration <base>`,
+   **commit the spec's done markings there**, merge each worker branch. A merge conflict is a
+   cross-worker collision — resolve only if mechanical, otherwise send it back to the owning
+   worker. Run build/lint/test on the integration branch before any review: stale imports and
+   mismatched signatures fail only here. The patch for Phase 2 is `git diff <base>...HEAD`; pass
+   the integration branch name. Write the change summary and dependency map for the union
+   yourself, attributing each step to its worker. Commit each Phase 2 fix on
+   `<task>-integration` before writing the next round's patch and before returning to `<base>`.
+3. **Phase 3 in orca worktree mode**: do not close the spec — the code sits on an unmerged
+   integration branch. Run the running-app check (Phase 3 step 1) on the integration branch,
+   return the repo-root checkout to `<base>`, then report: worker → steps, the integration and
+   worker branches, that nothing was merged into `<base>`, and the cleanup the user runs after
+   merging: `orca worktree rm --worktree path:<worktree>` per worker, then `git branch -D` on
+   each worker branch and `<task>-integration`. Never remove a worktree holding uncommitted
+   changes. Close the spec after the user merges.
 
 $ARGUMENTS
