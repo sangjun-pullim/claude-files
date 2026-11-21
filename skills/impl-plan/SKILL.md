@@ -115,7 +115,7 @@ Apply it per the Respond handling in `html-format.md`, then run `--lint-only`.
 ## Phase 3: Present
 
 Present the spec path, the risk surface recorded in its status block, what the review rounds
-found and fixed, any remaining MEDIUM/LOW notes, and the REJECTED findings with their
+found and fixed (last-round fixes marked as not re-reviewed — CLAUDE.md **리뷰 루프**), any remaining MEDIUM/LOW notes, and the REJECTED findings with their
 rationale. Implementation runs through
 `/impl-execute` on this spec — do not start implementing here.
 
