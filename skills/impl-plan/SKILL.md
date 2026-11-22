@@ -162,8 +162,9 @@ in Phase 1.5, a new `.final-<HHMMSS>` path in Phase 3) are defined in `html-form
 ```bash
 # lint only — after every edit, in every phase (.html specs)
 node "${CLAUDE_SKILL_DIR}/runtime/pack.mjs" docs/impl-spec/128-foo.html --root . --lint-only
-# packed copy for the user, always with -o outside the repo (.decide in Phase 1.5, .final in Phase 3)
-node "${CLAUDE_SKILL_DIR}/runtime/pack.mjs" docs/impl-spec/128-foo.html --root . -o "<scratch>/128-foo.decide-<HHMMSS>.html"
+# packed copy for the user, always with -o outside the repo (.decide in Phase 1.5, .final in Phase 3);
+# `open` shows it in the user's browser — when `open` fails, the packed path you give the user is enough
+out="<scratch>/128-foo.decide-<HHMMSS>.html"; node "${CLAUDE_SKILL_DIR}/runtime/pack.mjs" docs/impl-spec/128-foo.html --root . -o "$out" && open "$out"
 # read progress, decisions and review state (absolute path — other skills and agents run this too)
 node ~/.claude/skills/impl-plan/runtime/pack.mjs docs/impl-spec/128-foo.html --status
 # → {"status":"active","steps":{"total":7,"done":3,"next":"step-4","blocked":[]},"undecided":0,"unresolved":0}
