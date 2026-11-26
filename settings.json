@@ -279,13 +279,13 @@
       "effortLevel": "high"
     },
     "claude-opus-5-5": {
-      "effortLevel": "high",
-      "autoCompactWindow": 400000
+      "effortLevel": "high"
     },
     "glm-5.3": {
       "effortLevel": "xhigh"
     }
   },
+  "autoCompactWindow": 400000,
   "tui": "fullscreen",
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
